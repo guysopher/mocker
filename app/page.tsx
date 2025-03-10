@@ -63,13 +63,9 @@ export default function Home() {
       
       {!appGenerated ? (
         <div className="flex flex-1 flex-col items-center justify-center p-8 bg-gradient-to-b from-blue-50 to-gray-50">
-          <div className="max-w-3xl w-full bg-white p-10 rounded-xl shadow-lg border border-gray-100">
+          <div className="max-w-7xl w-full bg-white p-10 rounded-xl shadow-lg border border-gray-100">
             <div className="text-center mb-8">
-              <h1 className="text-4xl font-bold text-gray-800 mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">Wix App Creator</h1>
-              <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-                Describe your app idea in natural language, and our AI will generate prototype, 
-                logic flowcharts, and user stories to help you visualize and build your app.
-              </p>
+              <h1 className="text-4xl font-bold text-gray-800 mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">Tell Us About Your Dream App</h1>
             </div>
             
             <AppDescriptionForm 
@@ -111,13 +107,6 @@ export default function Home() {
               
               <div className="flex space-x-4">
                 <button 
-                  onClick={handleDesignIt}
-                  disabled={generatingContent || building}
-                  className="px-5 py-2 bg-indigo-600 text-white rounded-md font-medium disabled:bg-indigo-300"
-                >
-                  Design It
-                </button>
-                <button 
                   onClick={handleBuildIt}
                   disabled={generatingContent || building || buildProgress > 0}
                   className="px-5 py-2 bg-green-600 text-white rounded-md font-medium disabled:bg-green-300"
@@ -127,7 +116,7 @@ export default function Home() {
                 
                 {buildProgress === 100 && (
                   <Link 
-                    href="https://www.wix.com/dashboard"
+                    href="https://www.wix.com/"
                     target="_blank"
                     className="px-5 py-2 bg-blue-600 text-white rounded-md font-medium"
                   >

@@ -41,7 +41,5 @@ describe('Home Page', () => {
     // Check if the app description form is rendered 
     expect(screen.getByTestId('mock-app-description-form')).toBeInTheDocument()
     
-    // Check if the title is rendered
-    expect(screen.getByText('Wix App Creator')).toBeInTheDocument()
   })
 })

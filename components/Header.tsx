@@ -8,14 +8,7 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
         <div className="flex items-center space-x-3">
           <div className="relative">
-            <Image 
-              src="/wix-logo.svg" 
-              alt="Wix Logo" 
-              width={44} 
-              height={44}
-              className="w-11 h-11"
-            />
-            <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full animate-pulse"></div>
+            <div className="absolute -top-6 -right-1 w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full animate-pulse"></div>
           </div>
           <div>
             <h1 className="text-xl font-bold text-gray-800">App Creator</h1>

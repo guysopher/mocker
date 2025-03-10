@@ -81,9 +81,9 @@ export default function VoiceInteraction({ elementId, onVoiceEnd, element }: Voi
   
   return (
     <div 
-      className={`fixed z-50 bg-white rounded-lg shadow-xl transition-all duration-300 ${
+      className={`fixed z-50 bg-white/90 rounded-xl shadow-2xl transition-all duration-300 ${
         minimized ? 'w-12 h-12' : 'w-96'
-      } animate-fadeIn backdrop-blur-sm bg-opacity-95 border border-gray-100`}
+      } animate-fadeIn backdrop-blur-md border border-white/20`}
       style={{
         top: position.top,
         left: position.left
@@ -104,15 +104,15 @@ export default function VoiceInteraction({ elementId, onVoiceEnd, element }: Voi
         </button>
       ) : (
         <div className="flex flex-col h-full">
-          <div className="flex justify-between items-center px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+          <div className="flex justify-between items-center px-4 py-3 border-b border-gray-100/50 bg-gradient-to-r from-blue-600/10 via-indigo-500/10 to-purple-500/10 rounded-t-xl">
             <div className="flex items-center">
-              <div className="flex items-center justify-center h-7 w-7 bg-blue-100 rounded-full mr-3">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="flex items-center justify-center h-8 w-8 bg-blue-500 rounded-full mr-3 shadow-lg shadow-blue-500/50 transition-transform hover:scale-110">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                 </svg>
               </div>
               <div>
-                <h3 className="font-medium text-sm text-gray-900">Voice Interaction</h3>
+                <h3 className="font-semibold text-sm text-gray-900">Voice Interaction</h3>
                 <p className="text-xs text-gray-500">{element?.label}</p>
               </div>
             </div>
@@ -138,7 +138,7 @@ export default function VoiceInteraction({ elementId, onVoiceEnd, element }: Voi
             </div>
           </div>
           
-          <div className="p-4 flex-1 overflow-y-auto max-h-96 scrollbar-thin">
+          <div className="p-4 flex-1 overflow-y-auto max-h-96 scrollbar-thin scrollbar-thumb-blue-500/20 scrollbar-track-transparent">
             {/* Notes Section */}
             <div className="mb-4 border-b border-gray-100 pb-4">
               <div className="flex items-center justify-between mb-2">
@@ -200,20 +200,16 @@ export default function VoiceInteraction({ elementId, onVoiceEnd, element }: Voi
 
             {isListening ? (
               <div className="flex flex-col items-center justify-center py-10">
-                <div className="relative mb-4">
-                  <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="relative mb-6 group">
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full opacity-75 group-hover:opacity-100 blur transition duration-1000 group-hover:duration-200 animate-tilt"></div>
+                  <div className="relative w-24 h-24 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-white transform transition-transform group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                     </svg>
-                  </div>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="relative">
-                      <div className="absolute animate-ping h-4 w-4 rounded-full bg-blue-400 opacity-75"></div>
-                      <div className="relative h-3 w-3 rounded-full bg-blue-500"></div>
-                    </div>
+                    <div className="absolute inset-0 rounded-full animate-pulse-ring"></div>
                   </div>
                 </div>
-                <p className="text-blue-700 font-medium">Listening...</p>
+                <p className="text-blue-700 font-medium text-lg">Listening...</p>
                 <p className="text-sm text-gray-500 mt-2 text-center">Speak clearly to add comments or request changes</p>
               </div>
             ) : (
@@ -272,16 +268,16 @@ export default function VoiceInteraction({ elementId, onVoiceEnd, element }: Voi
             )}
           </div>
           
-          <div className="p-4 border-t border-gray-100">
+          <div className="p-4 border-t border-gray-100/50 bg-gradient-to-b from-transparent to-white/50">
             <div className="flex">
               <input 
                 type="text" 
-                className="flex-1 px-4 py-2.5 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                className="flex-1 px-4 py-2.5 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition-all"
                 placeholder="Type your change request..."
                 disabled={isListening}
               />
               <button 
-                className="px-4 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-r-md hover:from-blue-600 hover:to-indigo-700 transition-colors flex items-center"
+                className="px-4 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-r-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25 flex items-center"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
