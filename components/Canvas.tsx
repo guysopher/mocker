@@ -72,25 +72,8 @@ export default function Canvas({ view, appDescription, isGenerating, buildProgre
           activeElement={activeElement}
         />
       case 'design':
-        console.log('Rendering DesignView with elements:', canvasElements);
-        return <DesignView 
-          elements={canvasElements}
-          onElementClick={handleElementClick}
-          activeElement={activeElement}
-        />
       case 'prototype':
         return <DesignView
-          elements={canvasElements}
-          onElementClick={handleElementClick}
-          activeElement={activeElement}
-        />
-      // return <WireframeView 
-      //     elements={canvasElements} 
-      //     onElementClick={handleElementClick}
-      //     activeElement={activeElement}
-      //   />
-      case 'logic':
-        return <LogicView 
           elements={canvasElements}
           onElementClick={handleElementClick}
           activeElement={activeElement}

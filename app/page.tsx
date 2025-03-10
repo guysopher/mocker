@@ -11,7 +11,7 @@ export default function Home() {
   const [appDescription, setAppDescription] = useState('')
   const [generatingContent, setGeneratingContent] = useState(false)
   const [appGenerated, setAppGenerated] = useState(false)
-  const [currentView, setCurrentView] = useState('prototype') // prototype, logic, stories
+  const [currentView, setCurrentView] = useState('brief') // brief, design, stories
   const [buildProgress, setBuildProgress] = useState(0)
   const [building, setBuilding] = useState(false)
   
@@ -84,28 +84,20 @@ export default function Home() {
             <div className="flex justify-between items-center max-w-7xl mx-auto">
               <div className="flex space-x-6">
                 <button 
+                  onClick={() => setCurrentView('brief')}
+                  className={`px-4 py-2 font-medium ${currentView === 'brief' 
+                    ? 'text-blue-600 border-b-2 border-blue-600' 
+                    : 'text-gray-600 hover:text-gray-800'}`}
+                >
+                  Brief
+                </button>
+                <button 
                   onClick={() => setCurrentView('design')}
                   className={`px-4 py-2 font-medium ${currentView === 'design' 
                     ? 'text-blue-600 border-b-2 border-blue-600' 
                     : 'text-gray-600 hover:text-gray-800'}`}
                 >
                   Design
-                </button>
-                <button 
-                  onClick={() => setCurrentView('prototype')}
-                  className={`px-4 py-2 font-medium ${currentView === 'prototype' 
-                    ? 'text-blue-600 border-b-2 border-blue-600' 
-                    : 'text-gray-600 hover:text-gray-800'}`}
-                >
-                  Prototype
-                </button>
-                <button 
-                  onClick={() => setCurrentView('logic')}
-                  className={`px-4 py-2 font-medium ${currentView === 'logic' 
-                    ? 'text-blue-600 border-b-2 border-blue-600' 
-                    : 'text-gray-600 hover:text-gray-800'}`}
-                >
-                  Logic Flow
                 </button>
                 <button 
                   onClick={() => setCurrentView('stories')}

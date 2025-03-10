@@ -13,6 +13,9 @@ export default function VoiceInteraction({ elementId, onVoiceEnd, element }: Voi
   const [transcript, setTranscript] = useState('')
   const [minimized, setMinimized] = useState(false)
   const [conversations, setConversations] = useState<string[]>([])
+  const [notes, setNotes] = useState<string[]>(element?.notes || [])
+  const [showNoteInput, setShowNoteInput] = useState(false)
+  const [newNote, setNewNote] = useState('')
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
   
   // Simulated voice recognition
@@ -67,6 +70,14 @@ export default function VoiceInteraction({ elementId, onVoiceEnd, element }: Voi
   }
   
   const position = getPosition()
+  
+  const handleAddNote = () => {
+    if (newNote.trim()) {
+      setNotes([...notes, newNote.trim()])
+      setNewNote('')
+      setShowNoteInput(false)
+    }
+  }
   
   return (
     <div 
@@ -128,6 +139,65 @@ export default function VoiceInteraction({ elementId, onVoiceEnd, element }: Voi
           </div>
           
           <div className="p-4 flex-1 overflow-y-auto max-h-96 scrollbar-thin">
+            {/* Notes Section */}
+            <div className="mb-4 border-b border-gray-100 pb-4">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="text-sm font-medium text-gray-700">Notes</h4>
+                <button
+                  onClick={() => setShowNoteInput(true)}
+                  className="text-xs text-blue-500 hover:text-blue-700 flex items-center"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Add Note
+                </button>
+              </div>
+              
+              {showNoteInput && (
+                <div className="flex items-center gap-2 mb-2">
+                  <input
+                    type="text"
+                    value={newNote}
+                    onChange={(e) => setNewNote(e.target.value)}
+                    className="flex-1 text-sm px-3 py-1.5 border border-gray-300 rounded-md"
+                    placeholder="Type your note..."
+                  />
+                  <button
+                    onClick={handleAddNote}
+                    className="px-3 py-1.5 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600"
+                  >
+                    Add
+                  </button>
+                </div>
+              )}
+
+              {notes.length > 0 ? (
+                <div className="space-y-2">
+                  {notes.map((note, index) => (
+                    <div key={index} className="text-sm bg-yellow-50 p-2 rounded-md border-l-2 border-yellow-300">
+                      {note}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500 italic">No notes yet</p>
+              )}
+            </div>
+
+            {/* Alternatives Button */}
+            <div className="mb-4 border-b border-gray-100 pb-4">
+              <button
+                className="w-full py-2 px-4 border border-gray-200 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center justify-center gap-2"
+                onClick={() => {/* Handle alternatives */}}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                </svg>
+                Show Alternatives
+              </button>
+            </div>
+
             {isListening ? (
               <div className="flex flex-col items-center justify-center py-10">
                 <div className="relative mb-4">

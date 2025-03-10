@@ -9,7 +9,7 @@ interface MarketplaceElement extends CanvasElement {
   width: number;
   height: number;
   label: string;
-  notes: string;
+  notes: string[];
   hasComments: boolean;
   render?: () => JSX.Element
 }
@@ -25,11 +25,11 @@ export const MarketplaceContainer = ({ children }: { children: ReactNode }) => {
 }
 
 export const MarketplaceDemo: {
-  prototype: MarketplaceElement[];
-  logic: any[];
+  design: MarketplaceElement[];
+  brief: any[];
   stories: any[];
 } = {
-  prototype: [
+  design: [
     { 
       id: 'app-header', 
       type: 'header', 
@@ -38,7 +38,13 @@ export const MarketplaceDemo: {
       width: 1000,
       height: 40,
       label: 'LocalMarket',
-      notes: 'Clean header with logo, search, notifications (3), and profile picture',
+      notes: [
+        'Clean, minimal header design to maximize content space',
+        'Logo uses gradient to create modern, trustworthy feel',
+        'Search, notifications, and profile are easily accessible',
+        'Sticky header maintains navigation context while scrolling',
+        'Responsive design adjusts for different screen sizes'
+      ],
       hasComments: true,
       render: () => (
         <div className="absolute flex items-center justify-between px-4 py-2 bg-white shadow-sm rounded-lg" 
@@ -59,7 +65,13 @@ export const MarketplaceDemo: {
       width: 20,
       height: 20,
       label: '3',
-      notes: 'Notification counter showing unread messages',
+      notes: [
+        'High contrast badge ensures visibility',
+        'Animation on new notifications',
+        'Haptic feedback when tapped',
+        'Groups similar notifications to prevent overflow',
+        'Clear all option available in dropdown'
+      ],
       hasComments: false,
       render: () => (
         <div className="absolute flex items-center justify-center bg-red-500 text-white text-xs font-bold rounded-full"
@@ -76,7 +88,13 @@ export const MarketplaceDemo: {
       width: 40,
       height: 40,
       label: 'Sarah W.',
-      notes: 'Circular profile picture with online status indicator',
+      notes: [
+        'Online status indicator with real-time updates',
+        'Fallback initials if no photo available',
+        'Verified seller badge integration',
+        'Quick access to profile settings',
+        'Recent activity preview on hover'
+      ],
       hasComments: false,
       render: () => (
         <div className="absolute"
@@ -98,7 +116,14 @@ export const MarketplaceDemo: {
       width: 400,
       height: 20,
       label: '🔍 Search items nearby...',
-      notes: 'Search with voice input and camera scan options',
+      notes: [
+        'Voice search with natural language processing',
+        'Camera integration for visual search',
+        'Location-aware suggestions',
+        'Recent searches with quick filters',
+        'Typo-tolerant search algorithm',
+        'Search history syncs across devices'
+      ],
       hasComments: false,
       render: () => (
         <div className="relative flex items-center">
@@ -135,7 +160,13 @@ export const MarketplaceDemo: {
       width: 1000, 
       height: 60, 
       label: '📱 Electronics • 🪑 Furniture • 👕 Fashion • ⚽ Sports • 📚 Books • 🎨 Art • ➕ More',
-      notes: 'Scrollable categories with visual indicators',
+      notes: [
+        'Horizontally scrollable with smooth momentum',
+        'Categories ordered by popularity and relevance',
+        'Visual indicators for new items in each category',
+        'Customizable category order for users',
+        'Subcategories expand on long press'
+      ],
       hasComments: false,
       render: () => (
         <div className="flex space-x-4 px-4 py-2 overflow-x-auto">
@@ -158,7 +189,13 @@ export const MarketplaceDemo: {
       width: 650,
       height: 200,
       label: '🌟 Weekend Deals\nUp to 50% off on Electronics',
-      notes: 'Promotional banner with dynamic background and CTA',
+      notes: [
+        'Dynamic content based on user preferences',
+        'A/B testing different promotional layouts',
+        'Personalized deals based on browsing history',
+        'Time-sensitive offers with countdown',
+        'Share deals functionality built-in'
+      ],
       hasComments: true,
       render: () => (
         <div className="relative p-6 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
@@ -178,7 +215,14 @@ export const MarketplaceDemo: {
       width: 650, 
       height: 380, 
       label: '📥 Recently Added',
-      notes: 'Responsive grid with lazy loading and smooth animations',
+      notes: [
+        'Infinite scroll with lazy loading',
+        'Optimized image loading for fast rendering',
+        'Smart sorting based on relevance and distance',
+        'Pull to refresh with loading animation',
+        'Grid/List view toggle option',
+        'Skeleton loading state for better UX'
+      ],
       hasComments: true,
       render: () => (
         <div className="p-4">
@@ -197,7 +241,7 @@ export const MarketplaceDemo: {
       width: 180,
       height: 250,
       label: 'iPhone 13 Pro\n$649 • 2.3mi\n⭐️ 4.9 • Sarah W.',
-      notes: 'Product card with verified seller badge and rating',
+      notes: ['Product card with verified seller badge and rating'],
       hasComments: false,
       render: () => (
         <div className="rounded-lg border border-gray-200 bg-white p-4">
@@ -224,7 +268,7 @@ export const MarketplaceDemo: {
       width: 180,
       height: 250,
       label: 'IKEA Standing Desk\n$95 • 0.8mi\n⭐️ 4.7 • Mike T.',
-      notes: 'Product with multiple images and condition badge',
+      notes: ['Product with multiple images and condition badge'],
       hasComments: false,
       render: () => (
         <div className="rounded-lg border border-gray-200 bg-white p-4">
@@ -251,7 +295,7 @@ export const MarketplaceDemo: {
       width: 180,
       height: 250,
       label: 'Sony WH-1000XM4\n$220 • 1.5mi\n⭐️ 4.8 • Alex K.',
-      notes: 'Product with video preview and quick chat button',
+      notes: ['Product with video preview and quick chat button'],
       hasComments: false,
       render: () => (
         <div className="rounded-lg border border-gray-200 bg-white p-4">
@@ -278,7 +322,14 @@ export const MarketplaceDemo: {
       width: 330, 
       height: 400, 
       label: '📍 Items Near You\n15 items within 3 miles',
-      notes: 'Interactive map with price clusters and AR view option',
+      notes: [
+        'Interactive clustering for dense areas',
+        'Price indicators on map markers',
+        'AR view for nearby item discovery',
+        'Safe meeting spot suggestions',
+        'Real-time location updates',
+        'Custom map styling for better contrast'
+      ],
       hasComments: true,
       render: () => (
         <div className="rounded-lg border border-gray-200 overflow-hidden">
@@ -298,7 +349,13 @@ export const MarketplaceDemo: {
       width: 330, 
       height: 180, 
       label: '💰 $0-$1000 • 📍 5mi\n✨ Like New • 🔄 Available\n🏷️ On Sale',
-      notes: 'Smart filters with recent searches and saved filters',
+      notes: [
+        'Smart filter combinations based on usage',
+        'Save filter presets for quick access',
+        'Price range with histogram visualization',
+        'Distance radius with visual preview on map',
+        'Condition filters with detailed descriptions'
+      ],
       hasComments: false,
       render: () => (
         <div className="p-4 bg-white rounded-lg border border-gray-200">
@@ -332,7 +389,14 @@ export const MarketplaceDemo: {
       width: 60,
       height: 60,
       label: '📸 Sell',
-      notes: 'Quick listing creation with AI item recognition',
+      notes: [
+        'One-tap photo listing creation',
+        'AI-powered item recognition',
+        'Quick price suggestions',
+        'Draft saves automatically',
+        'Multi-photo upload support',
+        'Location auto-detection'
+      ],
       hasComments: false,
       render: () => (
         <button className="absolute bottom-20 right-6 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700">
@@ -348,7 +412,14 @@ export const MarketplaceDemo: {
       width: 1100,
       height: 80,
       label: '🏠 Home • ❤️ Saved (5) • 💬 Chat (3) • 👤 Profile',
-      notes: 'Navigation with haptic feedback and notification badges',
+      notes: [
+        'Haptic feedback on navigation',
+        'Badges update in real-time',
+        'Customizable tab order',
+        'Gesture shortcuts for quick actions',
+        'Adaptive layout for different devices',
+        'Accessibility labels for screen readers'
+      ],
       hasComments: true,
       render: () => (
         <div className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-2">
@@ -374,10 +445,160 @@ export const MarketplaceDemo: {
       )
     }
   ],
-  logic: [
-    // ... existing logic elements
+  brief: [
+    {
+      id: 'overview',
+      title: 'Project Overview',
+      content: 'LocalMarket is a community-focused marketplace app that connects local buyers and sellers, emphasizing trust, convenience, and sustainability in neighborhood commerce.',
+      priority: 'high'
+    },
+    {
+      id: 'core-goals',
+      title: 'Core Goals',
+      content: [
+        'Simplify the process of buying and selling items locally',
+        'Build trust and safety in peer-to-peer transactions',
+        'Reduce environmental impact by promoting local reuse',
+        'Create a strong sense of community through commerce'
+      ],
+      priority: 'high'
+    },
+    {
+      id: 'target-audience',
+      title: 'Target Audience',
+      content: [
+        'Primary: Urban and suburban residents aged 25-45',
+        'Secondary: College students and young professionals',
+        'Tech-savvy users comfortable with mobile payments',
+        'Environmentally conscious consumers',
+        'Local small business owners and artisans'
+      ],
+      priority: 'medium'
+    },
+    {
+      id: 'key-features',
+      title: 'Key Features',
+      content: [
+        'AI-powered quick listing with photo recognition',
+        'Multi-modal search (text, voice, image)',
+        'Real-time location-based item discovery',
+        'Secure in-app messaging and payment',
+        'Community trust scoring system',
+        'AR view for nearby items'
+      ],
+      priority: 'high'
+    },
+    {
+      id: 'technical-requirements',
+      title: 'Technical Requirements',
+      content: [
+        'Native mobile performance with React Native',
+        'Real-time location services and mapping',
+        'Secure payment gateway integration',
+        'Push notifications for messages and alerts',
+        'Image recognition and AR capabilities',
+        'Offline-first data architecture'
+      ],
+      priority: 'medium'
+    },
+    {
+      id: 'success-metrics',
+      title: 'Success Metrics',
+      content: [
+        'User acquisition and retention rates',
+        'Average time to list/sell items',
+        'Message response rates',
+        'Transaction completion rates',
+        'User trust scores',
+        'Community engagement levels'
+      ],
+      priority: 'medium'
+    },
+    {
+      id: 'design-principles',
+      title: 'Design Principles',
+      content: [
+        'Simplicity: Minimize steps for core actions',
+        'Trust: Visual cues for safety and verification',
+        'Local: Emphasize proximity and community',
+        'Speed: Quick access to key features',
+        'Accessibility: Universal design for all users'
+      ],
+      priority: 'high'
+    },
+    {
+      id: 'future-considerations',
+      title: 'Future Considerations',
+      content: [
+        'Integration with local business directories',
+        'Community events and meetups feature',
+        'Sustainable packaging initiatives',
+        'Group buying and bulk deals',
+        'Local service exchange platform'
+      ],
+      priority: 'low'
+    }
   ],
   stories: [
-    // ... existing stories elements
+    {
+      id: 'quick-listing',
+      title: 'Quick Item Listing',
+      description: 'As a seller, I want to quickly list an item by taking a photo, so I can start selling with minimal effort',
+      acceptance: [
+        'Camera opens immediately when tapping the "Sell" button',
+        'AI automatically suggests item category and title from the photo',
+        'Price suggestion based on similar items in the area',
+        'Option to add multiple photos with drag-to-reorder',
+        'Location is auto-filled based on current position'
+      ]
+    },
+    {
+      id: 'item-search',
+      title: 'Smart Item Search',
+      description: 'As a buyer, I want to search for items using various methods including text, voice, and image recognition',
+      acceptance: [
+        'Search by typing with real-time suggestions',
+        'Voice search with natural language processing',
+        'Camera scan to find similar items',
+        'Results filtered by distance and relevance',
+        'Search history is saved for quick access'
+      ]
+    },
+    {
+      id: 'safe-messaging',
+      title: 'Secure Communication',
+      description: 'As a user, I want to safely communicate with other users about items without sharing personal contact information',
+      acceptance: [
+        'In-app messaging with read receipts',
+        'Ability to share location for meetup',
+        'Quick responses and saved phrases',
+        'Report inappropriate messages',
+        'Built-in identity verification system'
+      ]
+    },
+    {
+      id: 'location-browse',
+      title: 'Location-Based Browsing',
+      description: 'As a buyer, I want to browse items near me and see them on a map to plan my purchases efficiently',
+      acceptance: [
+        'Interactive map showing item locations',
+        'Distance-based filtering options',
+        'Price clusters for dense areas',
+        'AR view for nearby items',
+        'Save favorite locations for frequent checking'
+      ]
+    },
+    {
+      id: 'trust-safety',
+      title: 'Trust and Safety Features',
+      description: 'As a user, I want to feel secure when buying and selling items with strangers',
+      acceptance: [
+        'Verified user badges with ID verification',
+        'User ratings and detailed reviews',
+        'Secure payment integration',
+        'Safe meeting spot suggestions',
+        'Transaction protection program'
+      ]
+    }
   ]
 } as const
