@@ -17,12 +17,8 @@ interface MarketplaceElement extends CanvasElement {
 export const MarketplaceContainer = ({ children }: { children: ReactNode }) => {
   return (
     <div className="relative">
-      {/* Box frame */}
-      <div className="relative w-[1100px] h-[960px] bg-white border border-gray-300 overflow-hidden">
-        {/* Content container with scrolling */}
-        <div className="h-full overflow-y-auto bg-gray-50 relative">
-          {children}
-        </div>
+      <div className="relative w-[1100px] h-[960px] bg-white border border-gray-300">
+        {children}
       </div>
     </div>
   )
@@ -45,7 +41,8 @@ export const MarketplaceDemo: {
       notes: 'Clean header with logo, search, notifications (3), and profile picture',
       hasComments: true,
       render: () => (
-        <div className="flex items-center justify-between px-4 py-2 bg-white shadow-sm rounded-lg">
+        <div className="absolute flex items-center justify-between px-4 py-2 bg-white shadow-sm rounded-lg" 
+             style={{ left: 50, top: 50, width: 1000, height: 40 }}>
           <div className="flex items-center">
             <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
               LocalMarket
@@ -65,7 +62,8 @@ export const MarketplaceDemo: {
       notes: 'Notification counter showing unread messages',
       hasComments: false,
       render: () => (
-        <div className="absolute flex items-center justify-center w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full">
+        <div className="absolute flex items-center justify-center bg-red-500 text-white text-xs font-bold rounded-full"
+             style={{ left: 880, top: 60, width: 20, height: 20 }}>
           3
         </div>
       )
@@ -81,7 +79,8 @@ export const MarketplaceDemo: {
       notes: 'Circular profile picture with online status indicator',
       hasComments: false,
       render: () => (
-        <div className="relative">
+        <div className="absolute"
+             style={{ left: 920, top: 55, width: 40, height: 40 }}>
           <img 
             src="https://randomuser.me/api/portraits/women/44.jpg" 
             alt="Sarah W."

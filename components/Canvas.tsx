@@ -7,6 +7,7 @@ import { StoriesView } from '@/components/views/StoriesView'
 import VoiceInteraction from '@/components/VoiceInteraction'
 import { MarketplaceDemo } from '@/components/Marketplace'
 import { DesignView } from '@/components/views/DesignView'
+import { BriefView } from '@/components/views/BriefView'
 
 interface CanvasProps {
   view: string
@@ -63,6 +64,13 @@ export default function Canvas({ view, appDescription, isGenerating, buildProgre
   
   const renderCanvas = () => {
     switch (view) {
+      case 'brief':
+        return <BriefView 
+          elements={canvasElements}
+          appDescription={appDescription}
+          onElementClick={handleElementClick}
+          activeElement={activeElement}
+        />
       case 'design':
         return <DesignView 
           elements={canvasElements}
