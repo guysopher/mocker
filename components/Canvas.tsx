@@ -38,12 +38,12 @@ export default function Canvas({ view, appDescription, isGenerating, buildProgre
   // Create demo project for second-hand marketplace
   const getMarketplaceDemo = () => MarketplaceDemo;
 
-  // Generate canvas elements based on app description or use demo
   useEffect(() => {
-    // If there's no description or a very short one, use the demo project
     const demoProject = getMarketplaceDemo();
+    console.log('Demo project:', demoProject);
+    console.log('Current view:', view);
+    console.log('Elements for current view:', demoProject[view as keyof typeof demoProject]);
     setCanvasElements(demoProject[view as keyof typeof demoProject] || []);
-    
   }, [view, appDescription]);
   
   const handleElementClick = (elementId: string) => {
@@ -72,17 +72,23 @@ export default function Canvas({ view, appDescription, isGenerating, buildProgre
           activeElement={activeElement}
         />
       case 'design':
+        console.log('Rendering DesignView with elements:', canvasElements);
         return <DesignView 
           elements={canvasElements}
           onElementClick={handleElementClick}
           activeElement={activeElement}
         />
       case 'prototype':
-        return <WireframeView 
-          elements={canvasElements} 
+        return <DesignView
+          elements={canvasElements}
           onElementClick={handleElementClick}
           activeElement={activeElement}
         />
+      // return <WireframeView 
+      //     elements={canvasElements} 
+      //     onElementClick={handleElementClick}
+      //     activeElement={activeElement}
+      //   />
       case 'logic':
         return <LogicView 
           elements={canvasElements}
