@@ -1,18 +1,6 @@
-import { CanvasElement } from '@/types/canvas'
+import { CanvasElement, CanvasStory, BriefItem } from '@/types/canvas'
 import React, { ReactNode } from 'react'
 
-interface MarketplaceElement extends CanvasElement {
-  id: string;
-  type: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  label: string;
-  notes: string[];
-  hasComments: boolean;
-  render?: () => JSX.Element
-}
 
 export const MarketplaceContainer = ({ children }: { children: ReactNode }) => {
   return (
@@ -25,9 +13,9 @@ export const MarketplaceContainer = ({ children }: { children: ReactNode }) => {
 }
 
 export const MarketplaceDemo: {
-  design: MarketplaceElement[];
-  brief: any[];
-  stories: any[];
+  design: CanvasElement[];
+  brief: BriefItem[];
+  stories: CanvasStory[];
 } = {
   design: [
     { 

@@ -1,18 +1,8 @@
+import { CanvasElement } from '@/types/canvas'
 import { FC } from 'react'
 
 interface DesignViewProps {
-  elements: Array<{
-    id: string
-    type: string
-    x: number
-    y: number
-    width: number
-    height: number
-    label: string
-    notes: string
-    hasComments: boolean
-    render?: () => JSX.Element
-  }>
+  elements: CanvasElement[]
   onElementClick?: (id: string) => void
   activeElement?: string | null
 }

@@ -8,8 +8,9 @@ interface AppDescriptionFormProps {
 }
 
 export default function AppDescriptionForm({ onSubmit, isGenerating }: AppDescriptionFormProps) {
-  const [description, setDescription] = useState('')
-  const [charCount, setCharCount] = useState(0)
+  const defaultDescription = "Create a marketplace app for buying and selling second-hand items. Features should include user profiles, item listings with photos and descriptions, search and filter functionality, in-app messaging between buyers and sellers, secure payment processing, and a review system. Users should be able to save favorite items and get notifications for price drops or new items matching their interests."
+  const [description, setDescription] = useState(defaultDescription)
+  const [charCount, setCharCount] = useState(defaultDescription.length)
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -26,17 +27,18 @@ export default function AppDescriptionForm({ onSubmit, isGenerating }: AppDescri
   
   // Example prompts that users can click to get started
   const examplePrompts = [
-    "Create a task management app for remote teams with project tracking and time logging",
-    "Design a recipe app that suggests meals based on ingredients in your pantry",
-    "Build a fitness tracker with workout plans and progress visualization"
+    "Create a local marketplace app for buying and selling second-hand items with in-app messaging and secure payment integration",
+    "Design a community marketplace where users can trade or sell used books, including rating system and condition tracking",
+    "Build a sustainable fashion marketplace with authentication, item categories, and location-based search"
   ]
+  
   
   return (
     <form onSubmit={handleSubmit} className="w-full">
       <div className="mb-6">
         <div className="flex justify-between items-center mb-2">
           <label htmlFor="appDescription" className="block text-sm font-medium text-gray-700">
-            Describe your app in detail
+            Describe your marketplace app
           </label>
           <span className={`text-xs ${charCount > 200 ? 'text-green-600' : 'text-gray-500'}`}>
             {charCount} characters {charCount < 100 ? '(aim for 100+)' : ''}
@@ -70,7 +72,7 @@ export default function AppDescriptionForm({ onSubmit, isGenerating }: AppDescri
         
         <div className="mt-3 space-y-3">
           <p className="text-sm text-gray-600">
-            Include details about features, user interactions, and the overall purpose of your app.
+            Include details about marketplace features, user roles (buyers/sellers), item management, and payment processing.
             The more specific you are, the better the generated result.
           </p>
           
@@ -96,7 +98,7 @@ export default function AppDescriptionForm({ onSubmit, isGenerating }: AppDescri
       
       <div className="flex items-center justify-end">
         <div className="mr-auto text-xs text-gray-500 italic">
-          Our AI will transform your description into interactive wireframes, logic flows, and user stories.
+          Our AI will transform your marketplace description into interactive wireframes, user flows, and feature specifications.
         </div>
         
         <button

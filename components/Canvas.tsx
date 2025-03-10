@@ -1,14 +1,12 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { WireframeView } from '@/components/views/WireframeView'
-import { LogicView } from '@/components/views/LogicView'
 import { StoriesView } from '@/components/views/StoriesView'
 import VoiceInteraction from '@/components/VoiceInteraction'
 import { MarketplaceDemo } from '@/components/Marketplace'
 import { DesignView } from '@/components/views/DesignView'
 import { BriefView } from '@/components/views/BriefView'
-
+import { CanvasElement, CanvasStory, BriefItem } from '@/types/canvas'
 interface CanvasProps {
   view: string
   appDescription: string
@@ -16,83 +14,85 @@ interface CanvasProps {
   buildProgress: number
 }
 
-interface CanvasElement {
-  id: string
-  type: string
-  x: number
-  y: number
-  width: number
-  height: number
-  label: string
-  notes: string
-  hasComments: boolean
-  render?: () => JSX.Element
-}
-
 export default function Canvas({ view, appDescription, isGenerating, buildProgress }: CanvasProps) {
   const [activeElement, setActiveElement] = useState<string | null>(null)
   const [voiceActive, setVoiceActive] = useState(false)
   const [canvasElements, setCanvasElements] = useState<CanvasElement[]>([])
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const [voicePopupPosition, setVoicePopupPosition] = useState({ x: 0, y: 0 })
   const canvasRef = useRef<HTMLDivElement>(null)
-  
+
   // Create demo project for second-hand marketplace
   const getMarketplaceDemo = () => MarketplaceDemo;
 
   useEffect(() => {
-    const demoProject = getMarketplaceDemo();
-    console.log('Demo project:', demoProject);
-    console.log('Current view:', view);
-    console.log('Elements for current view:', demoProject[view as keyof typeof demoProject]);
-    setCanvasElements(demoProject[view as keyof typeof demoProject] || []);
-  }, [view, appDescription]);
-  
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setVoiceActive(false)
+        setActiveElement(null)
+      }
+    }
+
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY })
+    }
+
+    document.addEventListener('keydown', handleEscape)
+    document.addEventListener('mousemove', handleMouseMove)
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape)
+      document.removeEventListener('mousemove', handleMouseMove)
+    }
+  }, [])
+
   const handleElementClick = (elementId: string) => {
     setActiveElement(elementId)
     setVoiceActive(true)
+    setVoicePopupPosition({ x: mousePosition.x, y: mousePosition.y })
   }
-  
+
   const handleVoiceEnd = () => {
     setVoiceActive(false)
-    
+
     // Simulate adding a comment to the element
-    setCanvasElements(elements => elements.map(element => 
-      element.id === activeElement 
-        ? { ...element, hasComments: true } 
+    setCanvasElements(elements => elements.map(element =>
+      element.id === activeElement
+        ? { ...element, hasComments: true }
         : element
     ))
   }
-  
+
   const renderCanvas = () => {
     switch (view) {
       case 'brief':
-        return <BriefView 
-          elements={canvasElements}
-          appDescription={appDescription}
+        return <BriefView
+          elements={getMarketplaceDemo()['brief' as keyof typeof getMarketplaceDemo] as CanvasBrief}
           onElementClick={handleElementClick}
           activeElement={activeElement}
         />
       case 'design':
       case 'prototype':
         return <DesignView
-          elements={canvasElements}
+          elements={getMarketplaceDemo()['design' as keyof typeof getMarketplaceDemo] as CanvasElement[]}
           onElementClick={handleElementClick}
           activeElement={activeElement}
         />
       case 'stories':
-        return <StoriesView 
-          elements={canvasElements}
-          onElementClick={handleElementClick} 
+        return <StoriesView
+          elements={getMarketplaceDemo()['stories' as keyof typeof getMarketplaceDemo] as CanvasStory[]}
+          onElementClick={handleElementClick}
           activeElement={activeElement}
         />
       default:
         return <div>Select a view to get started</div>
     }
   }
-  
+
   return (
     <div ref={canvasRef} className="w-full h-full relative">
       {isGenerating && (
-        <div className="absolute inset-0 bg-white bg-opacity-80 flex items-center justify-center z-50">
+        <div className="absolute bg-white bg-opacity-80 flex items-center justify-center z-50">
           <div className="flex flex-col items-center">
             <svg className="animate-spin mb-4 h-10 w-10 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -102,20 +102,30 @@ export default function Canvas({ view, appDescription, isGenerating, buildProgre
           </div>
         </div>
       )}
-      
+
       <div className="w-full h-full">
         <div className="relative w-full h-full bg-gradient-to-br from-gray-50 to-white p-8 grid grid-cols-1">
-          <div className="absolute inset-0 bg-grid-pattern opacity-20"></div>
+          <div className="absolute bg-grid-pattern opacity-20"></div>
           {renderCanvas()}
         </div>
       </div>
-      
+
       {voiceActive && activeElement && (
-        <VoiceInteraction 
-          elementId={activeElement}
-          onVoiceEnd={handleVoiceEnd}
-          element={canvasElements.find(el => el.id === activeElement)}
-        />
+        <div
+          style={{
+            position: 'fixed',
+            left: voicePopupPosition.x,
+            top: voicePopupPosition.y,
+            transform: 'translate(-50%, -50%)',
+            zIndex: 1000
+          }}
+        >
+          <VoiceInteraction
+            elementId={activeElement}
+            onVoiceEnd={handleVoiceEnd}
+            element={canvasElements.find(el => el.id === activeElement)}
+          />
+        </div>
       )}
     </div>
   )
