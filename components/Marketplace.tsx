@@ -18,9 +18,9 @@ export const MarketplaceDemo: {
   stories: CanvasStory[];
 } = {
   design: [
-    { 
-      id: 'app-header', 
-      type: 'header', 
+    {
+      id: 'app-header',
+      type: 'header',
       x: 50,
       y: 50,
       width: 1000,
@@ -35,118 +35,58 @@ export const MarketplaceDemo: {
       ],
       hasComments: true,
       render: () => (
-        <div className="absolute flex items-center justify-between px-4 py-2 bg-white shadow-sm rounded-lg" 
-             style={{ left: 50, top: 50, width: 1000, height: 40 }}>
-          <div className="flex items-center">
-            <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              LocalMarket
+        <div className="absolute flex items-center justify-between px-4 py-2 bg-white shadow-sm rounded-lg"
+          style={{ left: 0, top: 0, width: 1000, height: 80 }}>
+          <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            LocalMarket
+          </div>
+          <div className="relative flex items-center flex-1 mx-4">
+            <div className="absolute left-3">
+              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              placeholder="Search items nearby..."
+              className="w-full pl-10 pr-24 py-2 border border-gray-200 rounded-full bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-300 transition-all"
+            />
+            <div className="absolute right-2 flex items-center space-x-1">
+              <button className="p-1 text-gray-400 hover:text-gray-600">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                </svg>
+              </button>
+              <button className="p-1 text-gray-400 hover:text-gray-600">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div className="relative">
+            <img
+              src="https://randomuser.me/api/portraits/women/44.jpg"
+              alt="Sarah W."
+              className="w-10 h-10 rounded-full border-2 border-gray-200"
+            />
+            <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-white rounded-full"></span>
+            <div className="absolute flex items-center justify-center bg-red-500 text-white text-xs font-bold rounded-full"
+              style={{ right: -10, top: -10, width: 20, height: 20 }}>
+              3
             </div>
           </div>
         </div>
       )
     },
+
     {
-      id: 'notifications-badge',
-      type: 'badge',
-      x: 880,
-      y: 60,
-      width: 20,
-      height: 20,
-      label: '3',
-      notes: [
-        'High contrast badge ensures visibility',
-        'Animation on new notifications',
-        'Haptic feedback when tapped',
-        'Groups similar notifications to prevent overflow',
-        'Clear all option available in dropdown'
-      ],
-      hasComments: false,
-      render: () => (
-        <div className="absolute flex items-center justify-center bg-red-500 text-white text-xs font-bold rounded-full"
-             style={{ left: 880, top: 60, width: 20, height: 20 }}>
-          3
-        </div>
-      )
-    },
-    {
-      id: 'profile-picture',
-      type: 'avatar',
-      x: 920,
-      y: 55,
-      width: 40,
-      height: 40,
-      label: 'Sarah W.',
-      notes: [
-        'Online status indicator with real-time updates',
-        'Fallback initials if no photo available',
-        'Verified seller badge integration',
-        'Quick access to profile settings',
-        'Recent activity preview on hover'
-      ],
-      hasComments: false,
-      render: () => (
-        <div className="absolute"
-             style={{ left: 920, top: 55, width: 40, height: 40 }}>
-          <img 
-            src="https://randomuser.me/api/portraits/women/44.jpg" 
-            alt="Sarah W."
-            className="w-10 h-10 rounded-full border-2 border-gray-200"
-          />
-          <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-white rounded-full"></span>
-        </div>
-      )
-    },
-    {
-      id: 'search-bar',
-      type: 'searchInput',
-      x: 300,
-      y: 53,
-      width: 400,
-      height: 20,
-      label: '🔍 Search items nearby...',
-      notes: [
-        'Voice search with natural language processing',
-        'Camera integration for visual search',
-        'Location-aware suggestions',
-        'Recent searches with quick filters',
-        'Typo-tolerant search algorithm',
-        'Search history syncs across devices'
-      ],
-      hasComments: false,
-      render: () => (
-        <div className="relative flex items-center">
-          <input
-            type="text"
-            placeholder="Search items nearby..."
-            className="w-full pl-10 pr-12 py-2 border border-gray-200 rounded-full bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-300 transition-all"
-          />
-          <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-          <div className="absolute inset-y-0 right-2 flex items-center space-x-1">
-            <button className="p-1 text-gray-400 hover:text-gray-600">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-              </svg>
-            </button>
-            <button className="p-1 text-gray-400 hover:text-gray-600">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      )
-    },
-    { 
-      id: 'categories-nav', 
-      type: 'tabBar', 
-      x: 50, 
-      y: 140, 
-      width: 1000, 
-      height: 60, 
+      id: 'categories-nav',
+      type: 'tabBar',
+      x: 50,
+      y: 140,
+      width: 1000,
+      height: 60,
       label: '📱 Electronics • 🪑 Furniture • 👕 Fashion • ⚽ Sports • 📚 Books • 🎨 Art • ➕ More',
       notes: [
         'Horizontally scrollable with smooth momentum',
@@ -195,13 +135,13 @@ export const MarketplaceDemo: {
         </div>
       )
     },
-    { 
-      id: 'item-feed', 
-      type: 'grid', 
-      x: 50, 
-      y: 410, 
-      width: 650, 
-      height: 380, 
+    {
+      id: 'item-feed',
+      type: 'grid',
+      x: 50,
+      y: 410,
+      width: 650,
+      height: 250,
       label: '📥 Recently Added',
       notes: [
         'Infinite scroll with lazy loading',
@@ -302,13 +242,13 @@ export const MarketplaceDemo: {
         </div>
       )
     },
-    { 
-      id: 'map-view', 
-      type: 'map', 
-      x: 720, 
-      y: 220, 
-      width: 330, 
-      height: 400, 
+    {
+      id: 'map-view',
+      type: 'map',
+      x: 720,
+      y: 220,
+      width: 330,
+      height: 400,
       label: '📍 Items Near You\n15 items within 3 miles',
       notes: [
         'Interactive clustering for dense areas',
@@ -329,13 +269,13 @@ export const MarketplaceDemo: {
         </div>
       )
     },
-    { 
-      id: 'filters', 
-      type: 'filterPanel', 
-      x: 720, 
-      y: 340, 
-      width: 330, 
-      height: 180, 
+    {
+      id: 'filters',
+      type: 'filterPanel',
+      x: 720,
+      y: 340,
+      width: 330,
+      height: 180,
       label: '💰 $0-$1000 • 📍 5mi\n✨ Like New • 🔄 Available\n🏷️ On Sale',
       notes: [
         'Smart filter combinations based on usage',
@@ -350,7 +290,7 @@ export const MarketplaceDemo: {
           <div className="space-y-2">
             <div className="flex items-center space-x-2">
               <span>💰</span>
-              <input type="range" className="w-full" min="0" max="1000"/>
+              <input type="range" className="w-full" min="0" max="1000" />
             </div>
             <div className="flex items-center space-x-2">
               <span>📍</span>
@@ -392,7 +332,7 @@ export const MarketplaceDemo: {
         </button>
       )
     },
-    { 
+    {
       id: 'bottom-nav',
       type: 'navigation',
       x: 0,

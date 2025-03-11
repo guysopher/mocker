@@ -17,7 +17,14 @@ export const DesignView: FC<DesignViewProps> = ({
 }) => {
 
   return (
-    <div className="w-full h-full relative">
+    <div className="w-full h-full relative" style={{ 
+      border: '0px solid #111',
+      borderRadius: 10,
+      boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.1)',
+      height: 765,
+      width: 1105,
+      margin: '0 auto'
+    }}>
       {elements.map(element => {
         const isActive = element.id === activeElement
         return element.render ? (
