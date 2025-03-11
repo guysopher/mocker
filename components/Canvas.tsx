@@ -48,27 +48,32 @@ export default function Canvas({ view, appDescription, isGenerating, buildProgre
   }, [])
 
   const handleElementClick = (elementId: string) => {
-    setActiveElement(elementId)
-    setVoiceActive(true)
-    setVoicePopupPosition({ x: mousePosition.x, y: mousePosition.y })
+    // If clicking the same element that's active, trigger voice end
+    if (elementId === activeElement && voiceActive) {
+      handleVoiceEnd()
+    } else {
+      // Otherwise activate voice for the new element
+      setActiveElement(elementId)
+      setVoiceActive(true)
+      setVoicePopupPosition({ x: mousePosition.x, y: mousePosition.y })
+    }
   }
 
   const handleVoiceEnd = () => {
-    // Show progress circle when voice input ends
     setShowProgress(activeElement)
+    setVoiceActive(false)
     
-    // Hide progress circle and voice interaction after 4 seconds
+    // Reduced timeout to make it feel more responsive
     setTimeout(() => {
       setShowProgress(null)
-      setVoiceActive(false)
       
-      // Simulate adding a comment to the element
+      // Update canvas elements with comment
       setCanvasElements(elements => elements.map(element =>
         element.id === activeElement
           ? { ...element, hasComments: true }
           : element
       ))
-    }, 4000)
+    }, 2000) // Reduced from 4000ms to 2000ms for better responsiveness
   }
 
   const renderCanvas = () => {
