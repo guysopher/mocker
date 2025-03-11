@@ -1,14 +1,16 @@
 import { BriefItem } from "@/types/canvas"
 import { useState } from "react"
+import { CommentsIndicator } from "../CommentsIndicator"
 
 interface BriefViewProps {
   elements: BriefItem[]
   onElementClick: (id: string) => void
   activeElement: string | null
   onElementUpdate: (id: string, content: string) => void
+  showProgress: string | null
 }
 
-export const BriefView = ({ elements, onElementUpdate, activeElement, onElementClick }: BriefViewProps) => {
+export const BriefView = ({ elements, onElementUpdate, activeElement, onElementClick, showProgress }: BriefViewProps) => {
   const [editingContent, setEditingContent] = useState("")
 
   const handleSave = (id: string) => {
@@ -40,8 +42,8 @@ export const BriefView = ({ elements, onElementUpdate, activeElement, onElementC
                 autoFocus
               />
             ) : (
-              <p 
-                className="text-xl leading-relaxed mb-6 font-serif text-gray-700 
+              <div 
+                className="relative text-xl leading-relaxed mb-6 font-serif text-gray-700 
                            hover:bg-gray-50 rounded px-2 py-1 cursor-pointer
                            border border-transparent hover:border-gray-200"
                 onClick={() => handleClick(element)}
@@ -49,11 +51,14 @@ export const BriefView = ({ elements, onElementUpdate, activeElement, onElementC
                 tabIndex={0}
               >
                 {element.content}
-              </p>
+                {showProgress === element.id && (
+                  <CommentsIndicator />
+                )}
+              </div>
             )}
           </div>
         ))}
       </div>
     </div>
   )
-} 
+}

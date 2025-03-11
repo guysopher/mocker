@@ -6,7 +6,7 @@ import VoiceInteraction from '@/components/VoiceInteraction'
 import { MarketplaceDemo } from '@/components/Marketplace'
 import { DesignView } from '@/components/views/DesignView'
 import { BriefView } from '@/components/views/BriefView'
-import { CanvasElement, CanvasStory, BriefItem } from '@/types/canvas'
+import { CanvasElement, CanvasStory, BriefItem, CanvasBrief } from '@/types/canvas'
 interface CanvasProps {
   view: string
   appDescription: string
@@ -20,6 +20,7 @@ export default function Canvas({ view, appDescription, isGenerating, buildProgre
   const [canvasElements, setCanvasElements] = useState<CanvasElement[]>([])
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [voicePopupPosition, setVoicePopupPosition] = useState({ x: 0, y: 0 })
+  const [showProgress, setShowProgress] = useState(null as any)
   const canvasRef = useRef<HTMLDivElement>(null)
 
   // Create demo project for second-hand marketplace
@@ -53,14 +54,21 @@ export default function Canvas({ view, appDescription, isGenerating, buildProgre
   }
 
   const handleVoiceEnd = () => {
-    setVoiceActive(false)
-
-    // Simulate adding a comment to the element
-    setCanvasElements(elements => elements.map(element =>
-      element.id === activeElement
-        ? { ...element, hasComments: true }
-        : element
-    ))
+    // Show progress circle when voice input ends
+    setShowProgress(activeElement)
+    
+    // Hide progress circle and voice interaction after 4 seconds
+    setTimeout(() => {
+      setShowProgress(null)
+      setVoiceActive(false)
+      
+      // Simulate adding a comment to the element
+      setCanvasElements(elements => elements.map(element =>
+        element.id === activeElement
+          ? { ...element, hasComments: true }
+          : element
+      ))
+    }, 4000)
   }
 
   const renderCanvas = () => {
@@ -69,7 +77,12 @@ export default function Canvas({ view, appDescription, isGenerating, buildProgre
         return <BriefView
           elements={getMarketplaceDemo()['brief' as keyof typeof getMarketplaceDemo] as CanvasBrief}
           onElementClick={handleElementClick}
+          onElementUpdate={(elementId, updates) => {
+            // Handle element updates here
+            console.log('Element updated:', elementId, updates)
+          }}
           activeElement={activeElement}
+          showProgress={showProgress}
         />
       case 'design':
       case 'prototype':
@@ -77,12 +90,14 @@ export default function Canvas({ view, appDescription, isGenerating, buildProgre
           elements={getMarketplaceDemo()['design' as keyof typeof getMarketplaceDemo] as CanvasElement[]}
           onElementClick={handleElementClick}
           activeElement={activeElement}
+          showProgress={showProgress}
         />
       case 'stories':
         return <StoriesView
           elements={getMarketplaceDemo()['stories' as keyof typeof getMarketplaceDemo] as CanvasStory[]}
           onElementClick={handleElementClick}
           activeElement={activeElement}
+          showProgress={showProgress}
         />
       default:
         return <div>Select a view to get started</div>

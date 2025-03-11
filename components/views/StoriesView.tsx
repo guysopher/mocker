@@ -2,14 +2,16 @@
 
 import React from 'react'
 import { CanvasStory } from '@/types/canvas'
+import { CommentsIndicator } from '../CommentsIndicator'
 
 interface StoriesViewProps {
   elements: CanvasStory[]
   onElementClick: (elementId: string) => void
   activeElement: string | null
+  showProgress: string | null
 }
 
-export function StoriesView({ elements, onElementClick, activeElement }: StoriesViewProps) {
+export function StoriesView({ elements, onElementClick, activeElement, showProgress }: StoriesViewProps) {
   return (
     <div className="relative p-4 grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
       {elements.map((element) => {
@@ -60,6 +62,9 @@ export function StoriesView({ elements, onElementClick, activeElement }: Stories
                   </span>
                 )}
               </div>
+              {showProgress === element.id && (
+                <CommentsIndicator />
+              )}
             </div>
           </div>
         )

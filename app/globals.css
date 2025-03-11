@@ -74,3 +74,16 @@ body {
 .animate-tilt {
   animation: tilt 10s infinite linear;
 }
+
+@keyframes progress-circle {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-progress-circle {
+  animation: progress-circle 4s linear forwards;
+}
