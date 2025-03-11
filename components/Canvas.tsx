@@ -6,7 +6,7 @@ import VoiceInteraction from '@/components/VoiceInteraction'
 import { MarketplaceDemo } from '@/components/Marketplace'
 import { DesignView } from '@/components/views/DesignView'
 import { BriefView } from '@/components/views/BriefView'
-import { CanvasElement, CanvasStory, BriefItem, CanvasBrief } from '@/types/canvas'
+import { CanvasElement, CanvasStory, BriefItem } from '@/types/canvas'
 interface CanvasProps {
   view: string
   appDescription: string
@@ -80,7 +80,7 @@ export default function Canvas({ view, appDescription, isGenerating, buildProgre
     switch (view) {
       case 'brief':
         return <BriefView
-          elements={getMarketplaceDemo()['brief' as keyof typeof getMarketplaceDemo] as CanvasBrief}
+          elements={getMarketplaceDemo()['brief' as keyof typeof getMarketplaceDemo] as BriefItem[]}
           onElementClick={handleElementClick}
           onElementUpdate={(elementId, updates) => {
             // Handle element updates here
