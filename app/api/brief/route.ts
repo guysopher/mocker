@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateAppBrief } from '@/utils/anthropic';
+import { generateAppBrief } from '@/utils/openai';
 
 export async function POST(request: NextRequest) {
   try {

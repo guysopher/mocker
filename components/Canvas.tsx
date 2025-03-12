@@ -11,7 +11,6 @@ import { CanvasElement, CanvasStory, BriefItem } from '@/types/canvas'
 interface CanvasProps {
   view: string
   appDescription: string
-  isGenerating: boolean
   generatingSection: string | null
   buildProgress: number
   appContent: {
@@ -70,11 +69,11 @@ export default function Canvas({ view, appDescription, isGenerating, generatingS
   const handleVoiceEnd = () => {
     setShowProgress(activeElement)
     setVoiceActive(false)
-    
+
     // Reduced timeout to make it feel more responsive
     setTimeout(() => {
       setShowProgress(null)
-      
+
       // Update canvas elements with comment
       setCanvasElements(elements => elements.map(element =>
         element.id === activeElement
@@ -106,7 +105,7 @@ export default function Canvas({ view, appDescription, isGenerating, generatingS
           onElementClick={handleElementClick}
           activeElement={activeElement}
           showProgress={showProgress}
-          // isGenerating={isGenerating && generatingSection === 'design'}
+        // isGenerating={isGenerating && generatingSection === 'design'}
         />
       case 'stories':
         return <StoriesView
@@ -114,8 +113,8 @@ export default function Canvas({ view, appDescription, isGenerating, generatingS
           onElementClick={handleElementClick}
           activeElement={activeElement}
           showProgress={showProgress}
-          // isGenerating={isGenerating && generatingSection === 'stories'}
-          // content={appContent?.stories}
+        // isGenerating={isGenerating && generatingSection === 'stories'}
+        // content={appContent?.stories}
         />
       default:
         return <div>Select a view to get started</div>
@@ -124,8 +123,8 @@ export default function Canvas({ view, appDescription, isGenerating, generatingS
 
   return (
     <div ref={canvasRef} className="w-full h-full relative">
-      {isGenerating && (
-        <div className="fixed inset-0 w-full h-full bg-white bg-opacity-80 flex items-center justify-center z-50">
+      {(!appContent || appContent[view as keyof typeof appContent].length === 0) && (
+        <div className="absolute inset-0 w-full h-full bg-white bg-opacity-80 flex items-center justify-center z-50">
           <div className="flex flex-col items-center">
             <svg className="animate-spin mb-4 h-10 w-10 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -139,29 +138,9 @@ export default function Canvas({ view, appDescription, isGenerating, generatingS
       <div className="w-full h-full">
         <div className="relative w-full h-full bg-gradient-to-br from-gray-50 to-white p-8 grid grid-cols-1">
           <div className="absolute bg-grid-pattern opacity-20"></div>
-          <div className="flex border-b mb-4">
-            <button
-              onClick={() => setActiveTab('brief')}
-              className={`px-4 py-2 ${activeTab === 'brief' ? 'border-b-2 border-blue-500 font-medium' : ''}`}
-            >
-              Brief
-            </button>
-            <button
-              onClick={() => setActiveTab('stories')}
-              className={`px-4 py-2 ${activeTab === 'stories' ? 'border-b-2 border-blue-500 font-medium' : ''}`}
-            >
-              User Stories
-            </button>
-            <button
-              onClick={() => setActiveTab('design')}
-              className={`px-4 py-2 ${activeTab === 'design' ? 'border-b-2 border-blue-500 font-medium' : ''}`}
-            >
-              Design
-            </button>
-          </div>
-          
+
           <div className="flex-1">
-            {activeTab === 'brief' && <BriefView
+            {view === 'brief' && <BriefView
               elements={appContent?.brief as BriefItem[]}
               onElementClick={handleElementClick}
               onElementUpdate={(elementId, updates) => {
@@ -171,17 +150,17 @@ export default function Canvas({ view, appDescription, isGenerating, generatingS
               activeElement={activeElement}
               showProgress={showProgress}
               appDescription={appDescription}
-              // isGenerating={isGenerating && generatingSection === 'brief'}
+              isGenerating={isGenerating && generatingSection === 'brief'}
             />}
-            {activeTab === 'stories' && <StoriesView
+            {view === 'stories' && <StoriesView
               elements={appContent?.stories as CanvasStory[]}
               onElementClick={handleElementClick}
               activeElement={activeElement}
               showProgress={showProgress}
-              // isGenerating={isGenerating && generatingSection === 'stories'}
-              // content={appContent?.stories}
+            // isGenerating={isGenerating && generatingSection === 'stories'}
+            // content={appContent?.stories}
             />}
-            {activeTab === 'design' && <DesignView
+            {view === 'design' && <DesignView
               elements={appContent?.design as CanvasElement[]}
               onElementClick={handleElementClick}
               activeElement={activeElement}

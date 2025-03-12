@@ -31,13 +31,18 @@ export default function Home() {
     setAppGenerated(true);
 
     try {
+      let tempAppContent = {
+        brief: [],
+        stories: [],
+        design: []
+      }
       for (const section of ['brief', 'stories', 'design']) {
         const response = await fetch(`/api/${section}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ description, ...appContent }),
+          body: JSON.stringify({ description, ...tempAppContent }),
         });
         console.log('response', response)
 
@@ -48,11 +53,12 @@ export default function Home() {
 
         const data = await response.json();
         if (data) {
-          setAppContent(prevContent => ({
-            brief: section === 'brief' ? data.brief : (prevContent?.brief || []),
-            design: section === 'design' ? data.design : (prevContent?.design || []),
-            stories: section === 'stories' ? data.stories : (prevContent?.stories || [])
-          }));
+          tempAppContent = {
+            brief: section === 'brief' ? data.brief : (tempAppContent?.brief || []),
+            design: section === 'design' ? data.design : (tempAppContent?.design || []),
+            stories: section === 'stories' ? data.stories : (tempAppContent?.stories || [])
+          };
+          setAppContent(tempAppContent);
         }
       }
 
@@ -172,7 +178,6 @@ export default function Home() {
             <Canvas
               view={currentView}
               appDescription={appDescription}
-              isGenerating={generatingContent}
               generatingSection={generatingSection}
               buildProgress={buildProgress}
               appContent={appContent}

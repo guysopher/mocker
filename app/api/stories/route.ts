@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateUserStories } from '@/utils/anthropic';
+import { generateUserStories } from '@/utils/openai';
 
 export async function POST(request: NextRequest) {
   try {
