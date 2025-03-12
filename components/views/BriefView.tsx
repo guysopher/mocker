@@ -12,11 +12,11 @@ interface BriefViewProps {
   isGenerating: boolean
 }
 
-export function BriefView({ 
-  elements, 
-  onElementClick, 
-  onElementUpdate, 
-  activeElement, 
+export function BriefView({
+  elements,
+  onElementClick,
+  onElementUpdate,
+  activeElement,
   showProgress,
   appDescription,
   isGenerating,
@@ -49,34 +49,19 @@ export function BriefView({
           <h2 className="text-3xl font-serif font-semibold mb-6 text-gray-800">Project Brief</h2>
           <div className="max-w-none">
             {elements?.map((element) => (
-              <div key={element.name}>
-                {activeElement === element.name ? (
-                  <textarea
-                    className="w-full text-xl leading-relaxed mb-6 font-serif text-gray-700 
-                             focus:outline-none focus:ring-2 focus:ring-blue-500 
-                             rounded px-2 py-1 min-h-[100px] border border-gray-300"
-                    value={editingContent || element.description}
-                    onChange={(e) => setEditingContent(e.target.value)}
-                    onBlur={() => handleSave(element.name)}
-                    autoFocus
-                  />
-                ) : (
-                  <div 
-                    className="relative text-xl leading-relaxed mb-6 font-serif text-gray-700 
+              <div key={element.name}
+                  className="relative text-xl leading-relaxed mb-6 font-serif text-gray-700 
                                hover:bg-gray-50 rounded px-2 py-1 cursor-pointer
                                border border-transparent hover:border-gray-200"
-                    onClick={() => handleClick(element)}
-                    role="button"
-                    tabIndex={0}
-                  >
-                    <h3 className="text-xl font-bold text-gray-900">{element.name}</h3>   
-                    <p className="text-gray-600 line-clamp-3">{element.description}</p>
-                    {showProgress === element.name && (
-                      <CommentsIndicator />
-                    )}
-                  </div>
-                )}
-              </div>
+                  onClick={() => handleClick(element)}
+                  tabIndex={0}
+                >
+                  <h3 className="text-xl font-bold text-gray-900">{element.name}</h3>
+                  <p className="text-gray-600">{element.description}</p>
+                  {showProgress === element.name && (
+                    <CommentsIndicator />
+                  )}
+                </div>
             ))}
           </div>
         </div>

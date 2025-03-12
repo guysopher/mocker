@@ -38,7 +38,7 @@ export function StoriesView({ elements, onElementClick, activeElement, showProgr
                 </span>
               </div>
               
-              <p className="text-gray-600 line-clamp-3">{element.description}</p>
+              <p className="text-gray-600">{element.description}</p>
               
               <div className="pt-4 flex items-center justify-between text-sm text-gray-500 border-t">
                 <div className="flex items-center space-x-2">
