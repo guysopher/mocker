@@ -32,7 +32,7 @@ export function StoriesView({ elements, onElementClick, activeElement, showProgr
           >
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-xl font-bold text-gray-900">{element.title}</h3>
+                <h3 className="text-xl font-bold text-gray-900">{element.name}</h3>
                 <span className="px-3 py-1 text-sm rounded-full bg-gray-100 text-gray-600">
                   Story
                 </span>

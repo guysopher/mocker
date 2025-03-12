@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('API route error:', error);
     return NextResponse.json(
-      { error: 'Failed to generate app content' },
+      { error: 'Failed to generate app content: ' + error },
       { status: 500 }
     );
   }

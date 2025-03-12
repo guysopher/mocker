@@ -13,14 +13,12 @@ export interface CanvasElement {
 
 export interface CanvasStory {
   id: string;
-  title: string;
+  name: string;
   description: string;
-  acceptance: string[];
 }
 
 export interface BriefItem {
   id: string;
-  title: string;
-  content: string | string[];
-  priority: 'low' | 'medium' | 'high';
+  name: string;
+  description: string;
 }

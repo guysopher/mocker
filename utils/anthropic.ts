@@ -48,19 +48,97 @@ export async function generateCompletion(
  */
 export async function generateAppBrief(description: string) {
   try {
-    const systemPrompt = `You are an expert app designer and product strategist. Your task is to create a detailed brief for an app based on a user's description.
-    
-    Focus on:
-    - Core purpose and value proposition
-    - Target audience
-    - Key problems the app solves
-    - Market positioning
-    - Overall vision and goals
-    
-    Provide a comprehensive, well-structured brief that clearly articulates the app concept.`;
+    const systemPrompt = `
+    ## ROLE
+You are an experienced Product Manager specializing in SAAS products with strong technical background. Your expertise lies in analyzing raw product requirements and transforming them into structured product briefs that bridge business needs and technical implementation.
+## TASK DESCRIPTION
+Your task is to analyze the provided app requirements and create a structured initial product brief that will serve as a foundation for development team's work.
+## ANALYSIS GUIDELINES
+- Focus on identifying core functionality and key features
+- Extract technical requirements and dependencies
+- Identify system architecture considerations
+- Maintain balance between business goals and technical feasibility
+## OUTPUT STRUCTURE
+The output should be organized in the following sections:
+1. Executive Summary
+   - Product Overview
+   - Target User Profile
+   - Core Value Proposition
+2. Product Requirements
+   - Core Features
+   - Must-have Functionality
+   - Nice-to-have Features
+3. Technical Architecture
+   - System Components
+   - Data Flow
+   - Third-party Dependencies
+   - API Requirements
+4. Development Requirements
+   - Technology Stack Recommendations
+   - Development Environment Setup
+   - Required Services and Tools
+   - Security Requirements
+5. Database Structure
+   - Key Entities
+   - Critical Data Points
+   - Data Relationships
+   - Storage Requirements
+6. Integration Requirements
+   - External Systems
+   - Authentication Methods
+   - API Endpoints
+   - Data Exchange Formats
+7. Non-functional Requirements
+   - Performance Metrics
+   - Scalability Requirements
+   - Security Standards
+   - Compliance Requirements
+8. Technical Constraints
+   - Platform Limitations
+   - Resource Constraints
+   - Technical Debt Considerations
+9. Implementation Roadmap
+   - Technical Dependencies
+   - Critical Path Items
+   - Development Phases
+10. Success Metrics
+    - Performance KPIs
+    - Technical Success Criteria
+    - Monitoring Requirements
+## INSTRUCTIONS
+1. Read and analyze the input thoroughly
+2. Extract key technical requirements and system needs
+3. Structure the information according to the output sections
+4. Focus on technical clarity and implementation guidance
+5. Include specific technical details where critical
+## OUTPUT FORMAT
+
+Provide the brief in a JSON array format following the sections defined above.
+The description should be a textual description (not a JSON)
+For example: 
+[
+    {
+        "id": "brief1",
+        "name": "Executive Summary",
+        "description": "A textual description of the executive summary"
+    },
+    {
+        "id": "brief2",
+        "name": "Product Requirements",
+        "description": "A textual description of the product requirements"
+    },
+    ...
+]
+
+## INPUT
+Analyze the following app requirements and create a structured product brief:
+"""
+${description}
+"""
+    `;
     
     const response = await anthropic.messages.create({
-      model: "claude-3-5-sonnet-20240620",
+      model: "claude-3-5-sonnet-latest",
       max_tokens: 1500,
       system: systemPrompt,
       messages: [
@@ -75,7 +153,7 @@ export async function generateAppBrief(description: string) {
     });
 
     if (response.content[0].type === 'text') {
-      return response.content[0].text;
+      return JSON.parse(response.content[0].text);
     } else {
       throw new Error('Unexpected response format from Anthropic API');
     }
@@ -90,19 +168,49 @@ export async function generateAppBrief(description: string) {
  */
 export async function generateUserStories(description: string, brief: string) {
   try {
-    const systemPrompt = `You are an expert product manager and UX designer. Your task is to create user stories and define key features for an app based on its description and brief.
-    
-    Focus on:
-    - User personas and their needs
-    - User journeys and flows
-    - Core features and functionality
-    - Prioritization of features (must-have vs nice-to-have)
-    - Success metrics for each feature
-    
-    Provide comprehensive, well-structured user stories that clearly articulate how users will interact with the app.`;
+        const systemPrompt = `## ROLE
+You are a Professional Product Manager with expertise in breaking down product requirements into clear user stories. Your job is to analyze product definitions and briefs to create comprehensive user stories for development teams.
+## TASK DESCRIPTION
+Convert the provided app definition and project brief into well-structured user stories that capture all necessary functionality.
+## USER STORY GUIDELINES
+- Write stories in the format: "As a [user], I want to [action] so that [benefit]"
+- Ensure each story represents a single, clear functionality
+- Be specific and actionable
+- Focus on user value and outcomes
+- Avoid technical implementation details
+## STORY ORGANIZATION
+Group user stories by functionality categories such as:
+- Authentication & User Management
+- Core Features
+- User Interface & Navigation
+- Data Management
+- Integration & Communication
+- Settings & Preferences
+## OUTPUT FORMAT
+Provide output in Json Array format
+For exaple: 
+[
+    {
+        "id": "story1",
+        "name": "User Story 1",
+        "description": "..."
+    },
+    ...
+]
+## INPUT
+Analyze the following app definition and project brief to generate comprehensive user stories:
+App Definition:
+"""
+${description}
+"""
+
+Project Brief:
+"""
+${brief}
+"""`;
     
     const response = await anthropic.messages.create({
-      model: "claude-3-5-sonnet-20240620",
+      model: "claude-3-5-sonnet-latest",
       max_tokens: 1500,
       system: systemPrompt,
       messages: [
@@ -120,7 +228,7 @@ export async function generateUserStories(description: string, brief: string) {
     });
 
     if (response.content[0].type === 'text') {
-      return response.content[0].text;
+      return JSON.parse(response.content[0].text);
     } else {
       throw new Error('Unexpected response format from Anthropic API');
     }
@@ -147,7 +255,7 @@ export async function generateDesignRecommendations(description: string, brief: 
     Provide comprehensive, well-structured design recommendations that will guide the development of an intuitive and visually appealing app.`;
     
     const response = await anthropic.messages.create({
-      model: "claude-3-5-sonnet-20240620",
+      model: "claude-3-5-sonnet-latest",
       max_tokens: 1500,
       system: systemPrompt,
       messages: [
@@ -190,7 +298,7 @@ export async function generateAppContent(description: string) {
     const stories = await generateUserStories(description, brief);
     
     // Step 3: Generate design recommendations based on brief and stories
-    const design = await generateDesignRecommendations(description, brief, stories);
+    const design = ''//await generateDesignRecommendations(description, brief, stories);
     
     // Return all content
     return {

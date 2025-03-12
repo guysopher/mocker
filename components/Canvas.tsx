@@ -15,9 +15,9 @@ interface CanvasProps {
   generatingSection: string | null
   buildProgress: number
   appContent: {
-    brief: string
-    design: string
-    stories: string
+    brief: BriefItem[]
+    design: CanvasElement[]
+    stories: CanvasStory[]
   } | null
 }
 
@@ -87,7 +87,7 @@ export default function Canvas({ view, appDescription, isGenerating, generatingS
     switch (view) {
       case 'brief':
         return <BriefView
-          elements={getMarketplaceDemo()['brief' as keyof typeof getMarketplaceDemo] as BriefItem[]}
+          elements={appContent?.brief as BriefItem[]}
           onElementClick={handleElementClick}
           onElementUpdate={(elementId, updates) => {
             // Handle element updates here
@@ -96,27 +96,24 @@ export default function Canvas({ view, appDescription, isGenerating, generatingS
           activeElement={activeElement}
           showProgress={showProgress}
           appDescription={appDescription}
-          isGenerating={isGenerating && generatingSection === 'brief'}
-          content={appContent?.brief}
+          // isGenerating={isGenerating && generatingSection === 'brief'}
         />
       case 'design':
       case 'prototype':
         return <DesignView
-          elements={getMarketplaceDemo()['design' as keyof typeof getMarketplaceDemo] as CanvasElement[]}
+          elements={appContent?.design as CanvasElement[]}
           onElementClick={handleElementClick}
           activeElement={activeElement}
           showProgress={showProgress}
-          isGenerating={isGenerating && generatingSection === 'design'}
-          content={appContent?.design}
         />
       case 'stories':
         return <StoriesView
-          elements={getMarketplaceDemo()['stories' as keyof typeof getMarketplaceDemo] as CanvasStory[]}
+          elements={appContent?.stories as CanvasStory[]}
           onElementClick={handleElementClick}
           activeElement={activeElement}
           showProgress={showProgress}
-          isGenerating={isGenerating && generatingSection === 'stories'}
-          content={appContent?.stories}
+          // isGenerating={isGenerating && generatingSection === 'stories'}
+          // content={appContent?.stories}
         />
       default:
         return <div>Select a view to get started</div>

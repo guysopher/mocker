@@ -10,7 +10,7 @@ interface BriefViewProps {
   showProgress: any
   appDescription: string
   isGenerating: boolean
-  content: string | undefined
+  // content: string | undefined
 }
 
 export function BriefView({ 
@@ -21,7 +21,7 @@ export function BriefView({
   showProgress,
   appDescription,
   isGenerating,
-  content
+  // content
 }: BriefViewProps) {
   const [editingContent, setEditingContent] = useState("")
 
@@ -32,21 +32,14 @@ export function BriefView({
   }
 
   const handleClick = (element: BriefItem) => {
-    console.log('Clicked element:', element.id)
-    onElementClick(element.id)
-    setEditingContent(element.content as string)
+    console.log('Clicked element:', element.name)
+    onElementClick(element.name)
+    setEditingContent(element.description as string)
   }
 
   return (
     <div className="relative w-full h-full">
-      {content ? (
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-2xl font-bold mb-4">App Brief</h2>
-          <div className="prose max-w-none">
-            {content}
-          </div>
-        </div>
-      ) : isGenerating ? (
+      {isGenerating ? (
         <div className="bg-white rounded-lg shadow-md p-6 mb-6 animate-pulse">
           <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
           <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
@@ -58,15 +51,15 @@ export function BriefView({
           <h2 className="text-3xl font-serif font-semibold mb-6 text-gray-800">Project Brief</h2>
           <div className="max-w-none">
             {elements.map((element) => (
-              <div key={element.id}>
-                {activeElement === element.id ? (
+              <div key={element.name}>
+                {activeElement === element.name ? (
                   <textarea
                     className="w-full text-xl leading-relaxed mb-6 font-serif text-gray-700 
                              focus:outline-none focus:ring-2 focus:ring-blue-500 
                              rounded px-2 py-1 min-h-[100px] border border-gray-300"
-                    value={editingContent || element.content}
+                    value={editingContent || element.description}
                     onChange={(e) => setEditingContent(e.target.value)}
-                    onBlur={() => handleSave(element.id)}
+                    onBlur={() => handleSave(element.name)}
                     autoFocus
                   />
                 ) : (
@@ -78,8 +71,9 @@ export function BriefView({
                     role="button"
                     tabIndex={0}
                   >
-                    {element.content}
-                    {showProgress === element.id && (
+                    <h3 className="text-xl font-bold text-gray-900">{element.name}</h3>   
+                    <p className="text-gray-600 line-clamp-3">{element.description}</p>
+                    {showProgress === element.name && (
                       <CommentsIndicator />
                     )}
                   </div>
