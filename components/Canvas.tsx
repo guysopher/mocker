@@ -7,14 +7,21 @@ import { MarketplaceDemo } from '@/components/Marketplace'
 import { DesignView } from '@/components/views/DesignView'
 import { BriefView } from '@/components/views/BriefView'
 import { CanvasElement, CanvasStory, BriefItem } from '@/types/canvas'
+
 interface CanvasProps {
   view: string
   appDescription: string
   isGenerating: boolean
+  generatingSection: string | null
   buildProgress: number
+  appContent: {
+    brief: string
+    design: string
+    stories: string
+  } | null
 }
 
-export default function Canvas({ view, appDescription, isGenerating, buildProgress }: CanvasProps) {
+export default function Canvas({ view, appDescription, isGenerating, generatingSection, buildProgress, appContent }: CanvasProps) {
   const [activeElement, setActiveElement] = useState<string | null>(null)
   const [voiceActive, setVoiceActive] = useState(false)
   const [canvasElements, setCanvasElements] = useState<CanvasElement[]>([])
@@ -88,6 +95,9 @@ export default function Canvas({ view, appDescription, isGenerating, buildProgre
           }}
           activeElement={activeElement}
           showProgress={showProgress}
+          appDescription={appDescription}
+          isGenerating={isGenerating && generatingSection === 'brief'}
+          content={appContent?.brief}
         />
       case 'design':
       case 'prototype':
@@ -96,6 +106,8 @@ export default function Canvas({ view, appDescription, isGenerating, buildProgre
           onElementClick={handleElementClick}
           activeElement={activeElement}
           showProgress={showProgress}
+          isGenerating={isGenerating && generatingSection === 'design'}
+          content={appContent?.design}
         />
       case 'stories':
         return <StoriesView
@@ -103,6 +115,8 @@ export default function Canvas({ view, appDescription, isGenerating, buildProgre
           onElementClick={handleElementClick}
           activeElement={activeElement}
           showProgress={showProgress}
+          isGenerating={isGenerating && generatingSection === 'stories'}
+          content={appContent?.stories}
         />
       default:
         return <div>Select a view to get started</div>

@@ -14,16 +14,42 @@ export default function Home() {
   const [currentView, setCurrentView] = useState('brief') // brief, design, stories
   const [buildProgress, setBuildProgress] = useState(0)
   const [building, setBuilding] = useState(false)
+  const [appContent, setAppContent] = useState<{
+    brief: string;
+    design: string;
+    stories: string;
+  } | null>(null)
+  const [generatingSection, setGeneratingSection] = useState<string | null>(null)
   
-  const handleSubmitDescription = (description: string) => {
+  const handleSubmitDescription = async (description: string) => {
     setAppDescription(description)
     setGeneratingContent(true)
+    setGeneratingSection('brief')
     
-    // Simulate AI generation (would connect to actual APIs)
-    setTimeout(() => {
-      setGeneratingContent(false)
-      setAppGenerated(true)
-    }, 3000)
+    try {
+      const response = await fetch('/api/anthropic', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ description }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to generate app content');
+      }
+      
+      const data = await response.json();
+      setAppContent(data.content);
+      setGeneratingContent(false);
+      setGeneratingSection(null);
+      setAppGenerated(true);
+    } catch (error) {
+      console.error('Error generating app content:', error);
+      setGeneratingContent(false);
+      setGeneratingSection(null);
+      // Handle error - perhaps show an error message to the user
+    }
   }
   
   const handleDesignIt = () => {
@@ -132,7 +158,9 @@ export default function Home() {
               view={currentView} 
               appDescription={appDescription}
               isGenerating={generatingContent}
+              generatingSection={generatingSection}
               buildProgress={buildProgress}
+              appContent={appContent}
             />
           </div>
           
