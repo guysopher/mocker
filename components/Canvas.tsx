@@ -29,6 +29,7 @@ export default function Canvas({ view, appDescription, isGenerating, generatingS
   const [voicePopupPosition, setVoicePopupPosition] = useState({ x: 0, y: 0 })
   const [showProgress, setShowProgress] = useState(null as any)
   const canvasRef = useRef<HTMLDivElement>(null)
+  const [activeTab, setActiveTab] = useState('brief')
 
   // Create demo project for second-hand marketplace
   const getMarketplaceDemo = () => MarketplaceDemo;
@@ -87,7 +88,7 @@ export default function Canvas({ view, appDescription, isGenerating, generatingS
     switch (view) {
       case 'brief':
         return <BriefView
-          elements={appContent?.brief as BriefItem[]}
+          elements={appContent?.brief || [] as BriefItem[]}
           onElementClick={handleElementClick}
           onElementUpdate={(elementId, updates) => {
             // Handle element updates here
@@ -96,19 +97,20 @@ export default function Canvas({ view, appDescription, isGenerating, generatingS
           activeElement={activeElement}
           showProgress={showProgress}
           appDescription={appDescription}
-          // isGenerating={isGenerating && generatingSection === 'brief'}
+          isGenerating={isGenerating && generatingSection === 'brief'}
         />
       case 'design':
       case 'prototype':
         return <DesignView
-          elements={appContent?.design as CanvasElement[]}
+          elements={appContent?.design || [] as CanvasElement[]}
           onElementClick={handleElementClick}
           activeElement={activeElement}
           showProgress={showProgress}
+          // isGenerating={isGenerating && generatingSection === 'design'}
         />
       case 'stories':
         return <StoriesView
-          elements={appContent?.stories as CanvasStory[]}
+          elements={appContent?.stories || [] as CanvasStory[]}
           onElementClick={handleElementClick}
           activeElement={activeElement}
           showProgress={showProgress}
@@ -123,7 +125,7 @@ export default function Canvas({ view, appDescription, isGenerating, generatingS
   return (
     <div ref={canvasRef} className="w-full h-full relative">
       {isGenerating && (
-        <div className="absolute bg-white bg-opacity-80 flex items-center justify-center z-50">
+        <div className="fixed inset-0 w-full h-full bg-white bg-opacity-80 flex items-center justify-center z-50">
           <div className="flex flex-col items-center">
             <svg className="animate-spin mb-4 h-10 w-10 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -137,7 +139,55 @@ export default function Canvas({ view, appDescription, isGenerating, generatingS
       <div className="w-full h-full">
         <div className="relative w-full h-full bg-gradient-to-br from-gray-50 to-white p-8 grid grid-cols-1">
           <div className="absolute bg-grid-pattern opacity-20"></div>
-          {renderCanvas()}
+          <div className="flex border-b mb-4">
+            <button
+              onClick={() => setActiveTab('brief')}
+              className={`px-4 py-2 ${activeTab === 'brief' ? 'border-b-2 border-blue-500 font-medium' : ''}`}
+            >
+              Brief
+            </button>
+            <button
+              onClick={() => setActiveTab('stories')}
+              className={`px-4 py-2 ${activeTab === 'stories' ? 'border-b-2 border-blue-500 font-medium' : ''}`}
+            >
+              User Stories
+            </button>
+            <button
+              onClick={() => setActiveTab('design')}
+              className={`px-4 py-2 ${activeTab === 'design' ? 'border-b-2 border-blue-500 font-medium' : ''}`}
+            >
+              Design
+            </button>
+          </div>
+          
+          <div className="flex-1">
+            {activeTab === 'brief' && <BriefView
+              elements={appContent?.brief as BriefItem[]}
+              onElementClick={handleElementClick}
+              onElementUpdate={(elementId, updates) => {
+                // Handle element updates here
+                console.log('Element updated:', elementId, updates)
+              }}
+              activeElement={activeElement}
+              showProgress={showProgress}
+              appDescription={appDescription}
+              // isGenerating={isGenerating && generatingSection === 'brief'}
+            />}
+            {activeTab === 'stories' && <StoriesView
+              elements={appContent?.stories as CanvasStory[]}
+              onElementClick={handleElementClick}
+              activeElement={activeElement}
+              showProgress={showProgress}
+              // isGenerating={isGenerating && generatingSection === 'stories'}
+              // content={appContent?.stories}
+            />}
+            {activeTab === 'design' && <DesignView
+              elements={appContent?.design as CanvasElement[]}
+              onElementClick={handleElementClick}
+              activeElement={activeElement}
+              showProgress={showProgress}
+            />}
+          </div>
         </div>
       </div>
 

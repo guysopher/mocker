@@ -6,6 +6,9 @@ import Link from 'next/link'
 import Canvas from '@/components/Canvas'
 import AppDescriptionForm from '@/components/AppDescriptionForm'
 import Header from '@/components/Header'
+import { CanvasStory } from '@/types/canvas'
+import { BriefItem } from '@/types/canvas'
+import { CanvasElement } from '@/types/canvas'
 
 export default function Home() {
   const [appDescription, setAppDescription] = useState('')
@@ -15,35 +18,46 @@ export default function Home() {
   const [buildProgress, setBuildProgress] = useState(0)
   const [building, setBuilding] = useState(false)
   const [appContent, setAppContent] = useState<{
-    brief: string;
-    design: string;
-    stories: string;
+    brief: BriefItem[];
+    design: CanvasElement[];
+    stories: CanvasStory[];
   } | null>(null)
   const [generatingSection, setGeneratingSection] = useState<string | null>(null)
-  
+
   const handleSubmitDescription = async (description: string) => {
     setAppDescription(description)
     setGeneratingContent(true)
     setGeneratingSection('brief')
-    
+    setAppGenerated(true);
+
     try {
-      const response = await fetch('/api/anthropic', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ description }),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to generate app content');
+      for (const section of ['brief', 'stories', 'design']) {
+        const response = await fetch(`/api/${section}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ description, ...appContent }),
+        });
+        console.log('response', response)
+
+
+        if (!response.ok) {
+          throw new Error('Failed to generate app content');
+        }
+
+        const data = await response.json();
+        if (data) {
+          setAppContent(prevContent => ({
+            brief: section === 'brief' ? data.brief : (prevContent?.brief || []),
+            design: section === 'design' ? data.design : (prevContent?.design || []),
+            stories: section === 'stories' ? data.stories : (prevContent?.stories || [])
+          }));
+        }
       }
-      
-      const data = await response.json();
-      setAppContent(data.content);
+
       setGeneratingContent(false);
       setGeneratingSection(null);
-      setAppGenerated(true);
     } catch (error) {
       console.error('Error generating app content:', error);
       setGeneratingContent(false);
@@ -51,19 +65,19 @@ export default function Home() {
       // Handle error - perhaps show an error message to the user
     }
   }
-  
+
   const handleDesignIt = () => {
     setGeneratingContent(true)
-    
+
     // Simulate AI refinement
     setTimeout(() => {
       setGeneratingContent(false)
     }, 2500)
   }
-  
+
   const handleBuildIt = () => {
     setBuilding(true)
-    
+
     // Simulate build progress
     const interval = setInterval(() => {
       setBuildProgress(prev => {
@@ -75,28 +89,28 @@ export default function Home() {
       })
     }, 800)
   }
-  
+
   useEffect(() => {
     if (buildProgress >= 100) {
       // Ready to redirect to Wix
       setBuilding(false)
     }
   }, [buildProgress])
-  
+
   return (
     <main className="flex min-h-screen flex-col bg-gray-50">
       <Header />
-      
+
       {!appGenerated ? (
         <div className="flex flex-1 flex-col items-center justify-center p-8 bg-gradient-to-b from-blue-50 to-gray-50">
           <div className="max-w-7xl w-full bg-white p-10 rounded-xl shadow-lg border border-gray-100">
             <div className="text-center mb-8">
               <h1 className="text-4xl font-bold text-gray-800 mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">Tell Us About Your Dream App</h1>
             </div>
-            
-            <AppDescriptionForm 
-              onSubmit={handleSubmitDescription} 
-              isGenerating={generatingContent} 
+
+            <AppDescriptionForm
+              onSubmit={handleSubmitDescription}
+              isGenerating={generatingContent}
             />
           </div>
         </div>
@@ -105,43 +119,44 @@ export default function Home() {
           <div className="bg-white border-b border-gray-200 p-4">
             <div className="flex justify-between items-center max-w-7xl mx-auto">
               <div className="flex space-x-6">
-                <button 
+                <button
                   onClick={() => setCurrentView('brief')}
-                  className={`px-4 py-2 font-medium ${currentView === 'brief' 
-                    ? 'text-blue-600 border-b-2 border-blue-600' 
+                  className={`px-4 py-2 font-medium ${currentView === 'brief'
+                    ? 'text-blue-600 border-b-2 border-blue-600'
                     : 'text-gray-600 hover:text-gray-800'}`}
                 >
                   Brief
                 </button>
-                <button 
-                  onClick={() => setCurrentView('design')}
-                  className={`px-4 py-2 font-medium ${currentView === 'design' 
-                    ? 'text-blue-600 border-b-2 border-blue-600' 
-                    : 'text-gray-600 hover:text-gray-800'}`}
-                >
-                  Design
-                </button>
-                <button 
+                <button
                   onClick={() => setCurrentView('stories')}
-                  className={`px-4 py-2 font-medium ${currentView === 'stories' 
-                    ? 'text-blue-600 border-b-2 border-blue-600' 
+                  className={`px-4 py-2 font-medium ${currentView === 'stories'
+                    ? 'text-blue-600 border-b-2 border-blue-600'
                     : 'text-gray-600 hover:text-gray-800'}`}
                 >
                   User Stories
                 </button>
+                  <button
+                    onClick={() => setCurrentView('design')}
+                    className={`px-4 py-2 font-medium ${currentView === 'design'
+                      ? 'text-blue-600 border-b-2 border-blue-600'
+                      : 'text-gray-600 hover:text-gray-800'}`}
+                  >
+                    Design
+                  </button>
+
               </div>
-              
+
               <div className="flex space-x-4">
-                <button 
+                <button
                   onClick={handleBuildIt}
                   disabled={generatingContent || building || buildProgress > 0}
                   className="px-5 py-2 bg-green-600 text-white rounded-md font-medium disabled:bg-green-300"
                 >
                   Build It
                 </button>
-                
+
                 {buildProgress === 100 && (
-                  <Link 
+                  <Link
                     href="https://www.wix.com/"
                     target="_blank"
                     className="px-5 py-2 bg-blue-600 text-white rounded-md font-medium"
@@ -152,10 +167,10 @@ export default function Home() {
               </div>
             </div>
           </div>
-          
+
           <div className="flex-1 overflow-hidden">
-            <Canvas 
-              view={currentView} 
+            <Canvas
+              view={currentView}
               appDescription={appDescription}
               isGenerating={generatingContent}
               generatingSection={generatingSection}
@@ -163,21 +178,21 @@ export default function Home() {
               appContent={appContent}
             />
           </div>
-          
+
           {building && (
             <div className="fixed bottom-6 right-6 bg-white p-4 rounded-lg shadow-lg max-w-md">
               <h3 className="font-semibold text-lg mb-2">Building Your App</h3>
               <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
-                <div 
-                  className="bg-blue-600 h-2.5 rounded-full" 
+                <div
+                  className="bg-blue-600 h-2.5 rounded-full"
                   style={{ width: `${buildProgress}%` }}
                 ></div>
               </div>
               <p className="text-sm text-gray-600">
                 {buildProgress < 30 ? 'Generating code structure...' :
-                 buildProgress < 60 ? 'Implementing core functionality...' :
-                 buildProgress < 90 ? 'Adding UI components...' :
-                 buildProgress === 100 ? 'Ready to publish!' : 'Finalizing...'}
+                  buildProgress < 60 ? 'Implementing core functionality...' :
+                    buildProgress < 90 ? 'Adding UI components...' :
+                      buildProgress === 100 ? 'Ready to publish!' : 'Finalizing...'}
               </p>
             </div>
           )}

@@ -14,7 +14,7 @@ interface StoriesViewProps {
 export function StoriesView({ elements, onElementClick, activeElement, showProgress }: StoriesViewProps) {
   return (
     <div className="relative p-4 grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-      {elements.map((element) => {
+      {elements?.map((element) => {
         const isActive = element.id === activeElement
         
         return (

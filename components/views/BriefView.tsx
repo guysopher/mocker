@@ -10,7 +10,6 @@ interface BriefViewProps {
   showProgress: any
   appDescription: string
   isGenerating: boolean
-  // content: string | undefined
 }
 
 export function BriefView({ 
@@ -21,7 +20,6 @@ export function BriefView({
   showProgress,
   appDescription,
   isGenerating,
-  // content
 }: BriefViewProps) {
   const [editingContent, setEditingContent] = useState("")
 
@@ -50,7 +48,7 @@ export function BriefView({
         <div className="max-w-4xl mx-auto p-8 bg-white rounded-lg shadow-md">
           <h2 className="text-3xl font-serif font-semibold mb-6 text-gray-800">Project Brief</h2>
           <div className="max-w-none">
-            {elements.map((element) => (
+            {elements?.map((element) => (
               <div key={element.name}>
                 {activeElement === element.name ? (
                   <textarea

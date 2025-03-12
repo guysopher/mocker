@@ -284,30 +284,4 @@ export async function generateDesignRecommendations(description: string, brief: 
     console.error('Error generating design recommendations:', error);
     throw error;
   }
-}
-
-/**
- * Orchestrates the generation of all app content in sequence
- */
-export async function generateAppContent(description: string) {
-  try {
-    // Step 1: Generate the app brief
-    const brief = await generateAppBrief(description);
-    
-    // Step 2: Generate user stories based on the brief
-    const stories = await generateUserStories(description, brief);
-    
-    // Step 3: Generate design recommendations based on brief and stories
-    const design = ''//await generateDesignRecommendations(description, brief, stories);
-    
-    // Return all content
-    return {
-      brief,
-      stories,
-      design
-    };
-  } catch (error) {
-    console.error('Error generating app content:', error);
-    throw error;
-  }
 } 

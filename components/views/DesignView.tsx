@@ -25,7 +25,7 @@ export const DesignView: FC<DesignViewProps> = ({
       width: 1105,
       margin: '0 auto'
     }}>
-      {elements.map(element => {
+      {elements?.map(element => {
         const isActive = element.id === activeElement
         return element.render ? (
           <>
