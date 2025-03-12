@@ -10,7 +10,7 @@ interface DesignViewProps {
 }
 
 export const DesignView: FC<DesignViewProps> = ({
-  elements,
+  elements = [],
   onElementClick,
   activeElement,
   showProgress
