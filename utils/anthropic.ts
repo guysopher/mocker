@@ -302,23 +302,29 @@ export async function generateComponent(
             .replace('{{page}}', page)
             .replace('{{component}}', component);
 
-        const response = await openai.chat.completions.create({
-            model: "gpt-4o",
+        const response = await anthropic.messages.create({
+            model: "claude-3-5-sonnet-latest",
             max_tokens: 1500,
+            system: systemPrompt,
             messages: [
                 {
-                    role: "system",
-                    content: systemPrompt
+                    role: "user",
+                    content: `I'm creating an app with this description: "${description}"
+                    
+                    Here's the detailed brief for the app:
+                    ${brief}
+                    
+                    And here are the user stories and features:
+                    ${stories}`
                 },
             ],
             temperature: 0.7,
-            response_format: { type: "text" }
         });
 
-        if (response.choices[0]?.message?.content) {
-            return response.choices[0].message.content;
+        if (response.content[0].type === 'text') {
+            return response.content[0].text;
         } else {
-            throw new Error('Unexpected response format from OpenAI API');
+            throw new Error('Unexpected response format from Anthropic API');
         }
     } catch (error) {
         console.error('Error generating component:', error);

@@ -15,12 +15,12 @@ interface CanvasProps {
   buildProgress: number
   appContent: {
     brief: BriefItem[]
-    design: CanvasElement[]
+    pages: any
     stories: CanvasStory[]
   } | null
 }
 
-export default function Canvas({ view, appDescription, isGenerating, generatingSection, buildProgress, appContent }: CanvasProps) {
+export default function Canvas({ view, appDescription, generatingSection, buildProgress, appContent }: CanvasProps) {
   const [activeElement, setActiveElement] = useState<string | null>(null)
   const [voiceActive, setVoiceActive] = useState(false)
   const [canvasElements, setCanvasElements] = useState<CanvasElement[]>([])
@@ -96,16 +96,17 @@ export default function Canvas({ view, appDescription, isGenerating, generatingS
           activeElement={activeElement}
           showProgress={showProgress}
           appDescription={appDescription}
-          isGenerating={isGenerating && generatingSection === 'brief'}
+          isGenerating={!appContent?.brief}
         />
+      case 'pages':
       case 'design':
       case 'prototype':
         return <DesignView
-          elements={appContent?.design || [] as CanvasElement[]}
+          pages={appContent?.pages || {}}
           onElementClick={handleElementClick}
           activeElement={activeElement}
           showProgress={showProgress}
-        // isGenerating={isGenerating && generatingSection === 'design'}
+          isGenerating={!appContent?.pages}
         />
       case 'stories':
         return <StoriesView
@@ -113,8 +114,7 @@ export default function Canvas({ view, appDescription, isGenerating, generatingS
           onElementClick={handleElementClick}
           activeElement={activeElement}
           showProgress={showProgress}
-        // isGenerating={isGenerating && generatingSection === 'stories'}
-        // content={appContent?.stories}
+          isGenerating={!appContent?.stories}
         />
       default:
         return <div>Select a view to get started</div>
@@ -123,7 +123,7 @@ export default function Canvas({ view, appDescription, isGenerating, generatingS
 
   return (
     <div ref={canvasRef} className="w-full h-full relative">
-      {(!appContent || appContent[view as keyof typeof appContent].length === 0) && (
+      {(!appContent || !appContent[view as keyof typeof appContent]) && (
         <div className="absolute inset-0 w-full h-full bg-white bg-opacity-80 flex items-center justify-center z-50">
           <div className="flex flex-col items-center">
             <svg className="animate-spin mb-4 h-10 w-10 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -150,21 +150,23 @@ export default function Canvas({ view, appDescription, isGenerating, generatingS
               activeElement={activeElement}
               showProgress={showProgress}
               appDescription={appDescription}
-              isGenerating={isGenerating && generatingSection === 'brief'}
+              isGenerating={!appContent?.brief}
             />}
             {view === 'stories' && <StoriesView
               elements={appContent?.stories as CanvasStory[]}
               onElementClick={handleElementClick}
               activeElement={activeElement}
               showProgress={showProgress}
+              isGenerating={!appContent?.stories}
             // isGenerating={isGenerating && generatingSection === 'stories'}
             // content={appContent?.stories}
             />}
             {view === 'design' && <DesignView
-              elements={appContent?.design as CanvasElement[]}
+              pages={appContent?.pages || {}}
               onElementClick={handleElementClick}
               activeElement={activeElement}
               showProgress={showProgress}
+              isGenerating={!appContent?.pages}
             />}
           </div>
         </div>

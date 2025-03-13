@@ -1,15 +1,15 @@
 // Define the available prompt types
 export enum PromptName {
-  APP_BRIEF = 'brief',
-  USER_STORIES = 'stories',
-  SITEMAP = 'sitemap',
-  LAYOUT = 'layout',
-  COMPONENT = 'component'
+    APP_BRIEF = 'brief',
+    USER_STORIES = 'stories',
+    SITEMAP = 'sitemap',
+    LAYOUT = 'layout',
+    COMPONENT = 'component'
 }
 
 // Define the prompts
 const prompts: Record<PromptName, string> = {
-  [PromptName.APP_BRIEF]: `
+    [PromptName.APP_BRIEF]: `
 ## ROLE
 You are an experienced Product Manager specializing in SAAS products with strong technical background. Your expertise lies in analyzing raw product requirements and transforming them into structured product briefs that bridge business needs and technical implementation.
 
@@ -79,10 +79,10 @@ Analyze the following app requirements and create a structured product brief:
 {{description}}
 """
 `
-  
-  ,
 
-  [PromptName.USER_STORIES]: `
+    ,
+
+    [PromptName.USER_STORIES]: `
   ## ROLE
 You are a Professional Product Manager specializing in user story creation. Your job is to analyze application requirements and transform them into clear, actionable user stories that development teams can understand and implement.
 
@@ -119,7 +119,7 @@ App Brief:
 
   `,
 
-  [PromptName.SITEMAP]: `
+    [PromptName.SITEMAP]: `
   ## ROLE
 You are a professional Information Architect and UX Designer. Your job is to analyze business requirements and determine the optimal page structure based on industry best practices and business needs.
 
@@ -171,7 +171,7 @@ User Stories:
   
   `,
 
-  [PromptName.LAYOUT]: `
+    [PromptName.LAYOUT]: `
   ## ROLE
 You are a Senior UI/UX Designer and Layout Expert. Your job is to create comprehensive page layout definitions based on project requirements and user needs.
 
@@ -198,27 +198,22 @@ Provide output in JSON format:
 
 {
   "layout_name": string,
-  "sections": [
+"components": [
     {
-      "section_name": string,
-      "purpose": string,
-      "components": [
-        {
-          "name": string,
-          "purpose": string,
-          "grid_position": {
-            "column_start": number,
-            "column_end": number,
-            "row": number
-          },
-          "design_details": {
-            "type": string,
-            "size": string,
-            "colors": string,
-            "style_description": string
-          }
+        "name": string,
+        "purpose": string,
+        "grid_position": {
+        "column_start": number,
+        "column_end": number,
+        "row_start": number,
+        "row_end": number
+        },
+        "design_details": {
+        "type": string,
+        "size": string,
+        "colors": string,
+        "style_description": string
         }
-      ]
     }
   ]
 }
@@ -237,7 +232,7 @@ Page Description:
   
   `,
 
-  [PromptName.COMPONENT]: `
+    [PromptName.COMPONENT]: `
 
   ## ROLE
 You are a senior React Developer specializing in converting design specifications into React components. Your expertise lies in creating clean, responsive React components that accurately reflect design requirements.

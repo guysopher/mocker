@@ -77,8 +77,8 @@ export default function Home() {
         }
       }
 
-      // Generate layout for each page
-      for (const page of tempAppContent.sitemap) {
+      // Generate layout for all pages in parallel
+      const pagePromises = tempAppContent.sitemap.map(async (page: any) => {
         try {
           const response = await fetch(`/api/layout`, {
             method: 'POST',
@@ -96,11 +96,13 @@ export default function Home() {
           if (data) {
             tempAppContent.pages = {
               ...tempAppContent.pages,
-              [page]: {layout: data.layout, components: []}
+              [page.type]: {layout: data.layout, components: []}
             }
 
-            // Generate components for the page
-            for (const component of Object.keys(data.layout)) {
+            console.log("Updating pages", tempAppContent.pages)
+
+            // Generate all components for the page in parallel
+            const componentPromises = Object.keys(data.layout.components).map(async (component) => {
               try {
                 const response = await fetch(`/api/component`, {
                   method: 'POST',
@@ -113,6 +115,8 @@ export default function Home() {
                 if (!response.ok) {
                   throw new Error(`HTTP error! status: ${response.status}`);
                 }
+
+                console.log("Generating component", component)
 
                 const data = await response.json();
                 if (data) {
@@ -128,13 +132,19 @@ export default function Home() {
                 console.error(`Error generating component ${component} for page ${page}:`, error);
                 console.error('Current page layout:', tempAppContent.sitemap[page]);
               }
-            }
+            });
+
+            // Wait for all component requests to complete
+            await Promise.all(componentPromises);
           }
         } catch (error) {
           console.error(`Error generating layout for page ${page}:`, error);
           console.error('Current sitemap:', tempAppContent.sitemap);
         }
-      }
+      });
+
+      // Wait for all page requests to complete
+      await Promise.all(pagePromises);
 
       setGeneratingContent(false);
       setGeneratingSection(null);
@@ -206,8 +216,8 @@ export default function Home() {
                   User Stories
                 </button>
                 <button
-                  onClick={() => setCurrentView('design')}
-                  className={`px-4 py-2 font-medium ${currentView === 'design'
+                  onClick={() => setCurrentView('pages')}
+                  className={`px-4 py-2 font-medium ${currentView === 'pages'
                     ? 'text-blue-600 border-b-2 border-blue-600'
                     : 'text-gray-600 hover:text-gray-800'}`}
                 >
@@ -246,7 +256,7 @@ export default function Home() {
               buildProgress={buildProgress}
               appContent={{
                 brief: appContent?.brief || [],
-                design: [],
+                pages: appContent?.pages || {},
                 stories: appContent?.stories || []
               }}
             />
