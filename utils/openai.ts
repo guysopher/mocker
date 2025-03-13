@@ -200,7 +200,7 @@ export async function generateLayout(
     });
 
     if (response.choices[0]?.message?.content) {
-      return JSON.parse(response.choices[0].message.content).layout;
+      return JSON.parse(response.choices[0].message.content);
     } else {
       throw new Error('Unexpected response format from OpenAI API');
     }

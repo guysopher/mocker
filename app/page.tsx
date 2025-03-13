@@ -47,7 +47,7 @@ export default function Home() {
       }
       
       // Generate initial content for each section
-      for (const section of Object.keys(tempAppContent)) {
+      for (const section of ['brief', 'stories', 'sitemap']) {
         try {
           const response = await fetch(`/api/${section}`, {
             method: 'POST',
@@ -74,7 +74,6 @@ export default function Home() {
         } catch (error) {
           console.error(`Error generating ${section}:`, error);
           console.error('Current tempAppContent:', tempAppContent);
-          throw new Error(`Failed to generate ${section}`);
         }
       }
 
@@ -128,14 +127,12 @@ export default function Home() {
               } catch (error) {
                 console.error(`Error generating component ${component} for page ${page}:`, error);
                 console.error('Current page layout:', tempAppContent.sitemap[page]);
-                throw new Error(`Failed to generate component ${component}`);
               }
             }
           }
         } catch (error) {
           console.error(`Error generating layout for page ${page}:`, error);
           console.error('Current sitemap:', tempAppContent.sitemap);
-          throw new Error(`Failed to generate layout for page ${page}`);
         }
       }
 
