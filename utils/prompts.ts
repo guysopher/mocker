@@ -1,4 +1,12 @@
-export const prompts = {
+export type PromptName = {
+  brief: string;
+  stories: string;
+  sitemap: string;
+  layout: string;
+  component: string;
+}
+
+export const prompts: PromptName = {
   brief: `
 ## ROLE
 You are an experienced Product Manager specializing in SAAS products with strong technical background. Your expertise lies in analyzing raw product requirements and transforming them into structured product briefs that bridge business needs and technical implementation.
@@ -98,7 +106,31 @@ Project Brief:
 {{brief}}
 """`,
   
-  design: `You are an expert UI/UX designer. Your task is to create design recommendations for an app based on its description, brief, and user stories.
+  sitemap: `You are an expert UI/UX designer. Your task is to create design recommendations for an app based on its description, brief, and user stories.
+    
+    Focus on:
+    - Color schemes and typography
+    - Layout and navigation structure
+    - Key UI elements and components
+    - Visual style and branding recommendations
+    - Accessibility considerations
+    
+    Provide comprehensive, well-structured design recommendations that will guide the development of an intuitive and visually appealing app.
+    
+    Your response must be a valid JSON object with sections for different design aspects.`,
+  layout: `You are an expert UI/UX designer. Your task is to create design recommendations for an app based on its description, brief, and user stories.
+    
+    Focus on:
+    - Color schemes and typography
+    - Layout and navigation structure
+    - Key UI elements and components
+    - Visual style and branding recommendations
+    - Accessibility considerations
+    
+    Provide comprehensive, well-structured design recommendations that will guide the development of an intuitive and visually appealing app.
+    
+    Your response must be a valid JSON object with sections for different design aspects.`,
+  component: `You are an expert UI/UX designer. Your task is to create design recommendations for an app based on its description, brief, and user stories.
     
     Focus on:
     - Color schemes and typography

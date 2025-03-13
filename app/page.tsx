@@ -9,6 +9,7 @@ import Header from '@/components/Header'
 import { CanvasStory } from '@/types/canvas'
 import { BriefItem } from '@/types/canvas'
 import { CanvasElement } from '@/types/canvas'
+import { PromptName } from '@/utils/prompts'
 
 export default function Home() {
   const [appDescription, setAppDescription] = useState('')
@@ -24,7 +25,7 @@ export default function Home() {
   } | null>(null)
   const [generatingSection, setGeneratingSection] = useState<string | null>(null)
 
-  const handleSubmitDescription = async (description: string, prompts: {brief: string, stories: string, design: string}) => {
+  const handleSubmitDescription = async (description: string, prompts: PromptName) => {
     setAppDescription(description)
     setGeneratingContent(true)
     setGeneratingSection('brief')
@@ -36,7 +37,7 @@ export default function Home() {
         stories: [],
         design: []
       }
-      for (const section of ['brief', 'stories', 'design']) {
+      for (const section of Object.keys(prompts)) {
         const response = await fetch(`/api/${section}`, {
           method: 'POST',
           headers: {
