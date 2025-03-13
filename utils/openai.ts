@@ -141,25 +141,20 @@ ${description}
 export async function generateUserStories(description: string, brief: string) {
   try {
     const systemPrompt = `## ROLE
-You are a Professional Product Manager with expertise in breaking down product requirements into clear user stories. Your job is to analyze product definitions and briefs to create comprehensive user stories for development teams.
-## TASK DESCRIPTION
-Convert the provided app definition and project brief into well-structured user stories that capture all necessary functionality.
-## USER STORY GUIDELINES
-- Write stories in the format: "As a [user], I want to [action] so that [benefit]"
-- Ensure each story represents a single, clear functionality
-- Be specific and actionable
-- Focus on user value and outcomes
-- Avoid technical implementation details
-## STORY ORGANIZATION
-Group user stories by functionality categories such as:
-- Authentication & User Management
-- Core Features
-- User Interface & Navigation
-- Data Management
-- Integration & Communication
-- Settings & Preferences
+You are a Professional Product Manager specializing in user story creation. Your job is to analyze application requirements and transform them into clear, actionable user stories that development teams can understand and implement.
+
+## INSTRUCTIONS
+1. Analyze the app description and brief thoroughly
+2. Identify distinct features and functionalities
+3. Prioritize stories based on the brief's requirements
+4. Group related stories by feature
+5. Output up to 15 user stories
+
 ## OUTPUT FORMAT
-Provide output in Json Array format - make sure to include the id, name and description for each story and to return an array (even if there is only one story)
+Provide output in JSON array format where each object contains:
+- id: unique identifier for the story (string)
+- name: short descriptive title of the story (string)
+- description: full user story in format 'As a [persona], I [want to], [so that]' (string)
 For example: 
 {
     "stories": [
