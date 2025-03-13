@@ -151,7 +151,7 @@ Each suggested page must contain:
 ## OUTPUT FORMAT
 Provide a clean JSON (no code blocks) following this structure:
 {
-  "pages": [
+  "sitemap": [
     {"type": "<page type>",
       "description": "<concise page purpose >"
     }

@@ -3,7 +3,7 @@ import { generateLayout } from '@/utils/openai';
 
 export async function POST(request: NextRequest) {
   try {
-    const { description, brief, stories, customPrompt } = await request.json();
+    const { description, brief, stories, page, customPrompt } = await request.json();
     
     if (!description || !brief || !stories) {
       return NextResponse.json(
@@ -16,6 +16,7 @@ export async function POST(request: NextRequest) {
       description, 
       JSON.stringify(brief), 
       JSON.stringify(stories),
+      JSON.stringify(page),
       customPrompt
     );
     return NextResponse.json({ layout });

@@ -21,7 +21,11 @@ export default function Home() {
   const [appContent, setAppContent] = useState<{
     brief: BriefItem[];
     stories: CanvasStory[];
-    sitemap: Record<string, Record<string, any>>;
+    sitemap: any[];
+    pages: Record<string, {
+      layout: string;
+      components: string[];
+    }>;
   } | null>(null)
   const [generatingSection, setGeneratingSection] = useState<string | null>(null)
 
@@ -35,7 +39,11 @@ export default function Home() {
       let tempAppContent = {
         brief: [],
         stories: [],
-        sitemap: {} as Record<string, Record<string, any>>
+        sitemap: [],
+        pages: {} as Record<string, {
+          layout: string;
+          components: string[];
+        }>
       }
       
       // Generate initial content for each section
@@ -58,7 +66,8 @@ export default function Home() {
             tempAppContent = {
               brief: section === 'brief' ? data.brief : (tempAppContent?.brief || []),
               sitemap: section === 'sitemap' ? data.sitemap : (tempAppContent?.sitemap || []),
-              stories: section === 'stories' ? data.stories : (tempAppContent?.stories || [])
+              stories: section === 'stories' ? data.stories : (tempAppContent?.stories || []),
+              pages: section === 'pages' ? data.pages : (tempAppContent?.pages || {})
             };
             setAppContent(tempAppContent);
           }
@@ -70,7 +79,7 @@ export default function Home() {
       }
 
       // Generate layout for each page
-      for (const page of Object.keys(tempAppContent.sitemap)) {
+      for (const page of tempAppContent.sitemap) {
         try {
           const response = await fetch(`/api/layout`, {
             method: 'POST',
@@ -86,9 +95,9 @@ export default function Home() {
 
           const data = await response.json();
           if (data) {
-            tempAppContent.sitemap = {
-              ...tempAppContent.sitemap,
-              [page]: data.layout
+            tempAppContent.pages = {
+              ...tempAppContent.pages,
+              [page]: {layout: data.layout, components: []}
             }
 
             // Generate components for the page
@@ -108,13 +117,13 @@ export default function Home() {
 
                 const data = await response.json();
                 if (data) {
-                  tempAppContent.sitemap = {
-                    ...tempAppContent.sitemap,
-                    [page]: {
-                      ...tempAppContent.sitemap[page],
-                      [component]: data.code
-                    }
+                  if (!tempAppContent.pages) {
+                    tempAppContent.pages = {};
                   }
+                  if (!tempAppContent.pages[page]) {
+                    tempAppContent.pages[page] = { layout: '', components: [] };
+                  }
+                  tempAppContent.pages[page].components.push(data.code);
                 }
               } catch (error) {
                 console.error(`Error generating component ${component} for page ${page}:`, error);
