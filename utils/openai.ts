@@ -49,7 +49,7 @@ export async function generateCompletion(
  */
 export async function generateAppBrief(description: string, customPrompt?: string) {
   try {
-    const systemPrompt = (customPrompt || prompts.appBrief)
+    const systemPrompt = (customPrompt || prompts.brief)
       .replace('{{description}}', description);
     
     const response = await openai.chat.completions.create({
@@ -81,7 +81,7 @@ export async function generateAppBrief(description: string, customPrompt?: strin
  */
 export async function generateUserStories(description: string, brief: string, customPrompt?: string) {
   try {
-    const systemPrompt = (customPrompt || prompts.userStories)
+    const systemPrompt = (customPrompt || prompts.stories)
       .replace('{{description}}', description)
       .replace('{{brief}}', brief);
     
@@ -119,16 +119,16 @@ export async function generateUserStories(description: string, brief: string, cu
 }
 
 /**
- * Generates design recommendations based on the app brief and user stories
+ * Generates a sitemap with a list of pages for the app
  */
-export async function generateDesignRecommendations(
+export async function generateSitemap(
   description: string, 
   brief: string, 
   stories: string,
   customPrompt?: string
 ) {
   try {
-    const systemPrompt = (customPrompt || prompts.design)
+    const systemPrompt = (customPrompt || prompts.sitemap)
       .replace('{{description}}', description)
       .replace('{{brief}}', brief)
       .replace('{{stories}}', stories);
@@ -151,7 +151,7 @@ export async function generateDesignRecommendations(
           And here are the user stories and features:
           ${stories}
           
-          Please provide me with design recommendations for this app. Include color schemes, layout suggestions, key UI elements, and overall visual style.`
+          Please provide me with a sitemap for this app, listing all the pages that should be included.`
         }
       ],
       temperature: 0.7,
@@ -159,13 +159,96 @@ export async function generateDesignRecommendations(
     });
 
     if (response.choices[0]?.message?.content) {
-      // Already in JSON format, no need to parse and stringify again
       return response.choices[0].message.content;
     } else {
       throw new Error('Unexpected response format from OpenAI API');
     }
   } catch (error) {
-    console.error('Error generating design recommendations:', error);
+    console.error('Error generating sitemap:', error);
+    throw error;
+  }
+}
+
+/**
+ * Generates layout recommendations for each page
+ */
+export async function generateLayout(
+  description: string,
+  brief: string,
+  stories: string,
+  page: string,
+  customPrompt?: string
+) {
+  try {
+    const systemPrompt = (customPrompt || prompts.layout)
+      .replace('{{description}}', description)
+      .replace('{{brief}}', brief)
+      .replace('{{stories}}', stories)
+      .replace('{{page}}', page);
+    
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      max_tokens: 1500,
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt
+        },
+      ],
+      temperature: 0.7,
+      response_format: { type: "json_object" }
+    });
+
+    if (response.choices[0]?.message?.content) {
+      return response.choices[0].message.content;
+    } else {
+      throw new Error('Unexpected response format from OpenAI API');
+    }
+  } catch (error) {
+    console.error('Error generating layout:', error);
+    throw error;
+  }
+}
+
+/**
+ * Generates React code for a specific component
+ */
+export async function generateComponent(
+  description: string,
+  brief: string,
+  stories: string,
+  page: string,
+  component: string,
+  customPrompt?: string
+) {
+  try {
+    const systemPrompt = (customPrompt || prompts.component)
+      .replace('{{description}}', description)
+      .replace('{{brief}}', brief)
+      .replace('{{stories}}', stories)
+      .replace('{{page}}', page)
+      .replace('{{component}}', component);
+    
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      max_tokens: 1500,
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt
+        },
+      ],
+      temperature: 0.7,
+      response_format: { type: "text" }
+    });
+
+    if (response.choices[0]?.message?.content) {
+      return response.choices[0].message.content;
+    } else {
+      throw new Error('Unexpected response format from OpenAI API');
+    }
+  } catch (error) {
+    console.error('Error generating component:', error);
     throw error;
   }
 } 

@@ -1,5 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
-
+import prompts from './prompts';
 // Initialize the Anthropic client
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY || '',
@@ -284,4 +284,44 @@ export async function generateDesignRecommendations(description: string, brief: 
     console.error('Error generating design recommendations:', error);
     throw error;
   }
+} 
+
+export async function generateComponent(
+    description: string,
+    brief: string,
+    stories: string,
+    page: string,
+    component: string,
+    customPrompt?: string
+) {
+    try {
+        const systemPrompt = (customPrompt || prompts.component)
+            .replace('{{description}}', description)
+            .replace('{{brief}}', brief)
+            .replace('{{stories}}', stories)
+            .replace('{{page}}', page)
+            .replace('{{component}}', component);
+
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o",
+            max_tokens: 1500,
+            messages: [
+                {
+                    role: "system",
+                    content: systemPrompt
+                },
+            ],
+            temperature: 0.7,
+            response_format: { type: "text" }
+        });
+
+        if (response.choices[0]?.message?.content) {
+            return response.choices[0].message.content;
+        } else {
+            throw new Error('Unexpected response format from OpenAI API');
+        }
+    } catch (error) {
+        console.error('Error generating component:', error);
+        throw error;
+    }
 } 

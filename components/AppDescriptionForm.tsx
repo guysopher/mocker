@@ -4,30 +4,27 @@ import { useState } from 'react'
 import { Form, Input, Button, Spin, Modal, Space } from 'antd'
 import { SendOutlined, SettingOutlined } from '@ant-design/icons'
 import PromptEditor from './PromptEditor'
-
+import { PromptName } from '@/utils/prompts'
+import defaultPrompts from '@/utils/prompts'
 const { TextArea } = Input
 
 interface AppDescriptionFormProps {
-  onSubmit: (description: string, prompts: {brief: string, stories: string, design: string}) => void
+  onSubmit: (description: string, prompts: Record<PromptName, string>) => void
   isGenerating: boolean
 }
 
 export default function AppDescriptionForm({ onSubmit, isGenerating }: AppDescriptionFormProps) {
-  const defaultDescription = "Create a marketplace app for buying and selling second-hand items. Features should include user profiles, item listings with photos and descriptions, search and filter functionality, in-app messaging between buyers and sellers, secure payment processing, and a review system."
+  const defaultDescription = "a dead simple todo list app"
   const [description, setDescription] = useState(defaultDescription)
   const [isPromptEditorOpen, setIsPromptEditorOpen] = useState(false)
-  const [prompts, setPrompts] = useState({
-    brief: '',
-    stories: '',
-    design: ''
-  })
+  const [prompts, setPrompts] = useState(defaultPrompts)
   const handleSubmit = () => {
     if (description.trim() && !isGenerating) {
       onSubmit(description, prompts)
     }
   }
   
-  const handleSavePrompts = (prompts: any) => {
+  const handleSavePrompts = (prompts: Record<PromptName, string>) => {
     // Here you would handle saving the updated prompts
     console.log('Saving prompts:', prompts)
     setPrompts(prompts)

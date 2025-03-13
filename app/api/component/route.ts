@@ -1,28 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateDesignRecommendations } from '@/utils/openai';
+import { generateComponent } from '@/utils/anthropic';
 
 export async function POST(request: NextRequest) {
   try {
-    const { description, brief, stories, customPrompt } = await request.json();
+    const { description, brief, stories, page, component, customPrompt } = await request.json();
     
-    if (!description || !brief || !stories) {
+    if (!description || !brief || !stories || !page || !component) {
       return NextResponse.json(
-        { error: 'Description, brief, and stories are required' },
+        { error: 'Description, brief, stories, page, and component are required' },
         { status: 400 }
       );
     }
 
-    const design = await generateDesignRecommendations(
+    const code = await generateComponent(
       description, 
       JSON.stringify(brief), 
       JSON.stringify(stories),
+      page,
+      component,
       customPrompt
     );
-    return NextResponse.json({ design });
+    return NextResponse.json({ code });
   } catch (error) {
-    console.error('Error generating design recommendations:', error);
+    console.error('Error generating component:', error);
     return NextResponse.json(
-      { error: 'Failed to generate design recommendations' },
+      { error: 'Failed to generate component' },
       { status: 500 }
     );
   }

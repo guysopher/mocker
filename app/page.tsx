@@ -25,7 +25,7 @@ export default function Home() {
   } | null>(null)
   const [generatingSection, setGeneratingSection] = useState<string | null>(null)
 
-  const handleSubmitDescription = async (description: string, prompts: PromptName) => {
+  const handleSubmitDescription = async (description: string, prompts: Record<PromptName, string>) => {
     setAppDescription(description)
     setGeneratingContent(true)
     setGeneratingSection('brief')

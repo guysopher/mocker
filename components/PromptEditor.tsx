@@ -12,11 +12,7 @@ interface PromptEditorProps {
 }
 
 const PromptEditor = ({ onSave, onCancel }: PromptEditorProps) => {
-  const [editedPrompts, setEditedPrompts] = useState({
-    brief: prompts.brief,
-    stories: prompts.stories,
-    design: prompts.design
-  });
+  const [editedPrompts, setEditedPrompts] = useState(prompts);
   
   // const { success, error, info, contextHolder } = useMessage();
 
