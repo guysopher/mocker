@@ -239,11 +239,11 @@ export async function generateComponent(
         },
       ],
       temperature: 0.7,
-      response_format: { type: "text" }
+      response_format: { type: "json_object" }
     });
 
     if (response.choices[0]?.message?.content) {
-      return response.choices[0].message.content;
+      return JSON.parse(response.choices[0].message.content).code;
     } else {
       throw new Error('Unexpected response format from OpenAI API');
     }

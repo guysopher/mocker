@@ -102,7 +102,7 @@ export default function Home() {
             console.log("Updating pages", tempAppContent.pages)
 
             // Generate all components for the page in parallel
-            const componentPromises = Object.keys(data.layout.components).map(async (component) => {
+            const componentPromises = (data.layout.components).map(async (component: any) => {
               try {
                 const response = await fetch(`/api/component`, {
                   method: 'POST',

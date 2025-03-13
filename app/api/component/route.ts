@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateComponent } from '@/utils/anthropic';
+import { generateComponent } from '@/utils/openai';
 
 export async function POST(request: NextRequest) {
   try {

@@ -250,14 +250,17 @@ Create a stateless React component based on the provided design description. The
 - Follow React best practices for component structure
 
 ## OUTPUT FORMAT
-Provide the component code as one single function that returns a React component:
+Provide the component code as a JSON with a single key "code" that contains the code as a string:
 For example:
-"""
+{
+    code: "
 const ComponentName = () => {
     return <div>Component code here</div>;
 };
-"""
-IMPORTANT: Output code only, no additional textual description
+"
+}
+
+IMPORTANT: Output code only, no additional textual description or wrapper symbols
 
 ## STYLING GUIDELINES
 - Use inline styles with the style={{}} syntax

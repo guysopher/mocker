@@ -83,44 +83,6 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
     }, 2000) // Reduced from 4000ms to 2000ms for better responsiveness
   }
 
-  const renderCanvas = () => {
-    switch (view) {
-      case 'brief':
-        return <BriefView
-          elements={appContent?.brief || [] as BriefItem[]}
-          onElementClick={handleElementClick}
-          onElementUpdate={(elementId, updates) => {
-            // Handle element updates here
-            console.log('Element updated:', elementId, updates)
-          }}
-          activeElement={activeElement}
-          showProgress={showProgress}
-          appDescription={appDescription}
-          isGenerating={!appContent?.brief}
-        />
-      case 'pages':
-      case 'design':
-      case 'prototype':
-        return <DesignView
-          pages={appContent?.pages || {}}
-          onElementClick={handleElementClick}
-          activeElement={activeElement}
-          showProgress={showProgress}
-          isGenerating={!appContent?.pages}
-        />
-      case 'stories':
-        return <StoriesView
-          elements={appContent?.stories || [] as CanvasStory[]}
-          onElementClick={handleElementClick}
-          activeElement={activeElement}
-          showProgress={showProgress}
-          isGenerating={!appContent?.stories}
-        />
-      default:
-        return <div>Select a view to get started</div>
-    }
-  }
-
   return (
     <div ref={canvasRef} className="w-full h-full relative">
       {(!appContent || !appContent[view as keyof typeof appContent]) && (
@@ -161,7 +123,7 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
             // isGenerating={isGenerating && generatingSection === 'stories'}
             // content={appContent?.stories}
             />}
-            {view === 'design' && <DesignView
+            {view === 'pages' && <DesignView
               pages={appContent?.pages || {}}
               onElementClick={handleElementClick}
               activeElement={activeElement}

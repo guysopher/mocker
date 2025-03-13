@@ -14,7 +14,7 @@ interface AppDescriptionFormProps {
 }
 
 export default function AppDescriptionForm({ onSubmit, isGenerating }: AppDescriptionFormProps) {
-  const defaultDescription = "a dead simple todo list app"
+  const defaultDescription = "a dead simple todo list app - one page only with a list of todos and a button - nothing else!"
   const [description, setDescription] = useState(defaultDescription)
   const [isPromptEditorOpen, setIsPromptEditorOpen] = useState(false)
   const [prompts, setPrompts] = useState(defaultPrompts)
