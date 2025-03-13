@@ -159,7 +159,7 @@ export async function generateSitemap(
     });
 
     if (response.choices[0]?.message?.content) {
-      return response.choices[0].message.content;
+      return JSON.parse(response.choices[0].message.content).sitemap;
     } else {
       throw new Error('Unexpected response format from OpenAI API');
     }
@@ -200,7 +200,7 @@ export async function generateLayout(
     });
 
     if (response.choices[0]?.message?.content) {
-      return response.choices[0].message.content;
+      return JSON.parse(response.choices[0].message.content).layout;
     } else {
       throw new Error('Unexpected response format from OpenAI API');
     }

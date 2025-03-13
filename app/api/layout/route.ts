@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateDesignRecommendations } from '@/utils/openai';
+import { generateLayout } from '@/utils/openai';
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,15 +12,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const design = await generateDesignRecommendations(
+    const layout = await generateLayout(
       description, 
       JSON.stringify(brief), 
       JSON.stringify(stories),
       customPrompt
     );
-    return NextResponse.json({ design });
+    return NextResponse.json({ layout });
   } catch (error) {
-    console.error('Error generating design recommendations:', error);
+    console.error('Error generating layout:', error);
     return NextResponse.json(
       { error: 'Failed to generate design recommendations' },
       { status: 500 }

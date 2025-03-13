@@ -20,8 +20,8 @@ export default function Home() {
   const [building, setBuilding] = useState(false)
   const [appContent, setAppContent] = useState<{
     brief: BriefItem[];
-    design: CanvasElement[];
     stories: CanvasStory[];
+    sitemap: Record<string, Record<string, any>>;
   } | null>(null)
   const [generatingSection, setGeneratingSection] = useState<string | null>(null)
 
@@ -35,51 +35,108 @@ export default function Home() {
       let tempAppContent = {
         brief: [],
         stories: [],
-        design: []
+        sitemap: {} as Record<string, Record<string, any>>
       }
-      for (const section of Object.keys(prompts)) {
-        const response = await fetch(`/api/${section}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ description, customPrompt: prompts[section as keyof typeof prompts], ...tempAppContent }),
-        });
-        console.log('response', response)
+      
+      // Generate initial content for each section
+      for (const section of Object.keys(tempAppContent)) {
+        try {
+          const response = await fetch(`/api/${section}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ description, customPrompt: prompts[section as keyof typeof prompts], ...tempAppContent }),
+          });
 
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
 
-        if (!response.ok) {
-          throw new Error('Failed to generate app content');
+          const data = await response.json();
+          if (data) {
+            tempAppContent = {
+              brief: section === 'brief' ? data.brief : (tempAppContent?.brief || []),
+              sitemap: section === 'sitemap' ? data.sitemap : (tempAppContent?.sitemap || []),
+              stories: section === 'stories' ? data.stories : (tempAppContent?.stories || [])
+            };
+            setAppContent(tempAppContent);
+          }
+        } catch (error) {
+          console.error(`Error generating ${section}:`, error);
+          console.error('Current tempAppContent:', tempAppContent);
+          throw new Error(`Failed to generate ${section}`);
         }
+      }
 
-        const data = await response.json();
-        if (data) {
-          tempAppContent = {
-            brief: section === 'brief' ? data.brief : (tempAppContent?.brief || []),
-            design: section === 'design' ? data.design : (tempAppContent?.design || []),
-            stories: section === 'stories' ? data.stories : (tempAppContent?.stories || [])
-          };
-          setAppContent(tempAppContent);
+      // Generate layout for each page
+      for (const page of Object.keys(tempAppContent.sitemap)) {
+        try {
+          const response = await fetch(`/api/layout`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ description, page, customPrompt: prompts.layout, ...tempAppContent }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          if (data) {
+            tempAppContent.sitemap = {
+              ...tempAppContent.sitemap,
+              [page]: data.layout
+            }
+
+            // Generate components for the page
+            for (const component of Object.keys(data.layout)) {
+              try {
+                const response = await fetch(`/api/component`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ description, page, component, customPrompt: prompts.component, ...tempAppContent }),
+                });
+
+                if (!response.ok) {
+                  throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                if (data) {
+                  tempAppContent.sitemap = {
+                    ...tempAppContent.sitemap,
+                    [page]: {
+                      ...tempAppContent.sitemap[page],
+                      [component]: data.code
+                    }
+                  }
+                }
+              } catch (error) {
+                console.error(`Error generating component ${component} for page ${page}:`, error);
+                console.error('Current page layout:', tempAppContent.sitemap[page]);
+                throw new Error(`Failed to generate component ${component}`);
+              }
+            }
+          }
+        } catch (error) {
+          console.error(`Error generating layout for page ${page}:`, error);
+          console.error('Current sitemap:', tempAppContent.sitemap);
+          throw new Error(`Failed to generate layout for page ${page}`);
         }
       }
 
       setGeneratingContent(false);
       setGeneratingSection(null);
     } catch (error) {
-      console.error('Error generating app content:', error);
+      console.error('Fatal error in app generation:', error);
       setGeneratingContent(false);
       setGeneratingSection(null);
-      // Handle error - perhaps show an error message to the user
     }
-  }
-
-  const handleDesignIt = () => {
-    setGeneratingContent(true)
-
-    // Simulate AI refinement
-    setTimeout(() => {
-      setGeneratingContent(false)
-    }, 2500)
   }
 
   const handleBuildIt = () => {
@@ -142,14 +199,14 @@ export default function Home() {
                 >
                   User Stories
                 </button>
-                  <button
-                    onClick={() => setCurrentView('design')}
-                    className={`px-4 py-2 font-medium ${currentView === 'design'
-                      ? 'text-blue-600 border-b-2 border-blue-600'
-                      : 'text-gray-600 hover:text-gray-800'}`}
-                  >
-                    Design
-                  </button>
+                <button
+                  onClick={() => setCurrentView('design')}
+                  className={`px-4 py-2 font-medium ${currentView === 'design'
+                    ? 'text-blue-600 border-b-2 border-blue-600'
+                    : 'text-gray-600 hover:text-gray-800'}`}
+                >
+                  Design
+                </button>
 
               </div>
 
@@ -181,7 +238,11 @@ export default function Home() {
               appDescription={appDescription}
               generatingSection={generatingSection}
               buildProgress={buildProgress}
-              appContent={appContent}
+              appContent={{
+                brief: appContent?.brief || [],
+                design: [],
+                stories: appContent?.stories || []
+              }}
             />
           </div>
 
