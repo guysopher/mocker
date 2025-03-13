@@ -3,7 +3,7 @@ import { generateDesignRecommendations } from '@/utils/openai';
 
 export async function POST(request: NextRequest) {
   try {
-    const { description, brief, stories } = await request.json();
+    const { description, brief, stories, customPrompt } = await request.json();
     
     if (!description || !brief || !stories) {
       return NextResponse.json(
@@ -15,7 +15,8 @@ export async function POST(request: NextRequest) {
     const design = await generateDesignRecommendations(
       description, 
       JSON.stringify(brief), 
-      JSON.stringify(stories)
+      JSON.stringify(stories),
+      customPrompt
     );
     return NextResponse.json({ design });
   } catch (error) {

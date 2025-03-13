@@ -3,7 +3,7 @@ import { generateAppBrief } from '@/utils/openai';
 
 export async function POST(request: NextRequest) {
   try {
-    const { description } = await request.json();
+    const { description, customPrompt } = await request.json();
     
     if (!description) {
       return NextResponse.json(
@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const brief = await generateAppBrief(description);
+    const brief = await generateAppBrief(description, customPrompt);
     return NextResponse.json({ brief });
   } catch (error) {
     console.error('Error generating brief:', error);

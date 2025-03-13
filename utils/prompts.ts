@@ -1,5 +1,5 @@
 export const prompts = {
-  appBrief: `
+  brief: `
 ## ROLE
 You are an experienced Product Manager specializing in SAAS products with strong technical background. Your expertise lies in analyzing raw product requirements and transforming them into structured product briefs that bridge business needs and technical implementation.
 ## TASK DESCRIPTION
@@ -62,7 +62,7 @@ Analyze the following app requirements and create a structured product brief:
 """
     `,
   
-  userStories: `## ROLE
+  stories: `## ROLE
 You are a Professional Product Manager specializing in user story creation. Your job is to analyze application requirements and transform them into clear, actionable user stories that development teams can understand and implement.
 ## INSTRUCTIONS
 1. Analyze the app description and brief thoroughly
@@ -98,7 +98,7 @@ Project Brief:
 {{brief}}
 """`,
   
-  designRecommendations: `You are an expert UI/UX designer. Your task is to create design recommendations for an app based on its description, brief, and user stories.
+  design: `You are an expert UI/UX designer. Your task is to create design recommendations for an app based on its description, brief, and user stories.
     
     Focus on:
     - Color schemes and typography

@@ -24,7 +24,7 @@ export default function Home() {
   } | null>(null)
   const [generatingSection, setGeneratingSection] = useState<string | null>(null)
 
-  const handleSubmitDescription = async (description: string) => {
+  const handleSubmitDescription = async (description: string, prompts: {brief: string, stories: string, design: string}) => {
     setAppDescription(description)
     setGeneratingContent(true)
     setGeneratingSection('brief')
@@ -42,7 +42,7 @@ export default function Home() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ description, ...tempAppContent }),
+          body: JSON.stringify({ description, customPrompt: prompts[section as keyof typeof prompts], ...tempAppContent }),
         });
         console.log('response', response)
 

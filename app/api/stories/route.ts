@@ -3,7 +3,7 @@ import { generateUserStories } from '@/utils/openai';
 
 export async function POST(request: NextRequest) {
   try {
-    const { description, brief } = await request.json();
+    const { description, brief, customPrompt } = await request.json();
     
     if (!description || !brief) {
       return NextResponse.json(
@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const stories = await generateUserStories(description, JSON.stringify(brief));
+    const stories = await generateUserStories(description, JSON.stringify(brief), customPrompt);
     return NextResponse.json({ stories });
   } catch (error) {
     console.error('Error generating stories:', error);

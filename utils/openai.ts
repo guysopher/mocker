@@ -47,9 +47,10 @@ export async function generateCompletion(
 /**
  * Generates a detailed brief for the app based on the user's description
  */
-export async function generateAppBrief(description: string) {
+export async function generateAppBrief(description: string, customPrompt?: string) {
   try {
-    const systemPrompt = prompts.appBrief.replace('${description}', description);
+    const systemPrompt = (customPrompt || prompts.appBrief)
+      .replace('{{description}}', description);
     
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
@@ -78,11 +79,11 @@ export async function generateAppBrief(description: string) {
 /**
  * Generates user stories and features based on the app brief
  */
-export async function generateUserStories(description: string, brief: string) {
+export async function generateUserStories(description: string, brief: string, customPrompt?: string) {
   try {
-    const systemPrompt = prompts.userStories
-      .replace('${description}', description)
-      .replace('${brief}', brief);
+    const systemPrompt = (customPrompt || prompts.userStories)
+      .replace('{{description}}', description)
+      .replace('{{brief}}', brief);
     
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
@@ -120,9 +121,17 @@ export async function generateUserStories(description: string, brief: string) {
 /**
  * Generates design recommendations based on the app brief and user stories
  */
-export async function generateDesignRecommendations(description: string, brief: string, stories: string) {
+export async function generateDesignRecommendations(
+  description: string, 
+  brief: string, 
+  stories: string,
+  customPrompt?: string
+) {
   try {
-    const systemPrompt = prompts.designRecommendations;
+    const systemPrompt = (customPrompt || prompts.design)
+      .replace('{{description}}', description)
+      .replace('{{brief}}', brief)
+      .replace('{{stories}}', stories);
     
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
