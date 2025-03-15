@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error generating stylesheet:', error);
     return NextResponse.json(
-      { error: 'Failed to generate design recommendations' },
+      { error: 'Failed to generate design recommendations' + (error as Error).message },
       { status: 500 }
     );
   }
