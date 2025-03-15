@@ -1,9 +1,11 @@
 import { CanvasElement } from '@/types/canvas'
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 import { CommentsIndicator } from '@/components/CommentsIndicator'
+import * as antd from 'antd'
 import { Skeleton, Tabs } from 'antd'
 import * as Babel from '@babel/standalone';
 import React from 'react';
+import { createRoot } from 'react-dom/client';
 interface DesignViewProps {
   pages: Record<string, {
     layout: string;
@@ -15,10 +17,129 @@ interface DesignViewProps {
   showProgress: string | null
   isGenerating: boolean
 }
+// Declare window interfaces to fix TypeScript errors
+declare global {
+  interface Window {
+    React: typeof React;
+    antd: typeof antd;
+  }
+}
+
+debugger;
+if (typeof window !== 'undefined') {
+  window.React = React;
+  window.antd = antd;
+}
+
+const titleToId = (title: string) => {
+  return title.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '');
+}
+
+const DEFAULT_CODE = `
+(function() {
+  var React = window.React;
+  var antd = window.antd;
+  var { Input, Button, List, Checkbox } = antd;
+
+  var TodoListApp = function() {
+    var [tasks, setTasks] = React.useState([]);
+    var [newTask, setNewTask] = React.useState("");
+
+    var addTask = function() {
+      if (newTask.trim() === "") return;
+      setTasks([...tasks, { id: Date.now(), text: newTask, completed: false }]);
+      setNewTask("");
+    };
+
+    var toggleTask = function(id) {
+      setTasks(tasks.map(function(task) { 
+        return task.id === id ? { ...task, completed: !task.completed } : task 
+      }));
+    };
+
+    var deleteTask = function(id) {
+      setTasks(tasks.filter(function(task) { 
+        return task.id !== id 
+      }));
+    };
+
+    return React.createElement(
+      'div',
+      { 
+        style: { 
+          maxWidth: "400px", 
+          margin: "auto", 
+          padding: "20px", 
+          background: "#fff", 
+          borderRadius: "8px", 
+          boxShadow: "0px 4px 6px rgba(0,0,0,0.1)" 
+        } 
+      },
+      [
+        React.createElement('h2', { 
+          style: { textAlign: "center" }, 
+          key: 'title' 
+        }, 'Todo List'),
+        React.createElement(
+          'div',
+          { 
+            style: { 
+              display: "flex", 
+              gap: "8px", 
+              marginBottom: "16px" 
+            },
+            key: 'input-container'
+          },
+          [
+            React.createElement(Input, {
+              value: newTask,
+              onChange: function(e) { setNewTask(e.target.value) },
+              placeholder: "Add a new task",
+              key: 'input'
+            }),
+            React.createElement(Button, {
+              type: "primary",
+              onClick: addTask,
+              key: 'add-button'
+            }, 'Add')
+          ]
+        ),
+        React.createElement(List, {
+          bordered: true,
+          dataSource: tasks,
+          key: 'list',
+          renderItem: function(task) {
+            return React.createElement(List.Item, {
+              key: task.id,
+              actions: [
+                React.createElement(Checkbox, {
+                  checked: task.completed,
+                  onChange: function() { toggleTask(task.id) },
+                  key: 'checkbox-' + task.id
+                }),
+                React.createElement(Button, {
+                  danger: true,
+                  onClick: function() { deleteTask(task.id) },
+                  key: 'delete-' + task.id
+                }, 'Delete')
+              ]
+            }, React.createElement('span', {
+              style: { 
+                textDecoration: task.completed ? "line-through" : "none" 
+              }
+            }, task.text))
+          }
+        })
+      ]
+    );
+  };
+
+  return TodoListApp;
+})()`;
 
 export const DesignView: FC<DesignViewProps> = ({
   pages = {},
-  stylesheet = {classes: [], stylesheet: ''},
+  stylesheet = { classes: [], stylesheet: '' },
   onElementClick,
   activeElement,
   showProgress,
@@ -39,27 +160,70 @@ export const DesignView: FC<DesignViewProps> = ({
     }
   };
 
+  function renderComponent(code: string, elementId: string) {
+    debugger;
+    try {
+      const Component = eval(`
+        (function() {
+          var React = window.React;
+          var antd = window.antd;
+          ${code}
+          return Page;
+        })()`);
+
+      const rootElement = document.getElementById(elementId);
+      if (rootElement) {
+        // Clear any existing content
+        rootElement.innerHTML = '';
+        // Create a container div for the component
+        const container = document.createElement('div');
+        container.style.width = '100%';
+        container.style.height = '100%';
+        container.style.display = 'flex';
+        container.style.justifyContent = 'center';
+        container.style.alignItems = 'center';
+        rootElement.appendChild(container);
+
+        // Create root and render
+        const root = createRoot(container);
+        root.render(React.createElement(Component));
+      }
+    } catch (error) {
+      console.error("Error rendering component:", error);
+    }
+  }
+
+  useEffect(() => {
+    if (Object.keys(pages).length > 0) {
+      const key = Object.keys(pages)[0];
+      renderComponent(pages[key].components[0], 'render-page-' + titleToId(key))
+    }
+  }, []);
+
   const items = Object.keys(pages).map(page => ({
     label: page,
-    key: page,
+    key: (page),
     children: (
-      <div className="w-full h-full relative" style={{
-        border: '0px solid #111',
-        borderRadius: 10,
-        boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.1)',
-        height: 765,
-        width: 1105,
-        margin: '0 auto',
-        display: 'grid',
-        gridTemplateColumns: 'repeat(16, 1fr)', /* 16 equal columns */
-        gridTemplateRows: 'repeat(9, 1fr)', /* 9 equal rows */
-        gap: 10, /* Adjust spacing */
-        overflow: 'hidden',
-        boxSizing: 'border-box'
-      }}>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/antd@5.20.0/dist/reset.css" />
-        <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
-        {pages[page].components?.map((component: any) => {
+      <div
+        id={'render-page-' + titleToId(page)}
+        className="w-full h-full relative"
+        style={{
+          border: '0px solid #111',
+          borderRadius: 10,
+          boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.1)',
+          height: 765,
+          width: 1105,
+          margin: '0 auto',
+          // display: 'grid',
+          // gridTemplateColumns: 'repeat(16, 1fr)', /* 16 equal columns */
+          // gridTemplateRows: 'repeat(9, 1fr)', /* 9 equal rows */
+          // gap: 10, /* Adjust spacing */
+          overflow: 'hidden',
+          boxSizing: 'border-box'
+        }}>
+        {/* <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/antd@5.20.0/dist/reset.css" /> */}
+        {/* <style dangerouslySetInnerHTML={{ __html: stylesheet }} /> */}
+        {/* {pages[page].components?.map((component: any) => {
           const isActive = component.html === activeElement
           if (isActive) {
             return <>
@@ -70,12 +234,12 @@ export const DesignView: FC<DesignViewProps> = ({
                   {showProgress === component && (
                     <CommentsIndicator />
                   )}
-                </div> */}
+                </div> }
             </>
           } else {
-            return compileAndRenderComponent(component)
+            renderComponent(DEFUALT_CODE, page)
           }
-        })}
+        })} */}
       </div>
     )
   }));
@@ -86,7 +250,16 @@ export const DesignView: FC<DesignViewProps> = ({
         <Skeleton active paragraph={{ rows: 8 }} className="w-full max-w-4xl" />
       </div>
     ) : (
-      <Tabs items={items} />
+      <Tabs items={items} onChange={(key) => {
+        debugger;
+        renderComponent(pages[key].components[0], 'render-page-' + titleToId(key))
+      }}
+      // onLoad={() => {
+      //   debugger;
+      //   const key = items[0].key;
+      //   renderComponent(pages[key].layout, 'render-page-' + key)
+      // }}
+      />
     )
   )
 } 

@@ -12,14 +12,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const html = await generatePage(
+    const code = await generatePage(
       description, 
       JSON.stringify(brief), 
       JSON.stringify(cssClasses),
       JSON.stringify(page),
       customPrompt
     );
-    return NextResponse.json({ html });
+    return NextResponse.json({ code });
   } catch (error) {
     console.error('Error generating page:', error);
     return NextResponse.json(

@@ -317,34 +317,132 @@ Component Description:
 
     [PromptName.PAGE]: `
 ## ROLE
-You are a senior HTML/CSS Developer specializing in **Ant Design (antd)** components. Your expertise lies in **creating clean, responsive, and visually accurate** components using Ant Design's recommended classes and best practices.
+You are a senior React Developer specializing in **Ant Design (antd)** components. Your expertise lies in **creating clean, responsive, and visually accurate** components using Ant Design's recommended classes and best practices.
 
 ## TASK
-Create a **stateless HTML/CSS page** using **Ant Design components and classes**. The page should focus on **visual representation only**, without any functional logic.
+Create a **stateless React component** using **Ant Design components and classes**. The component should focus on **visual representation only**, without any functional logic.
 
-## PAGE GUIDELINES
-- **Use Ant Design components and class names** (e.g., 'ant-btn', 'ant-card', 'ant-modal') for styling.
-- **Prefer modified global CSS classes** from the **Global CSS Classes** parameter when available.
-- **Ensure all components fit the Ant Design grid system** ('Row' and 'Col' layout).
-- **Follow the grid positioning** as specified in the 'grid_position' field.
-- **Use semantic HTML** with 'div', 'section', and appropriate elements.
-- **Ensure the component includes relevant text content** from the App Brief.
-- Create the entire page, with all the components in one page, make sure it all fits in the grid and that the components are not overlapping.
+## COMPONENT GUIDELINES
+- Use React.createElement (no JSX).
+- Define the component as a stateless function using var.
+- Use only antd and React as globals (no import statements or other libraries).
+- Destructure antd components at the top (var { Input, Button } = antd;).
+- Use inline styles (no external CSS or CSS-in-JS).
+- Define event handlers as var functions inside the component.
+- Use arrays and map() for rendering lists.
+- Avoid modern syntax (no arrow functions, let, const, classes, or modules).
 
 ## OUTPUT FORMAT
-Provide the page code as a JSON with a key "html" that contains the code as a string
+Provide the component code as a JSON with a key "code" that contains the code as a string.
+The code should define one component named "Page" that is a page.
 For example:
 {
-    "html": "<div id='page-id'>Page with all the components in the grid</div>",
+    "code": "
+  var { Input, Button, List, Checkbox } = antd;
+
+  var Page = function() {
+    var [tasks, setTasks] = React.useState([]);
+    var [newTask, setNewTask] = React.useState("");
+
+    var addTask = function() {
+      if (newTask.trim() === "") return;
+      setTasks([...tasks, { id: Date.now(), text: newTask, completed: false }]);
+      setNewTask("");
+    };
+
+    var toggleTask = function(id) {
+      setTasks(tasks.map(function(task) {
+        return task.id === id ? { ...task, completed: !task.completed } : task
+      }));
+    };
+
+    var deleteTask = function(id) {
+      setTasks(tasks.filter(function(task) {
+        return task.id !== id
+      }));
+    };
+
+    return React.createElement(
+      'div',
+      {
+        style: {
+          maxWidth: "400px",
+          margin: "auto",
+          padding: "20px",
+          background: "#fff",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 6px rgba(0,0,0,0.1)"
+        }
+      },
+      [
+        React.createElement('h2', {
+          style: { textAlign: "center" },
+          key: 'title'
+        }, 'Todo List'),
+        React.createElement(
+          'div',
+          {
+            style: {
+              display: "flex",
+              gap: "8px",
+              marginBottom: "16px"
+            },
+            key: 'input-container'
+          },
+          [
+            React.createElement(Input, {
+              value: newTask,
+              onChange: function(e) { setNewTask(e.target.value) },
+              placeholder: "Add a new task",
+              key: 'input'
+            }),
+            React.createElement(Button, {
+              type: "primary",
+              onClick: addTask,
+              key: 'add-button'
+            }, 'Add')
+          ]
+        ),
+        React.createElement(List, {
+          bordered: true,
+          dataSource: tasks,
+          key: 'list',
+          renderItem: function(task) {
+            return React.createElement(List.Item, {
+              key: task.id,
+              actions: [
+                React.createElement(Checkbox, {
+                  checked: task.completed,
+                  onChange: function() { toggleTask(task.id) },
+                  key: 'checkbox-' + task.id
+                }),
+                React.createElement(Button, {
+                  danger: true,
+                  onClick: function() { deleteTask(task.id) },
+                  key: 'delete-' + task.id
+                }, 'Delete')
+              ]
+            }, React.createElement('span', {
+              style: {
+                textDecoration: task.completed ? "line-through" : "none"
+              }
+            }, task.text))
+          }
+        })
+      ]
+    );
+  };
+    ",
 }
 
 IMPORTANT: Output code only, no additional textual description or wrapper symbols
 
 ## STYLING GUIDELINES
 - Use relative units (rem, %, vh/vw) where appropriate
+- The grid area is specified in the grid_position key in the component description, remember that the grid is 16 columns and 9 rows and that the end row or column are not included in the grid area (for example: given a start_row 1 and a end_row 3, column_start 1 and column_end 16, the grid area is 1 / 1 / 4 / 17)
 
 ## INPUTS
-Create a HTML/CSS page based on the following information:
+Create a HTML/CSS component based on the following information:
 
 App Brief:
 {{brief}}

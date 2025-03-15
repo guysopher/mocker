@@ -280,7 +280,7 @@ export async function generatePage(
         });
 
         if (response.choices[0]?.message?.content) {
-            return JSON.parse(response.choices[0].message.content).html;
+            return JSON.parse(response.choices[0].message.content).code;
         } else {
             throw new Error('Unexpected response format from OpenAI API');
         }

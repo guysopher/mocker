@@ -179,7 +179,7 @@ export default function Home() {
                 if (!tempAppContent.pages[page.type]) {
                   tempAppContent.pages[page.type] = { layout: '', components: [] };
                 }
-                tempAppContent.pages[page.type].components.push(pageData.html);
+                tempAppContent.pages[page.type].components.push(pageData.code);
               }
               setAppContent(tempAppContent);
 
@@ -280,15 +280,6 @@ export default function Home() {
             centered
             tabBarExtraContent={
               <>
-                <div className="mr-4 flex items-center">
-                  <Text className="mr-2">Component-Based:</Text>
-                  <Switch 
-                    checked={useComponents} 
-                    onChange={setUseComponents}
-                    disabled={generatingContent || building}
-                    size="small"
-                  />
-                </div>
                 <Button
                   type="primary"
                   size='large'
