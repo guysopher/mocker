@@ -17,6 +17,7 @@ interface CanvasProps {
     brief: BriefItem[]
     pages: any
     stories: CanvasStory[]
+    stylesheet: string
   } | null
 }
 
@@ -112,23 +113,24 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
               activeElement={activeElement}
               showProgress={showProgress}
               appDescription={appDescription}
-              isGenerating={!appContent?.brief}
+              isGenerating={!appContent?.brief || !appContent?.brief.length}
             />}
             {view === 'stories' && <StoriesView
               elements={appContent?.stories as CanvasStory[]}
               onElementClick={handleElementClick}
               activeElement={activeElement}
               showProgress={showProgress}
-              isGenerating={!appContent?.stories}
+              isGenerating={!appContent?.stories || !appContent?.stories.length}
             // isGenerating={isGenerating && generatingSection === 'stories'}
             // content={appContent?.stories}
             />}
             {view === 'pages' && <DesignView
               pages={appContent?.pages || {}}
+              stylesheet={appContent?.stylesheet || ''}
               onElementClick={handleElementClick}
               activeElement={activeElement}
               showProgress={showProgress}
-              isGenerating={!appContent?.pages}
+              isGenerating={!appContent?.pages || !Object.keys(appContent?.pages).length}
             />}
           </div>
         </div>

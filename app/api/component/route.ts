@@ -3,9 +3,9 @@ import { generateComponent } from '@/utils/openai';
 
 export async function POST(request: NextRequest) {
   try {
-    const { description, brief, stories, page, component, customPrompt } = await request.json();
+    const { description, brief, cssClasses, page, component, customPrompt } = await request.json();
     
-    if (!description || !brief || !stories || !page || !component) {
+    if (!description || !brief || !cssClasses || !page || !component) {
       return NextResponse.json(
         { error: 'Description, brief, stories, page, and component are required' },
         { status: 400 }
@@ -15,9 +15,9 @@ export async function POST(request: NextRequest) {
     const code = await generateComponent(
       description, 
       JSON.stringify(brief), 
-      JSON.stringify(stories),
-      page,
-      component,
+      JSON.stringify(cssClasses),
+      JSON.stringify(page),
+      JSON.stringify(component),
       customPrompt
     );
     return NextResponse.json({ code });

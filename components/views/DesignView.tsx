@@ -1,7 +1,7 @@
 import { CanvasElement } from '@/types/canvas'
 import { FC } from 'react'
 import { CommentsIndicator } from '@/components/CommentsIndicator'
-import { Tabs } from 'antd'
+import { Skeleton, Tabs } from 'antd'
 import * as Babel from '@babel/standalone';
 import React from 'react';
 interface DesignViewProps {
@@ -9,6 +9,7 @@ interface DesignViewProps {
     layout: string;
     components: string[];
   }>
+  stylesheet: string
   onElementClick?: (id: string) => void
   activeElement?: string | null
   showProgress: string | null
@@ -17,94 +18,24 @@ interface DesignViewProps {
 
 export const DesignView: FC<DesignViewProps> = ({
   pages = {},
+  stylesheet = {classes: [], stylesheet: ''},
   onElementClick,
   activeElement,
   showProgress,
   isGenerating
 }) => {
 
-  const compileAndRenderComponent = (code: string) => {
+  const compileAndRenderComponent = (html: string, styles: any) => {
     try {
-      // Transpile JSX to JavaScript
-      const transpiledCode = Babel.transform(code, { presets: ["react"] }).code;
-
-      // Evaluate the transpiled JavaScript and extract the component
-        const Component = new Function("React", `${transpiledCode}; return TaskCard;`)(React);
-
-      return <Component />;
+      return <div style={styles} dangerouslySetInnerHTML={{ __html: html }} />;
     } catch (error) {
       console.error("Error rendering component:", error);
       return <p>Error rendering component</p>;
     }
   };
 
-  const renderComponent = (code: string) => {
-    try {
-      // Transform JSX to JavaScript
-      const transformedCode = Babel.transform(code, {
-        presets: ['react'],
-      }).code;
-
-      // Wrap the transformed code
-      const wrappedCode = `
-        const React = require('react');
-        ${transformedCode}
-        return CardComponent();
-      `;
-
-      const Component = new Function('require', wrappedCode)(require);
-      return Component;
-    } catch (error) {
-      console.error("Error rendering component:", error);
-      return <p>Error rendering component</p>;
-    }
-  };
-
-  const _pages: Record<string, {
-    layout: string;
-    components: string[];
-  }> = {
-    Home: {
-      layout: "Test",
-      components: [`
-        const CardComponent = () => {
-    const cardStyle = {
-        width: '100%',
-        maxWidth: '300px',
-        margin: '1rem auto',
-        padding: '1rem',
-        boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-        borderRadius: '8px',
-        backgroundColor: '#ffffff',
-        textAlign: 'center',
-        boxSizing: 'border-box'
-    };
-
-    const headerStyle = {
-        fontSize: '1.5rem',
-        marginBottom: '0.5rem',
-        color: '#333'
-    };
-
-    const paragraphStyle = {
-        fontSize: '1rem',
-        lineHeight: '1.5',
-        color: '#666'
-    };
-
-    return (
-        <div style={cardStyle}>
-            <h2 style={headerStyle}>Card Title</h2>
-            <p style={paragraphStyle}>This is a simple card component used to display content. It is responsive and adjusts to different screen sizes.</p>
-        </div>
-    );
-  };`]
-    }
-
-  }
-
-  const items = Object.keys(_pages).map(page => ({
-    label: page,
+  const items = Object.keys(pages).map(page => ({
+    label: page + '1',
     key: page,
     children: (
       <div className="w-full h-full relative" style={{
@@ -113,25 +44,32 @@ export const DesignView: FC<DesignViewProps> = ({
         boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.1)',
         height: 765,
         width: 1105,
-        margin: '0 auto'
+        margin: '0 auto',
+        display: 'grid',
+        gridTemplateColumns: 'repeat(16, 1fr)', /* 16 equal columns */
+        gridTemplateRows: 'repeat(9, 1fr)', /* 9 equal rows */
+        gap: 10, /* Adjust spacing */
+        overflow: 'hidden',
+        boxSizing: 'border-box'
       }}>
-        <div className="grid grid-cols-12 gap-4">
-          {_pages[page].components?.map(component => {
-            const isActive = component === activeElement
-            if (isActive) {
-              return <div key={component}
-                onClick={() => onElementClick?.(component)}
-              >
-                {compileAndRenderComponent(component)}
-                {showProgress === component && (
-                  <CommentsIndicator />
-                )}
-              </div>
-            } else {
-              return renderComponent(component)
-            }
-          })}
-        </div>
+        <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
+        {pages[page].components?.map((component: any) => {
+          const isActive = component.html === activeElement
+          if (isActive) {
+            return <>
+              {compileAndRenderComponent(component.html, component.styles)}
+              {/* <div key={component}
+                  onClick={() => onElementClick?.(component)}
+                >
+                  {showProgress === component && (
+                    <CommentsIndicator />
+                  )}
+                </div> */}
+            </>
+          } else {
+            return compileAndRenderComponent(component.html, component.styles)
+          }
+        })}
       </div>
     )
   }));
@@ -139,7 +77,7 @@ export const DesignView: FC<DesignViewProps> = ({
   return (
     isGenerating ? (
       <div className="w-full h-full flex items-center justify-center">
-        <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse">Yoooo</div>
+        <Skeleton active paragraph={{ rows: 8 }} className="w-full max-w-4xl" />
       </div>
     ) : (
       <Tabs items={items} />

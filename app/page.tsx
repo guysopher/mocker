@@ -22,6 +22,7 @@ export default function Home() {
     brief: BriefItem[];
     stories: CanvasStory[];
     sitemap: any[];
+    stylesheet: { classes: string[], stylesheet: string };
     pages: Record<string, {
       layout: string;
       components: string[];
@@ -40,45 +41,40 @@ export default function Home() {
         brief: [],
         stories: [],
         sitemap: [],
+        stylesheet: { classes: [], stylesheet: '' },
         pages: {} as Record<string, {
           layout: string;
           components: string[];
         }>
       }
-      
-      // Generate initial content for each section
-      for (const section of ['brief', 'stories', 'sitemap']) {
+
+      const createPromise = async (section: string) => {
         try {
-          const response = await fetch(`/api/${section}`, {
+          await fetch(`/api/${section}`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({ description, customPrompt: prompts[section as keyof typeof prompts], ...tempAppContent }),
-          });
-
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-
-          const data = await response.json();
-          if (data) {
+          }).then(response => response.json()).then(data => {
             tempAppContent = {
               brief: section === 'brief' ? data.brief : (tempAppContent?.brief || []),
               sitemap: section === 'sitemap' ? data.sitemap : (tempAppContent?.sitemap || []),
               stories: section === 'stories' ? data.stories : (tempAppContent?.stories || []),
-              pages: section === 'pages' ? data.pages : (tempAppContent?.pages || {})
+              pages: section === 'pages' ? data.pages : (tempAppContent?.pages || {}),
+              stylesheet: section === 'stylesheet' ? data.stylesheet : (tempAppContent?.stylesheet || { classes: [], stylesheet: '' })
             };
             setAppContent(tempAppContent);
-          }
+          });
         } catch (error) {
           console.error(`Error generating ${section}:`, error);
-          console.error('Current tempAppContent:', tempAppContent);
         }
-      }
+      };
+      await createPromise('brief');
 
-      // Generate layout for all pages in parallel
-      const pagePromises = tempAppContent.sitemap.map(async (page: any) => {
+      await Promise.all([createPromise('stories'), createPromise('stylesheet'), createPromise('sitemap')]);
+
+      const pagePromises = tempAppContent.sitemap.map(async (page: { type: string, description: string }) => {
         try {
           const response = await fetch(`/api/layout`, {
             method: 'POST',
@@ -96,7 +92,7 @@ export default function Home() {
           if (data) {
             tempAppContent.pages = {
               ...tempAppContent.pages,
-              [page.type]: {layout: data.layout, components: []}
+              [page.type]: { layout: data.layout, components: [] }
             }
 
             console.log("Updating pages", tempAppContent.pages)
@@ -109,7 +105,7 @@ export default function Home() {
                   headers: {
                     'Content-Type': 'application/json',
                   },
-                  body: JSON.stringify({ description, page, component, customPrompt: prompts.component, ...tempAppContent }),
+                  body: JSON.stringify({ description, page, component, cssClasses: appContent?.stylesheet?.classes, customPrompt: prompts.component, ...tempAppContent }),
                 });
 
                 if (!response.ok) {
@@ -123,14 +119,14 @@ export default function Home() {
                   if (!tempAppContent.pages) {
                     tempAppContent.pages = {};
                   }
-                  if (!tempAppContent.pages[page]) {
-                    tempAppContent.pages[page] = { layout: '', components: [] };
+                  if (!tempAppContent.pages[page.type]) {
+                    tempAppContent.pages[page.type] = { layout: '', components: [] };
                   }
-                  tempAppContent.pages[page].components.push(data.code);
+                  tempAppContent.pages[page.type].components.push(data.code);
                 }
               } catch (error) {
                 console.error(`Error generating component ${component} for page ${page}:`, error);
-                console.error('Current page layout:', tempAppContent.sitemap[page]);
+                console.error('Current page layout:', tempAppContent.sitemap);
               }
             });
 
@@ -257,7 +253,8 @@ export default function Home() {
               appContent={{
                 brief: appContent?.brief || [],
                 pages: appContent?.pages || {},
-                stories: appContent?.stories || []
+                stories: appContent?.stories || [],
+                stylesheet: appContent?.stylesheet?.stylesheet || ''
               }}
             />
           </div>
@@ -284,3 +281,4 @@ export default function Home() {
     </main>
   )
 }
+

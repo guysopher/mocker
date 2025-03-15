@@ -3,6 +3,7 @@
 import React from 'react'
 import { CanvasStory } from '@/types/canvas'
 import { CommentsIndicator } from '../CommentsIndicator'
+import { Skeleton } from 'antd'
 
 interface StoriesViewProps {
   elements: CanvasStory[]
@@ -14,19 +15,19 @@ interface StoriesViewProps {
 
 export function StoriesView({ elements, onElementClick, activeElement, showProgress, isGenerating }: StoriesViewProps) {
   return (
-    <div className="relative p-4 grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-      {elements?.map((element) => {
-        const isActive = element.id === activeElement
-
-        return (
-          isGenerating ? (
-            <div className="bg-white rounded-lg shadow-md p-6 mb-6 animate-pulse">
-              <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
-              <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
-              <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
-              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-            </div>
-          ) : (
+    isGenerating ? (
+      <>
+        <Skeleton active paragraph={{ rows: 3 }} className="bg-white rounded-lg shadow-md p-6 mb-6" />
+        <br/>
+        <Skeleton active paragraph={{ rows: 3 }} className="bg-white rounded-lg shadow-md p-6 mb-6" />
+        <br/>
+        <Skeleton active paragraph={{ rows: 3 }} className="bg-white rounded-lg shadow-md p-6 mb-6" />
+      </>
+    ) : (
+      <div className="relative p-4 grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        {elements?.map((element) => {
+          const isActive = element.id === activeElement
+          return (
             <div
               key={element.id}
               onClick={() => onElementClick(element.id)}
@@ -77,8 +78,8 @@ export function StoriesView({ elements, onElementClick, activeElement, showProgr
               </div>
             </div>
           )
-        )
-      })}
-    </div>
+        })}
+      </div>
+    )
   )
 }

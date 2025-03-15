@@ -1,6 +1,7 @@
 import { BriefItem } from "@/types/canvas"
 import { useState } from "react"
 import { CommentsIndicator } from "../CommentsIndicator"
+import { Skeleton } from "antd"
 
 interface BriefViewProps {
   elements: BriefItem[]
@@ -38,11 +39,11 @@ export function BriefView({
   return (
     <div className="relative w-full h-full">
       {isGenerating ? (
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6 animate-pulse">
-          <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
-          <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
-          <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
-          <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+        <div>
+          <Skeleton active paragraph={{ rows: 3, width: ['100%', '100%', '75%'] }} />
+          <Skeleton active paragraph={{ rows: 3, width: ['100%', '100%', '75%'] }} />
+          <Skeleton active paragraph={{ rows: 3, width: ['100%', '100%', '75%'] }} />
+          <Skeleton active paragraph={{ rows: 3, width: ['100%', '100%', '75%'] }} />
         </div>
       ) : (
         <div className="max-w-4xl mx-auto p-8 bg-white rounded-lg shadow-md">

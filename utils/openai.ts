@@ -216,7 +216,7 @@ export async function generateLayout(
 export async function generateComponent(
   description: string,
   brief: string,
-  stories: string,
+  cssClasses: string,
   page: string,
   component: string,
   customPrompt?: string
@@ -225,7 +225,7 @@ export async function generateComponent(
     const systemPrompt = (customPrompt || prompts.component)
       .replace('{{description}}', description)
       .replace('{{brief}}', brief)
-      .replace('{{stories}}', stories)
+      .replace('{{cssClasses}}', cssClasses)
       .replace('{{page}}', page)
       .replace('{{component}}', component);
     
@@ -243,7 +243,7 @@ export async function generateComponent(
     });
 
     if (response.choices[0]?.message?.content) {
-      return JSON.parse(response.choices[0].message.content).code;
+      return JSON.parse(response.choices[0].message.content);
     } else {
       throw new Error('Unexpected response format from OpenAI API');
     }
@@ -252,3 +252,35 @@ export async function generateComponent(
     throw error;
   }
 } 
+
+export async function generateStylesheet(
+  brief: string,
+  customPrompt?: string
+) {
+  try {
+    const systemPrompt = (customPrompt || prompts.stylesheet)
+      .replace('{{brief}}', brief);
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      max_tokens: 1500,
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt
+        },
+      ],
+      temperature: 0.7,
+      response_format: { type: "json_object" }
+    });
+
+    if (response.choices[0]?.message?.content) {
+      return JSON.parse(response.choices[0].message.content);
+    } else {
+      throw new Error('Unexpected response format from OpenAI API');
+    }
+  } catch (error) {
+    console.error('Error generating stylesheet:', error);
+    throw error;
+  }
+}

@@ -3,6 +3,7 @@ export enum PromptName {
     APP_BRIEF = 'brief',
     USER_STORIES = 'stories',
     SITEMAP = 'sitemap',
+    STYLESHEET = 'stylesheet',
     LAYOUT = 'layout',
     COMPONENT = 'component'
 }
@@ -112,10 +113,10 @@ Example:
 Based on the following app description and brief, generate appropriate user stories:
 
 App Description:
-{{ description }}
+{{description}}
 
 App Brief:
-{{ brief }} 
+{{brief}} 
 
   `,
 
@@ -161,22 +162,51 @@ Provide a clean JSON (no code blocks) following this structure:
 Analyze the following business information and suggest an optimal page structure:
 
 Business Description:
-{{ description }}
+{{description}}
 
 Business Brief:
-{{ brief }}
+{{brief}}
 
 User Stories:
-{{ stories }}
+{{stories}}
   
   `,
 
+    [PromptName.STYLESHEET]: `
+    ## ROLE
+You are a UI/UX Designer and CSS Expert. Your job is to create clean and effective stylesheets based on app requirements.
+
+## TASK
+Create a CSS stylesheet that reflects the app's design requirements and maintains consistency across the application.
+
+## GUIDELINES
+The stylesheet should:
+- Use clear class names
+- Follow CSS best practices
+- Use relative units (rem, %, vh/vw) where appropriate
+- The style should be according to the design description in the App Brief.
+- The design should be stunning and modern
+- The design should look like a mockup, beautiful simple and clean
+
+## OUTPUT FORMAT
+Json format with keys "classes" and "stylesheet":
+
+{"classes": array of classes,
+"stylesheet": css code}
+
+## INPUT
+Create a CSS stylesheet based on the following information:
+
+App Brief:
+{{brief}}
+
+`,
     [PromptName.LAYOUT]: `
   ## ROLE
 You are a Senior UI/UX Designer and Layout Expert. Your job is to create comprehensive page layout definitions based on project requirements and user needs.
 
 ## TASK
-Create a detailed page layout definition by analyzing the provided app brief, user stories, and page description. The layout should specify components, their purposes, and precise positioning on a 12-column grid system.
+Create a detailed page layout definition by analyzing the provided app brief, user stories, and page description. The layout should specify components, their purposes, and precise positioning on a 16 columns and 9 rows grid system.
 
 ## LAYOUT DEFINITION GUIDELINES
 Components should be defined with:
@@ -191,7 +221,9 @@ Components should be defined with:
 2. Analyze user stories to identify needed interface elements
 3. Consider page description for specific content requirements
 4. Define logical sections based on content relationship
-5. Position components optimally within the 12-column grid
+5. Position components optimally within the 16 columns and 9 rows grid
+6. The component is rendered in a grid layout, specify the exact grid_position of the component (specific rows and columns)
+7. Make sure that the components are not overlapping and fill the whole grid
 
 ## OUTPUT FORMAT
 Provide output in JSON format:
@@ -222,51 +254,60 @@ Provide output in JSON format:
 Create a page layout definition based on the following information:
 
 App Brief:
-{{ brief }}
+{{brief}}
 
 User Stories:
-{{ stories }}
+{{stories}}
 
 Page Description:
-{{ page }}
+{{page}}
   
   `,
 
     [PromptName.COMPONENT]: `
 
   ## ROLE
-You are a senior React Developer specializing in converting design specifications into React components. Your expertise lies in creating clean, responsive React components that accurately reflect design requirements.
+You are a senior HTML/CSS Developer specializing in converting design specifications into HTML/CSS components. Your expertise lies in creating clean, responsive HTML/CSS components that accurately reflect design requirements.
 
 ## TASK
-Create a stateless React component based on the provided design description. The component should focus on visual representation without any functional logic.
+Create a stateless HTML/CSS component based on the provided design description. The component should focus on visual representation without any functional logic.
 
 ## COMPONENT GUIDELINES
-- Create a stateless functional component
-- Use inline styles for all styling
-- Implement responsive design principles
+- Create a stateless html/css component
+- Use the global css classes provided in the CSS Classes parameter to style the component
 - Focus on visual representation only
-- Keep the code simple and straightforward
-- Do not include PropTypes or extensive documentation
-- Follow React best practices for component structure
+- Do not include images or icons that are not implemented in the component code
+- The component is rendered in a grid layout, the position in the grid is specified in the component description (under grid_position)
+- The component should inclide relevant content (text only) according to the content guide in the App Brief
 
 ## OUTPUT FORMAT
-Provide the component code as a JSON with a single key "code" that contains the code as a string:
+Provide the component code as a JSON with a key "html" that contains the code as a string, and a key styles that contains the parent styles for the grid position of the component.
 For example:
 {
-    code: "
-const ComponentName = () => {
-    return <div>Component code here</div>;
-};
-"
+    "html": "<div id='component-id'>Component that start in column 1 and row 1 and end in column 3 and row 2</div>",
+    "styles": {
+        "grid-area": "1 / 3 / 2 / 4"
+    }
 }
 
 IMPORTANT: Output code only, no additional textual description or wrapper symbols
 
 ## STYLING GUIDELINES
-- Use inline styles with the style={{}} syntax
-- Include media queries within conditional style logic when needed
-- Follow mobile-first approach for responsive design
 - Use relative units (rem, %, vh/vw) where appropriate
+- The grid area is specified in the grid_position key in the component description, remember that the grid is 16 columns and 9 rows and that the end row or column are not included in the grid area (for example: given a start_row 1 and a end_row 3, column_start 1 and column_end 16, the grid area is 1 / 1 / 4 / 17)
+
+## INPUTS
+Create a HTML/CSS component based on the following information:
+
+App Brief:
+{{brief}}
+
+Global CSS Classes:
+{{cssClasses}}
+
+Component Description:
+{{component}}
+
 
 `
 };
