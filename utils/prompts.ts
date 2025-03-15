@@ -131,11 +131,9 @@ Analyze the provided business information and create a comprehensive page struct
 ## GUIDELINES
 - Analyze business type and goals to determine necessary pages
 - Use consistent 'pages' terminology regardless if it's a website or application
-- Include all essential pages based on the business requirements
-- Ensure each suggested page has a clear purpose and adds value
-- Consider user journey and common interaction patterns
 - Base your decisions on industry best practices
-- Return minimum necessary pages
+- Ensure each suggested page has a clear purpose and adds value
+- Return only pages that are absolutely necessary for the business
 
 ## DECISION CRITERIA
 Determine pages based on:
@@ -145,24 +143,26 @@ Determine pages based on:
 - Business goals and objectives
 - Industry standard requirements
 
+Pick only the most important pages (up to 5 pages)
+
 ## PAGE STRUCTURE RULES
 Each suggested page must contain:
 - type: Identifies the page category/purpose
-- description: Clear explanation of why this page is necessary and its function
+- description: Long and fully detailed explanation of why this page is necessary and its function. In the description, include every detail about the page, including the purpose, function, components, design, and any other relevant information.
 
 ## OUTPUT FORMAT
 Provide a clean JSON (no code blocks) following this structure:
 {
   "sitemap": [
     {"type": "<page type>",
-      "description": "<concise page purpose >"
+      "description": "Long and fully detailed explanation of why this page is necessary and its function. In the description, include every detail about the page, including the purpose, function, components, design, and any other relevant information."
     }
   ]
 }
 ## INPUT
 Analyze the following business information and suggest an optimal page structure:
 
-Business Description:
+App Brief:
 {{description}}
 
 Business Brief:
@@ -223,7 +223,7 @@ JSON object with the following keys:
 You are a Senior UI/UX Designer and Layout Expert specializing in **Ant Design (antd)**. Your job is to create comprehensive **Ant Design-based page layouts** that are structured using Ant Design's recommended components and best practices.
 
 ## TASK
-Create a detailed page layout definition using **Ant Design's component library** and **Grid system**. Each section of the layout should use the **appropriate Ant Design components** and define their exact placement within a **24-column Ant Design grid system**.
+Create a detailed page layout definition using **Ant Design's component library** *. Each section of the layout should use the **appropriate Ant Design components** and define their exact placement within a **24-column Ant Design grid system**.
 
 ## LAYOUT DEFINITION GUIDELINES
 Each component should be defined with:
@@ -238,12 +238,10 @@ Each component should be defined with:
 2. **Analyze User Stories** - Identify key elements needed for usability.
 3. **Identify Ant Design Components** - Use **only** Ant Design components that fit the design.
 4. **Define Layout Structure** - Organize sections into logical components.
-5. **Apply the Ant Design Grid** - Ensure all components fit within **Ant Design's 24-column grid**.
 6. **Ensure No Overlaps & Proper Spacing** - Components should **not** overlap and should effectively use the grid.
 
 ### ** Important Notes**
 - The layout should follow **Ant Design's 'Layout', 'Row', and 'Col' system**.
-- The grid **must have 24 columns** (Ant Design standard).
 - The **height should be managed by 'flex' or 'grid' properties**, depending on the use case.
 
 ## OUTPUT FORMAT
@@ -258,12 +256,6 @@ Provide output in **JSON format**:
             "ant_design_component": "string",
             "purpose": "string",
             "detailed_description": "string",
-            "grid_position": {
-                "col_span": number,
-                "col_offset": number,
-                "row_start": number,
-                "row_end": number
-            }
         }
     ]
 }  
@@ -331,6 +323,12 @@ Create a **stateless React component** using **Ant Design components and classes
 - Define event handlers as var functions inside the component.
 - Use arrays and map() for rendering lists.
 - Avoid modern syntax (no arrow functions, let, const, classes, or modules).
+- The height and width of each page should be 765px and 1105px respectively.
+- Do not render any images!
+- Write detailed content for the component
+- Use Ant Design icons for the component
+- The page will render in a container. It should not include the header, footer, or sidebar - only the main content.
+
 
 ## OUTPUT FORMAT
 Provide the component code as a JSON with a key "code" that contains the code as a string.
@@ -449,9 +447,6 @@ App Brief:
 
 Global CSS Classes:
 {{cssClasses}}
-
-Page Layout and Components Description:
-{{page}}
 
 `
 };

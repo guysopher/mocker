@@ -102,20 +102,21 @@ export default function Home() {
 
       const pagePromises = tempAppContent.sitemap.map(async (page: { type: string, description: string }) => {
         try {
-          const response = await fetch(`/api/layout`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ description, page, customPrompt: prompts.layout, ...tempAppContent }),
-          });
+          if (useComponents) {
+            const response = await fetch(`/api/layout`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ description, page, customPrompt: prompts.layout, ...tempAppContent }),
+            });
 
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
 
-          const data = await response.json();
-          if (data) {
+            const data = await response.json();
+
             tempAppContent.pages = {
               ...tempAppContent.pages,
               [page.type]: { layout: data.layout, components: [] }
@@ -123,68 +124,67 @@ export default function Home() {
 
             console.log("Updating pages", tempAppContent.pages)
 
-            if (useComponents) {
-              const componentPromises = (data.layout.components).map(async (component: any) => {
-                try {
-                  const response = await fetch(`/api/component`, {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ description, page, component, cssClasses: tempAppContent?.stylesheet?.classes, customPrompt: prompts.component, ...tempAppContent }),
-                  });
+            const componentPromises = (data.layout.components).map(async (component: any) => {
+              try {
+                const response = await fetch(`/api/component`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ description, page, component, cssClasses: tempAppContent?.stylesheet?.classes, customPrompt: prompts.component, ...tempAppContent }),
+                });
 
-                  if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                if (!response.ok) {
+                  throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                console.log("Generating component", component)
+
+                const data = await response.json();
+                if (data) {
+                  if (!tempAppContent.pages) {
+                    tempAppContent.pages = {};
                   }
-
-                  console.log("Generating component", component)
-
-                  const data = await response.json();
-                  if (data) {
-                    if (!tempAppContent.pages) {
-                      tempAppContent.pages = {};
-                    }
-                    if (!tempAppContent.pages[page.type]) {
-                      tempAppContent.pages[page.type] = { layout: '', components: [] };
-                    }
-                    tempAppContent.pages[page.type].components.push(data.code);
+                  if (!tempAppContent.pages[page.type]) {
+                    tempAppContent.pages[page.type] = { layout: '', components: [] };
                   }
-                } catch (error) {
-                  console.error(`Error generating component ${component} for page ${page}:`, error);
-                  console.error('Current page layout:', tempAppContent.sitemap);
+                  tempAppContent.pages[page.type].components.push(data.code);
                 }
-              });
-
-              // Wait for all component requests to complete
-              await Promise.all(componentPromises);
-            } else {
-              const pageResponse = await fetch(`/api/page`, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ description, page, cssClasses: tempAppContent?.stylesheet?.classes, customPrompt: prompts.page, ...tempAppContent }),
-              });
-
-              if (!pageResponse.ok) {
-                throw new Error(`HTTP error! status: ${pageResponse.status}`);
+              } catch (error) {
+                console.error(`Error generating component ${component} for page ${page}:`, error);
+                console.error('Current page layout:', tempAppContent.sitemap);
               }
+            });
 
-              const pageData = await pageResponse.json();
-              if (pageData) {
-                if (!tempAppContent.pages) {
-                  tempAppContent.pages = {};
-                }
-                if (!tempAppContent.pages[page.type]) {
-                  tempAppContent.pages[page.type] = { layout: '', components: [] };
-                }
-                tempAppContent.pages[page.type].components.push(pageData.code);
-              }
-              setAppContent(tempAppContent);
+            // Wait for all component requests to complete
+            await Promise.all(componentPromises);
+          } else {
+            const pageResponse = await fetch(`/api/page`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ description, page, cssClasses: tempAppContent?.stylesheet?.classes, customPrompt: prompts.page, ...tempAppContent }),
+            });
 
+            if (!pageResponse.ok) {
+              throw new Error(`HTTP error! status: ${pageResponse.status}`);
             }
+
+            const pageData = await pageResponse.json();
+            if (pageData) {
+              if (!tempAppContent.pages) {
+                tempAppContent.pages = {};
+              }
+              if (!tempAppContent.pages[page.type]) {
+                tempAppContent.pages[page.type] = { layout: '', components: [] };
+              }
+              tempAppContent.pages[page.type].components.push(pageData.code);
+            }
+            setAppContent(tempAppContent);
+
           }
+
         } catch (error) {
           console.error(`Error generating layout for page ${page}:`, error);
           console.error('Current sitemap:', tempAppContent.sitemap);
@@ -258,8 +258,8 @@ export default function Home() {
 
             <div className="flex justify-end mb-4 items-center">
               <Text className="mr-2">Use Component-Based Generation:</Text>
-              <Switch 
-                checked={useComponents} 
+              <Switch
+                checked={useComponents}
                 onChange={setUseComponents}
                 disabled={generatingContent}
               />
