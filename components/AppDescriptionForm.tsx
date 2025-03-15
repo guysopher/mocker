@@ -38,22 +38,12 @@ export default function AppDescriptionForm({ onSubmit, isGenerating }: AppDescri
     return defaultPrompts
   })
 
-  // Save to localStorage when values change
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY_DESCRIPTION, description)
-  }, [description])
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY_PROMPTS, JSON.stringify(prompts))
-  }, [prompts])
-
   const handleSubmit = () => {
     if (description.trim() && !isGenerating) {
-      // Save to localStorage before submitting
+      // Save to localStorage only when Generate App is clicked
       localStorage.setItem(STORAGE_KEY_DESCRIPTION, description)
       localStorage.setItem(STORAGE_KEY_PROMPTS, JSON.stringify(prompts))
       
-      // Then submit to parent component
       onSubmit(description, prompts)
     }
   }
@@ -69,6 +59,16 @@ export default function AppDescriptionForm({ onSubmit, isGenerating }: AppDescri
       [promptName]: defaultPrompts[promptName]
     }
     setPrompts(updatedPrompts)
+    
+    // When a prompt is reset, remove it from localStorage
+    if (typeof window !== 'undefined') {
+      const savedPrompts = localStorage.getItem(STORAGE_KEY_PROMPTS)
+      if (savedPrompts) {
+        const parsedPrompts = JSON.parse(savedPrompts)
+        delete parsedPrompts[promptName]
+        localStorage.setItem(STORAGE_KEY_PROMPTS, JSON.stringify(parsedPrompts))
+      }
+    }
   }
   
   return (
