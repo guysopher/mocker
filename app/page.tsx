@@ -12,7 +12,8 @@ import {
   Progress,
   notification,
   Spin,
-  Tabs
+  Tabs,
+  Switch
 } from 'antd'
 import {
   CheckOutlined,
@@ -33,7 +34,7 @@ const { Content } = Layout
 const { Title, Text } = Typography
 const { TabPane } = Tabs
 
-const USE_COMPONENTS = true
+const USE_COMPONENTS = false
 
 export default function Home() {
   const [appDescription, setAppDescription] = useState('')
@@ -42,6 +43,7 @@ export default function Home() {
   const [currentView, setCurrentView] = useState('brief') // brief, design, stories
   const [buildProgress, setBuildProgress] = useState(0)
   const [building, setBuilding] = useState(false)
+  const [useComponents, setUseComponents] = useState(false)
   const [appContent, setAppContent] = useState<{
     brief: BriefItem[];
     stories: CanvasStory[];
@@ -121,7 +123,7 @@ export default function Home() {
 
             console.log("Updating pages", tempAppContent.pages)
 
-            if (USE_COMPONENTS) {
+            if (useComponents) {
               const componentPromises = (data.layout.components).map(async (component: any) => {
                 try {
                   const response = await fetch(`/api/component`, {
@@ -254,6 +256,15 @@ export default function Home() {
               </Title>
             </div>
 
+            <div className="flex justify-end mb-4 items-center">
+              <Text className="mr-2">Use Component-Based Generation:</Text>
+              <Switch 
+                checked={useComponents} 
+                onChange={setUseComponents}
+                disabled={generatingContent}
+              />
+            </div>
+
             <AppDescriptionForm
               onSubmit={handleSubmitDescription}
               isGenerating={generatingContent}
@@ -269,6 +280,15 @@ export default function Home() {
             centered
             tabBarExtraContent={
               <>
+                <div className="mr-4 flex items-center">
+                  <Text className="mr-2">Component-Based:</Text>
+                  <Switch 
+                    checked={useComponents} 
+                    onChange={setUseComponents}
+                    disabled={generatingContent || building}
+                    size="small"
+                  />
+                </div>
                 <Button
                   type="primary"
                   size='large'
