@@ -105,7 +105,7 @@ export default function Home() {
                   headers: {
                     'Content-Type': 'application/json',
                   },
-                  body: JSON.stringify({ description, page, component, cssClasses: appContent?.stylesheet?.classes, customPrompt: prompts.component, ...tempAppContent }),
+                  body: JSON.stringify({ description, page, component, cssClasses: tempAppContent?.stylesheet?.classes, customPrompt: prompts.component, ...tempAppContent }),
                 });
 
                 if (!response.ok) {

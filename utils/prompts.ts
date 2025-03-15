@@ -182,17 +182,21 @@ Create a CSS stylesheet that reflects the app's design requirements and maintain
 ## GUIDELINES
 The stylesheet should:
 - Use clear class names
-- Follow CSS best practices
 - Use relative units (rem, %, vh/vw) where appropriate
 - The style should be according to the design description in the App Brief.
 - The design should be stunning and modern
 - The design should look like a mockup, beautiful simple and clean
+- Create an extensive stylesheet with all the possible classes and styles that might be needed for the components of the app. As detailed as possible.
+- The stylesheet should be in the format of a css file, not a json object.
+
+Start by creating an extensive overview of the design language the app should have. A detailed description of the colors, fonts, spacing, etc.
+The overview should resemble a design style guide, fully detailed and professional.
 
 ## OUTPUT FORMAT
-Json format with keys "classes" and "stylesheet":
-
-{"classes": array of classes,
-"stylesheet": css code}
+Json obejct with the following keys:
+- overview: detailed description of the design language
+- classes: array of all required classes (class names only)
+- stylesheet: css code implementing the classes
 
 ## INPUT
 Create a CSS stylesheet based on the following information:
@@ -225,27 +229,26 @@ Components should be defined with:
 6. The component is rendered in a grid layout, specify the exact grid_position of the component (specific rows and columns)
 7. Make sure that the components are not overlapping and fill the whole grid
 
+Start by creating a detailed description of the layout, what it is for and what it should contain.
+The layout description should include the list of components that should be included in the layout, their purpose and the way they should be positioned in the grid.
+The layout description should be a detailed textual description of the layout, not a JSON object.
 ## OUTPUT FORMAT
 Provide output in JSON format:
 
 {
   "layout_name": string,
-"components": [
+  "layout_description": string,
+  "components": [
     {
-        "name": string,
-        "purpose": string,
-        "grid_position": {
+      "name": string,
+      "purpose": string,
+      "detailed_description": string,
+      "grid_position": {
         "column_start": number,
         "column_end": number,
         "row_start": number,
         "row_end": number
-        },
-        "design_details": {
-        "type": string,
-        "size": string,
-        "colors": string,
-        "style_description": string
-        }
+      },
     }
   ]
 }

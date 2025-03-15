@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     
     if (!description || !brief || !cssClasses || !page || !component) {
       return NextResponse.json(
-        { error: 'Description, brief, stories, page, and component are required' },
+        { error: 'Description, brief, cssClasses, page, and component are required' },
         { status: 400 }
       );
     }
