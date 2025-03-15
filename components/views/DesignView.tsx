@@ -6,6 +6,8 @@ import { Skeleton, Tabs } from 'antd'
 import * as Babel from '@babel/standalone';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import * as antdIcons from '@ant-design/icons';
+
 interface DesignViewProps {
   pages: Record<string, {
     layout: string;
@@ -29,6 +31,7 @@ debugger;
 if (typeof window !== 'undefined') {
   window.React = React;
   window.antd = antd;
+  window.antdIcons = antdIcons;
 }
 
 const titleToId = (title: string) => {
@@ -39,6 +42,8 @@ const DEFAULT_CODE = `
 (function() {
   var React = window.React;
   var antd = window.antd;
+  var antdIcons = window.antdIcons;
+
   var { Input, Button, List, Checkbox } = antd;
 
   var TodoListApp = function() {
@@ -193,12 +198,12 @@ export const DesignView: FC<DesignViewProps> = ({
     }
   }
 
-  useEffect(() => {
-    if (Object.keys(pages).length > 0) {
-      const key = Object.keys(pages)[0];
-      renderComponent(pages[key].components[0], 'render-page-' + titleToId(key))
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (Object.keys(pages).length > 0) {
+  //     const key = Object.keys(pages)[0];
+  //     renderComponent(pages[key].components[0], 'render-page-' + titleToId(key))
+  //   }
+  // }, []);
 
   const items = Object.keys(pages).map(page => ({
     label: page,

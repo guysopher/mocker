@@ -131,17 +131,8 @@ Analyze the provided business information and create a comprehensive page struct
 ## GUIDELINES
 - Analyze business type and goals to determine necessary pages
 - Use consistent 'pages' terminology regardless if it's a website or application
-- Base your decisions on industry best practices
 - Ensure each suggested page has a clear purpose and adds value
 - Return only pages that are absolutely necessary for the business
-
-## DECISION CRITERIA
-Determine pages based on:
-- Business type and category
-- Core business functions and services
-- User interaction needs
-- Business goals and objectives
-- Industry standard requirements
 
 Pick only the most important pages (up to 5 pages)
 
@@ -149,13 +140,18 @@ Pick only the most important pages (up to 5 pages)
 Each suggested page must contain:
 - type: Identifies the page category/purpose
 - description: Long and fully detailed explanation of why this page is necessary and its function. In the description, include every detail about the page, including the purpose, function, components, design, and any other relevant information.
+- components: Description of the components that will be used in the page.
+- design: Design guidelines for the page.
 
 ## OUTPUT FORMAT
 Provide a clean JSON (no code blocks) following this structure:
 {
   "sitemap": [
-    {"type": "<page type>",
-      "description": "Long and fully detailed explanation of why this page is necessary and its function. In the description, include every detail about the page, including the purpose, function, components, design, and any other relevant information."
+    {
+      "type": "<page type>",
+      "description": "Long and fully detailed explanation of why this page is necessary and its function. In the description, include every detail about the page, including the purpose, function, components, design, and any other relevant information.",
+      "components": ["<component1>", "<component2>", "<component3>"],
+      "design": "<design guidelines>"
     }
   ]
 }
@@ -323,20 +319,23 @@ Create a **stateless React component** using **Ant Design components and classes
 - Define event handlers as var functions inside the component.
 - Use arrays and map() for rendering lists.
 - Avoid modern syntax (no arrow functions, let, const, classes, or modules).
-- The height and width of each page should be 765px and 1105px respectively.
 - Do not render any images!
 - Write detailed content for the component
 - Use Ant Design icons for the component
-- The page will render in a container. It should not include the header, footer, or sidebar - only the main content.
+- The page will render in a container. It should not include the header or footer - only the main content.
+- The height and width of the Page component should be 765px and 1105px respectively.
 
 
 ## OUTPUT FORMAT
-Provide the component code as a JSON with a key "code" that contains the code as a string.
+Provide the component code as a JSON with a key "plan" that contains your plan about how to build the page and what will it include
+and a key "code" that contains the code as a string.
 The code should define one component named "Page" that is a page.
 For example:
 {
+    "plan": "The page will include a header, a footer, and a sidebar. The main content will include a form and a table.",
     "code": "
   var { Input, Button, List, Checkbox } = antd;
+  var { BookOutlined } = antdIcons;
 
   var Page = function() {
     var [tasks, setTasks] = React.useState([]);
