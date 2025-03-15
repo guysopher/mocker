@@ -49,6 +49,11 @@ export default function AppDescriptionForm({ onSubmit, isGenerating }: AppDescri
 
   const handleSubmit = () => {
     if (description.trim() && !isGenerating) {
+      // Save to localStorage before submitting
+      localStorage.setItem(STORAGE_KEY_DESCRIPTION, description)
+      localStorage.setItem(STORAGE_KEY_PROMPTS, JSON.stringify(prompts))
+      
+      // Then submit to parent component
       onSubmit(description, prompts)
     }
   }

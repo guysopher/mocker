@@ -5,7 +5,8 @@ export enum PromptName {
     SITEMAP = 'sitemap',
     STYLESHEET = 'stylesheet',
     LAYOUT = 'layout',
-    COMPONENT = 'component'
+    COMPONENT = 'component',
+    PAGE = 'page'
 }
 
 // Define the prompts
@@ -173,115 +174,115 @@ User Stories:
   `,
 
     [PromptName.STYLESHEET]: `
-    ## ROLE
-You are a UI/UX Designer and CSS Expert. Your job is to create clean and effective stylesheets based on app requirements.
+## ROLE
+You are a UI/UX Designer and CSS Expert specializing in Ant Design (antd). Your job is to create clean, scalable, and visually stunning CSS stylesheets that extend Ant Design's components while maintaining consistency.
 
 ## TASK
-Create a CSS stylesheet that reflects the app's design requirements and maintains consistency across the application.
+Create a **CSS extension file** that builds upon Ant Design's default styles, adding additional utility classes and component-specific styles as needed.
 
 ## GUIDELINES
 The stylesheet should:
-- Use clear class names
-- Use relative units (rem, %, vh/vw) where appropriate
-- The style should be according to the design description in the App Brief.
-- The design should be stunning and modern
-- The design should look like a mockup, beautiful simple and clean
-- Create an extensive stylesheet with all the possible classes and styles that might be needed for the components of the app. As detailed as possible.
-- The stylesheet should be in the format of a css file, not a json object.
+- **Extend Ant Design styles rather than override them**
+- Use **Ant Design class names** (e.g., '.ant - btn', '.ant - card') and apply additional styling
+- **Use CSS variables** to keep styles flexible and themeable
+- Maintain a **modern, clean, and elegant** look
+- Ensure **responsive design**, adapting well to different screen sizes
+- Use **relative units** (rem, %, vh/vw) for better scalability
+- The output should be **a CSS file**, not a JSON object
 
-Start by creating an extensive overview of the design language the app should have. A detailed description of the colors, fonts, spacing, etc.
-The overview should resemble a design style guide, fully detailed and professional.
+### **PROCESS**
+1. **Design Style Guide**  
+   - Generate a **detailed overview** of the app's design language, including colors, typography, spacing, shadows, and aesthetics.
+   - Define a **cohesive color palette** aligned with Ant Design's theme.
+   - Provide **clear design principles** for consistency.
+
+2. **Class List**  
+   - List out all additional styles for Ant Design components.
+   - Ensure styles **extend Ant Design's existing classes** (e.g., '.ant - btn - primary', '.ant - card').
+
+3. **Ant Design Extension CSS**  
+   - Write additional styles using **Ant Design's class names**.
+   - Utilize **CSS variables** to make styles easily adjustable.
+   - Ensure all styles are **responsive and consistent with Ant Design**.
 
 ## OUTPUT FORMAT
-Json obejct with the following keys:
-- overview: detailed description of the design language
-- classes: array of all required classes (class names only)
-- stylesheet: css code implementing the classes
+JSON object with the following keys:
+- **overview**: A detailed description of the design language
+- **classes**: An array of all additional class names (class names only)
+- **stylesheet**: The actual CSS code extending Ant Design
 
-## INPUT
-Create a CSS stylesheet based on the following information:
-
-App Brief:
-{{brief}}
-
+### **Example Output**
+{
+    "overview": "The app should have a clean, modern, and elegant design. It should use a neutral color palette with soft blues and warm grays. Typography should be minimalistic and sans-serif. Components should have subtle shadows and rounded edges.",
+    "classes": ["btn-primary", "card-shadow", "text-gradient", "custom-container"],
+    "stylesheet": "@layer utilities { .btn-primary { @apply bg-blue-600 text-white py-2 px-4 rounded-md shadow-lg transition-all duration-300 hover:bg-blue-700; } .card-shadow { @apply shadow-lg rounded-lg p-4 bg-white; } .text-gradient { background: linear-gradient(to right, #ff7eb3, #ff758c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; } .custom-container { max-width: 1200px; margin: 0 auto; padding: 1rem; } }"
+}
 `,
     [PromptName.LAYOUT]: `
-  ## ROLE
-You are a Senior UI/UX Designer and Layout Expert. Your job is to create comprehensive page layout definitions based on project requirements and user needs.
+## ROLE
+You are a Senior UI/UX Designer and Layout Expert specializing in **Ant Design (antd)**. Your job is to create comprehensive **Ant Design-based page layouts** that are structured using Ant Design's recommended components and best practices.
 
 ## TASK
-Create a detailed page layout definition by analyzing the provided app brief, user stories, and page description. The layout should specify components, their purposes, and precise positioning on a 16 columns and 9 rows grid system.
+Create a detailed page layout definition using **Ant Design's component library** and **Grid system**. Each section of the layout should use the **appropriate Ant Design components** and define their exact placement within a **24-column Ant Design grid system**.
 
 ## LAYOUT DEFINITION GUIDELINES
-Components should be defined with:
-- Component name and purpose
-- Exact positioning (column start/end, vertical placement)
-- Design characteristics (size, appearance, style)
-- Color schemes and visual elements
-- Relationship to other components
+Each component should be defined with:
+- **Component name** (Ant Design's recommended component, e.g., 'Layout', 'Card', 'Menu', 'Button')
+- **Purpose** (what it does and why it is used)
+- **Exact grid positioning** (span, offset, row, col)
+- **Design characteristics** (size, appearance, color schemes)
+- **Relationship to other components** (how they interact)
 
 ## ANALYSIS PROCESS
-1. Review app brief to understand overall purpose and requirements
-2. Analyze user stories to identify needed interface elements
-3. Consider page description for specific content requirements
-4. Define logical sections based on content relationship
-5. Position components optimally within the 16 columns and 9 rows grid
-6. The component is rendered in a grid layout, specify the exact grid_position of the component (specific rows and columns)
-7. Make sure that the components are not overlapping and fill the whole grid
+1. **Review the App Brief** - Understand the purpose of the page.
+2. **Analyze User Stories** - Identify key elements needed for usability.
+3. **Identify Ant Design Components** - Use **only** Ant Design components that fit the design.
+4. **Define Layout Structure** - Organize sections into logical components.
+5. **Apply the Ant Design Grid** - Ensure all components fit within **Ant Design's 24-column grid**.
+6. **Ensure No Overlaps & Proper Spacing** - Components should **not** overlap and should effectively use the grid.
 
-Start by creating a detailed description of the layout, what it is for and what it should contain.
-The layout description should include the list of components that should be included in the layout, their purpose and the way they should be positioned in the grid.
-The layout description should be a detailed textual description of the layout, not a JSON object.
+### ** Important Notes**
+- The layout should follow **Ant Design's 'Layout', 'Row', and 'Col' system**.
+- The grid **must have 24 columns** (Ant Design standard).
+- The **height should be managed by 'flex' or 'grid' properties**, depending on the use case.
+
 ## OUTPUT FORMAT
-Provide output in JSON format:
+Provide output in **JSON format**:
 
 {
-  "layout_name": string,
-  "layout_description": string,
-  "components": [
-    {
-      "name": string,
-      "purpose": string,
-      "detailed_description": string,
-      "grid_position": {
-        "column_start": number,
-        "column_end": number,
-        "row_start": number,
-        "row_end": number
-      },
-    }
-  ]
-}
-
-## INPUTS
-Create a page layout definition based on the following information:
-
-App Brief:
-{{brief}}
-
-User Stories:
-{{stories}}
-
-Page Description:
-{{page}}
-  
-  `,
+    "layout_name": "string",
+    "layout_description": "string",
+    "components": [
+        {
+            "name": "string",
+            "ant_design_component": "string",
+            "purpose": "string",
+            "detailed_description": "string",
+            "grid_position": {
+                "col_span": number,
+                "col_offset": number,
+                "row_start": number,
+                "row_end": number
+            }
+        }
+    ]
+}  
+`,
 
     [PromptName.COMPONENT]: `
-
-  ## ROLE
-You are a senior HTML/CSS Developer specializing in converting design specifications into HTML/CSS components. Your expertise lies in creating clean, responsive HTML/CSS components that accurately reflect design requirements.
+## ROLE
+You are a senior HTML/CSS Developer specializing in **Ant Design (antd)** components. Your expertise lies in **creating clean, responsive, and visually accurate** components using Ant Design's recommended classes and best practices.
 
 ## TASK
-Create a stateless HTML/CSS component based on the provided design description. The component should focus on visual representation without any functional logic.
+Create a **stateless HTML/CSS component** using **Ant Design components and classes**. The component should focus on **visual representation only**, without any functional logic.
 
 ## COMPONENT GUIDELINES
-- Create a stateless html/css component
-- Use the global css classes provided in the CSS Classes parameter to style the component
-- Focus on visual representation only
-- Do not include images or icons that are not implemented in the component code
-- The component is rendered in a grid layout, the position in the grid is specified in the component description (under grid_position)
-- The component should inclide relevant content (text only) according to the content guide in the App Brief
+- **Use Ant Design components and class names** (e.g., 'ant-btn', 'ant-card', 'ant-modal') for styling.
+- **Prefer modified global CSS classes** from the **Global CSS Classes** parameter when available.
+- **Ensure all components fit the Ant Design grid system** ('Row' and 'Col' layout).
+- **Follow the grid positioning** as specified in the 'grid_position' field.
+- **Use semantic HTML** with 'div', 'section', and appropriate elements.
+- **Ensure the component includes relevant text content** from the App Brief.
 
 ## OUTPUT FORMAT
 Provide the component code as a JSON with a key "html" that contains the code as a string, and a key styles that contains the parent styles for the grid position of the component.
@@ -311,6 +312,48 @@ Global CSS Classes:
 Component Description:
 {{component}}
 
+
+`,
+
+    [PromptName.PAGE]: `
+## ROLE
+You are a senior HTML/CSS Developer specializing in **Ant Design (antd)** components. Your expertise lies in **creating clean, responsive, and visually accurate** components using Ant Design's recommended classes and best practices.
+
+## TASK
+Create a **stateless HTML/CSS page** using **Ant Design components and classes**. The page should focus on **visual representation only**, without any functional logic.
+
+## PAGE GUIDELINES
+- **Use Ant Design components and class names** (e.g., 'ant-btn', 'ant-card', 'ant-modal') for styling.
+- **Prefer modified global CSS classes** from the **Global CSS Classes** parameter when available.
+- **Ensure all components fit the Ant Design grid system** ('Row' and 'Col' layout).
+- **Follow the grid positioning** as specified in the 'grid_position' field.
+- **Use semantic HTML** with 'div', 'section', and appropriate elements.
+- **Ensure the component includes relevant text content** from the App Brief.
+- Create the entire page, with all the components in one page, make sure it all fits in the grid and that the components are not overlapping.
+
+## OUTPUT FORMAT
+Provide the page code as a JSON with a key "html" that contains the code as a string
+For example:
+{
+    "html": "<div id='page-id'>Page with all the components in the grid</div>",
+}
+
+IMPORTANT: Output code only, no additional textual description or wrapper symbols
+
+## STYLING GUIDELINES
+- Use relative units (rem, %, vh/vw) where appropriate
+
+## INPUTS
+Create a HTML/CSS page based on the following information:
+
+App Brief:
+{{brief}}
+
+Global CSS Classes:
+{{cssClasses}}
+
+Page Layout and Components Description:
+{{page}}
 
 `
 };

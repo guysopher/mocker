@@ -11,6 +11,8 @@ import { BriefItem } from '@/types/canvas'
 import { CanvasElement } from '@/types/canvas'
 import { PromptName } from '@/utils/prompts'
 
+const USE_COMPONENTS = true
+
 export default function Home() {
   const [appDescription, setAppDescription] = useState('')
   const [generatingContent, setGeneratingContent] = useState(false)
@@ -97,41 +99,67 @@ export default function Home() {
 
             console.log("Updating pages", tempAppContent.pages)
 
-            // Generate all components for the page in parallel
-            const componentPromises = (data.layout.components).map(async (component: any) => {
-              try {
-                const response = await fetch(`/api/component`, {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({ description, page, component, cssClasses: tempAppContent?.stylesheet?.classes, customPrompt: prompts.component, ...tempAppContent }),
-                });
+            if (USE_COMPONENTS) {
+              const componentPromises = (data.layout.components).map(async (component: any) => {
+                try {
+                  const response = await fetch(`/api/component`, {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ description, page, component, cssClasses: tempAppContent?.stylesheet?.classes, customPrompt: prompts.component, ...tempAppContent }),
+                  });
 
-                if (!response.ok) {
-                  throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                console.log("Generating component", component)
-
-                const data = await response.json();
-                if (data) {
-                  if (!tempAppContent.pages) {
-                    tempAppContent.pages = {};
+                  if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                   }
-                  if (!tempAppContent.pages[page.type]) {
-                    tempAppContent.pages[page.type] = { layout: '', components: [] };
+
+                  console.log("Generating component", component)
+
+                  const data = await response.json();
+                  if (data) {
+                    if (!tempAppContent.pages) {
+                      tempAppContent.pages = {};
+                    }
+                    if (!tempAppContent.pages[page.type]) {
+                      tempAppContent.pages[page.type] = { layout: '', components: [] };
+                    }
+                    tempAppContent.pages[page.type].components.push(data.code);
                   }
-                  tempAppContent.pages[page.type].components.push(data.code);
+                } catch (error) {
+                  console.error(`Error generating component ${component} for page ${page}:`, error);
+                  console.error('Current page layout:', tempAppContent.sitemap);
                 }
-              } catch (error) {
-                console.error(`Error generating component ${component} for page ${page}:`, error);
-                console.error('Current page layout:', tempAppContent.sitemap);
+              });
+
+              // Wait for all component requests to complete
+              await Promise.all(componentPromises);
+            } else {
+              const pageResponse = await fetch(`/api/page`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ description, page, cssClasses: tempAppContent?.stylesheet?.classes, customPrompt: prompts.page, ...tempAppContent }),
+              });
+
+              if (!pageResponse.ok) {
+                throw new Error(`HTTP error! status: ${pageResponse.status}`);
               }
-            });
 
-            // Wait for all component requests to complete
-            await Promise.all(componentPromises);
+              const pageData = await pageResponse.json();
+              if (pageData) {
+                if (!tempAppContent.pages) {
+                  tempAppContent.pages = {};
+                }
+                if (!tempAppContent.pages[page.type]) {
+                  tempAppContent.pages[page.type] = { layout: '', components: [] };
+                }
+                tempAppContent.pages[page.type].components.push(pageData.html);
+              }
+              setAppContent(tempAppContent);
+
+            }
           }
         } catch (error) {
           console.error(`Error generating layout for page ${page}:`, error);
@@ -254,7 +282,7 @@ export default function Home() {
                 brief: appContent?.brief || [],
                 pages: appContent?.pages || {},
                 stories: appContent?.stories || [],
-                stylesheet: appContent?.stylesheet?.stylesheet || ''
+                stylesheet: appContent?.stylesheet?.stylesheet || '',
               }}
             />
           </div>

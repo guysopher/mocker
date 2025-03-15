@@ -25,9 +25,14 @@ export const DesignView: FC<DesignViewProps> = ({
   isGenerating
 }) => {
 
-  const compileAndRenderComponent = (html: string, styles: any) => {
+  const compileAndRenderComponent = (component: any) => {
     try {
-      return <div style={styles} dangerouslySetInnerHTML={{ __html: html }} />;
+      // return <div style={{...styles, border: '1px solid red'}} >{JSON.stringify(styles)}</div>;
+      if (component.html) {
+        return <div style={component.styles} dangerouslySetInnerHTML={{ __html: component.html }} />;
+      } else {
+        return <div dangerouslySetInnerHTML={{ __html: component }} />;
+      }
     } catch (error) {
       console.error("Error rendering component:", error);
       return <p>Error rendering component</p>;
@@ -35,7 +40,7 @@ export const DesignView: FC<DesignViewProps> = ({
   };
 
   const items = Object.keys(pages).map(page => ({
-    label: page + '1',
+    label: page,
     key: page,
     children: (
       <div className="w-full h-full relative" style={{
@@ -52,12 +57,13 @@ export const DesignView: FC<DesignViewProps> = ({
         overflow: 'hidden',
         boxSizing: 'border-box'
       }}>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/antd@5.20.0/dist/reset.css" />
         <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
         {pages[page].components?.map((component: any) => {
           const isActive = component.html === activeElement
           if (isActive) {
             return <>
-              {compileAndRenderComponent(component.html, component.styles)}
+              {compileAndRenderComponent(component)}
               {/* <div key={component}
                   onClick={() => onElementClick?.(component)}
                 >
@@ -67,7 +73,7 @@ export const DesignView: FC<DesignViewProps> = ({
                 </div> */}
             </>
           } else {
-            return compileAndRenderComponent(component.html, component.styles)
+            return compileAndRenderComponent(component)
           }
         })}
       </div>
