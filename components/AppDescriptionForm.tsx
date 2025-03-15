@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Form, Input, Button, Spin, Modal, Space } from 'antd'
 import { SendOutlined, SettingOutlined } from '@ant-design/icons'
 import PromptEditor from './PromptEditor'
@@ -13,22 +13,57 @@ interface AppDescriptionFormProps {
   isGenerating: boolean
 }
 
+// Storage keys
+const STORAGE_KEY_DESCRIPTION = 'app_description'
+const STORAGE_KEY_PROMPTS = 'app_prompts'
+
 export default function AppDescriptionForm({ onSubmit, isGenerating }: AppDescriptionFormProps) {
   const defaultDescription = "a dead simple todo list app - one page only with a list of todos and a button - nothing else!"
-  const [description, setDescription] = useState(defaultDescription)
+  
+  // Initialize state with values from localStorage or defaults
+  const [description, setDescription] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem(STORAGE_KEY_DESCRIPTION) || defaultDescription
+    }
+    return defaultDescription
+  })
+  
   const [isPromptEditorOpen, setIsPromptEditorOpen] = useState(false)
-  const [prompts, setPrompts] = useState(defaultPrompts)
+  
+  const [prompts, setPrompts] = useState<Record<PromptName, string>>(() => {
+    if (typeof window !== 'undefined') {
+      const savedPrompts = localStorage.getItem(STORAGE_KEY_PROMPTS)
+      return savedPrompts ? JSON.parse(savedPrompts) : defaultPrompts
+    }
+    return defaultPrompts
+  })
+
+  // Save to localStorage when values change
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY_DESCRIPTION, description)
+  }, [description])
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY_PROMPTS, JSON.stringify(prompts))
+  }, [prompts])
+
   const handleSubmit = () => {
     if (description.trim() && !isGenerating) {
       onSubmit(description, prompts)
     }
   }
   
-  const handleSavePrompts = (prompts: Record<PromptName, string>) => {
-    // Here you would handle saving the updated prompts
-    console.log('Saving prompts:', prompts)
-    setPrompts(prompts)
+  const handleSavePrompts = (updatedPrompts: Record<PromptName, string>) => {
+    setPrompts(updatedPrompts)
     setIsPromptEditorOpen(false)
+  }
+  
+  const handleResetPrompt = (promptName: PromptName) => {
+    const updatedPrompts = {
+      ...prompts,
+      [promptName]: defaultPrompts[promptName]
+    }
+    setPrompts(updatedPrompts)
   }
   
   return (
@@ -91,7 +126,9 @@ export default function AppDescriptionForm({ onSubmit, isGenerating }: AppDescri
       >
         <PromptEditor 
           onSave={handleSavePrompts} 
-          onCancel={() => setIsPromptEditorOpen(false)} 
+          onCancel={() => setIsPromptEditorOpen(false)}
+          initialPrompts={prompts}
+          onResetPrompt={handleResetPrompt}
         />
       </Modal>
     </>

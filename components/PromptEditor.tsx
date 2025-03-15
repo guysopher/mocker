@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button, Input, Card, Typography, Space, Row, Col } from 'antd';
 import prompts from '../utils/prompts';
+import { PromptName } from '@/utils/prompts';
 // import { useMessage } from '@/hooks/useMessage';
 
 const { TextArea } = Input;
@@ -9,15 +10,17 @@ const { Title, Text } = Typography;
 interface PromptEditorProps {
   onSave: (updatedPrompts: any) => void;
   onCancel: () => void;
+  initialPrompts: any;
+  onResetPrompt: (promptName: PromptName) => void;
 }
 
-const PromptEditor = ({ onSave, onCancel }: PromptEditorProps) => {
-  const [editedPrompts, setEditedPrompts] = useState(prompts);
+const PromptEditor = ({ onSave, onCancel, initialPrompts, onResetPrompt }: PromptEditorProps) => {
+  const [editedPrompts, setEditedPrompts] = useState(initialPrompts);
   
   // const { success, error, info, contextHolder } = useMessage();
 
   const handleChange = (field: string, value: string) => {
-    setEditedPrompts(prev => ({
+    setEditedPrompts((prev: any) => ({
       ...prev,
       [field]: value
     }));
@@ -34,8 +37,9 @@ const PromptEditor = ({ onSave, onCancel }: PromptEditorProps) => {
     onSave(editedPrompts);
   };
 
-  const handleReset = (field: string) => {
-    setEditedPrompts(prev => ({
+  const handleReset = (field: PromptName) => {
+    onResetPrompt(field);
+    setEditedPrompts((prev: any) => ({
       ...prev,
       [field]: prompts[field as keyof typeof prompts]
     }));
@@ -59,7 +63,7 @@ const PromptEditor = ({ onSave, onCancel }: PromptEditorProps) => {
                 <Title level={5}>App Brief Prompt</Title>
               </Col>
               <Col>
-                <Button size="small" onClick={() => handleReset('brief')}>Reset to Default</Button>
+                <Button size="small" onClick={() => handleReset(PromptName.APP_BRIEF)}>Reset to Default</Button>
               </Col>
             </Row>
             <TextArea
@@ -75,7 +79,7 @@ const PromptEditor = ({ onSave, onCancel }: PromptEditorProps) => {
                 <Title level={5}>User Stories Prompt</Title>
               </Col>
               <Col>
-                <Button size="small" onClick={() => handleReset('stories')}>Reset to Default</Button>
+                <Button size="small" onClick={() => handleReset(PromptName.USER_STORIES)}>Reset to Default</Button>
               </Col>
             </Row>
             <TextArea
@@ -91,7 +95,7 @@ const PromptEditor = ({ onSave, onCancel }: PromptEditorProps) => {
                 <Title level={5}>Design Recommendations Prompt</Title>
               </Col>
               <Col>
-                <Button size="small" onClick={() => handleReset('design')}>Reset to Default</Button>
+                <Button size="small" onClick={() => handleReset(PromptName.STYLESHEET)}>Reset to Default</Button>
               </Col>
             </Row>
             <TextArea
