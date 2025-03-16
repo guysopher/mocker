@@ -50,6 +50,7 @@ export default function AppDescriptionForm({ onSubmit, isGenerating }: AppDescri
   
   const handleSavePrompts = (updatedPrompts: Record<PromptName, string>) => {
     setPrompts(updatedPrompts)
+    localStorage.setItem(STORAGE_KEY_PROMPTS, JSON.stringify(updatedPrompts))
     setIsPromptEditorOpen(false)
   }
   
@@ -99,25 +100,40 @@ export default function AppDescriptionForm({ onSubmit, isGenerating }: AppDescri
         </Form.Item>
         
         <Form.Item>
-          <div className="flex justify-end space-x-2">
+          <div className="flex justify-between space-x-2">
             <Button
               type="default"
-              icon={<SettingOutlined />}
-              onClick={() => setIsPromptEditorOpen(true)}
+              onClick={() => {
+                // Reset prompts to default
+                setPrompts(defaultPrompts);
+                // Remove prompts from localStorage but keep description
+                if (typeof window !== 'undefined') {
+                  localStorage.setItem(STORAGE_KEY_PROMPTS, JSON.stringify(defaultPrompts));
+                }
+              }}
               disabled={isGenerating}
             >
-              Edit Prompts
+              Reset Prompts to Default
             </Button>
-            <Button
-              type="primary"
-              htmlType="submit"
-              disabled={!description.trim() || isGenerating}
-              icon={<SendOutlined />}
-              size="large"
-              loading={isGenerating}
-            >
-              {isGenerating ? 'Generating...' : 'Generate App'}
-            </Button>
+            <div className="flex space-x-2">
+              <Button
+                type="default"
+                icon={<SettingOutlined />}
+                onClick={() => setIsPromptEditorOpen(true)}
+                disabled={isGenerating}
+              >
+                Edit Prompts
+              </Button>
+              <Button
+                type="primary"
+                htmlType="submit"
+                disabled={!description.trim() || isGenerating}
+                icon={<SendOutlined />}
+                loading={isGenerating}
+              >
+                {isGenerating ? 'Generating...' : 'Generate App'}
+              </Button>
+            </div>
           </div>
         </Form.Item>
       </Form>
@@ -133,6 +149,8 @@ export default function AppDescriptionForm({ onSubmit, isGenerating }: AppDescri
           onSave={handleSavePrompts} 
           onCancel={() => setIsPromptEditorOpen(false)}
           onResetPrompt={handleResetPrompt}
+          editedPrompts={prompts}
+          setEditedPrompts={setPrompts}
         />
       </Modal>
     </>

@@ -12,38 +12,15 @@ interface PromptEditorProps {
   onSave: (updatedPrompts: any) => void;
   onCancel: () => void;
   onResetPrompt: (promptName: PromptName) => void;
+  editedPrompts: any;
+  setEditedPrompts: (updatedPrompts: any) => void;
 }
 
 // Mapping between PromptName enum and the keys used in the editedPrompts state
-const PromptEditor = ({ onSave, onCancel, onResetPrompt }: PromptEditorProps) => {
-  const [editedPrompts, setEditedPrompts] = useState<any>(null);
+const PromptEditor = ({ onSave, onCancel, onResetPrompt, editedPrompts, setEditedPrompts }: PromptEditorProps) => {
   const [activeTab, setActiveTab] = useState<string>(PromptName.APP_BRIEF);
   
   // const { success, error, info, contextHolder } = useMessage();
-
-  // Load prompts from localStorage on component mount
-  useEffect(() => {
-    const loadPrompts = () => {
-      try {
-        // Try to get saved prompts from localStorage
-        const savedPrompts = JSON.parse(localStorage.getItem('customPrompts') || '{}');
-        
-        const editedPrompts = {...prompts};
-        if (savedPrompts) {
-          for (const promptName of Object.keys(savedPrompts)) {
-            // If saved prompts exist, use them
-            editedPrompts[promptName as PromptName] = savedPrompts[promptName as any];
-          }
-        }
-        setEditedPrompts(editedPrompts);
-      } catch (error) {
-        console.error('Error loading prompts:', error);
-        setEditedPrompts(prompts);
-      }
-    };
-
-    loadPrompts();
-  }, []);
 
   const handleChange = (field: string, value: string) => {
     setEditedPrompts((prev: any) => ({
@@ -53,9 +30,6 @@ const PromptEditor = ({ onSave, onCancel, onResetPrompt }: PromptEditorProps) =>
   };
 
   const handleSave = () => {
-    // Save to localStorage
-    localStorage.setItem('customPrompts', JSON.stringify(editedPrompts));
-    
     onSave(editedPrompts);
   };
 
