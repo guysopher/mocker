@@ -1,5 +1,5 @@
 import { CanvasElement } from '@/types/canvas'
-import { Component, FC, useEffect } from 'react'
+import { Component, FC, useEffect, useState } from 'react'
 import { CommentsIndicator } from '@/components/CommentsIndicator'
 import * as antd from 'antd'
 import { Skeleton, Tabs } from 'antd'
@@ -48,6 +48,8 @@ export const DesignView: FC<DesignViewProps> = ({
   showProgress,
   isGenerating
 }) => {
+
+  const [activePage, setActivePage] = useState(Object.keys(pages)[0] || '');
 
   const compileAndRenderComponent = async (code: string, elementId: string) => {
     try {
@@ -141,6 +143,12 @@ export const DesignView: FC<DesignViewProps> = ({
     )
   }));
 
+  useEffect(() => {
+    if (pages[activePage] && pages[activePage].components && pages[activePage].components.length > 0) {
+      compileAndRenderComponent(pages[activePage].components[0], 'render-page-' + titleToId(activePage));
+    }
+  }, [activePage, pages]);
+
   return (
     <div className='w-full h-full'>
       {
@@ -155,17 +163,9 @@ export const DesignView: FC<DesignViewProps> = ({
             }
           }}
             onTabClick={(key) => {
-              if (pages[key] && pages[key].components && pages[key].components.length > 0) {
-                compileAndRenderComponent(pages[key].components[0], 'render-page-' + titleToId(key));
-              }
+              setActivePage(key);
             }}
-            defaultActiveKey={Object.keys(pages)[0] || ''}
-            onLoad={() => {
-              const firstPage = Object.keys(pages)[0];
-              if (firstPage && pages[firstPage] && pages[firstPage].components && pages[firstPage].components.length > 0) {
-                compileAndRenderComponent(pages[firstPage].components[0], 'render-page-' + titleToId(firstPage));
-              }
-            }}
+            defaultActiveKey={activePage}
           />
         )
       }
