@@ -17,16 +17,8 @@ app.prepare().then(() => {
   createServer(httpsOptions, (req, res) => {
     const parsedUrl = parse(req.url, true);
     handle(req, res, parsedUrl);
-  }).listen(3001, (err) => {
+  }).listen(3000, (err) => {
     if (err) throw err;
-    console.log('> Ready on https://localhost:3001');
+    console.log('> Ready on https://localhost:3000');
   });
-});
-
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: true,
-  // your other Next.js config options here
-};
-
-module.exports = nextConfig;
+}); 

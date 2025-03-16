@@ -25,7 +25,7 @@ const SpeechRecognition = typeof window !== 'undefined'
   ? (window.SpeechRecognition || window.webkitSpeechRecognition)
   : null;
 
-export default function VoiceInteraction({ elementId, onVoiceEnd, element }: VoiceInteractionProps) {
+export default function VoiceInteraction({ elementId, onVoiceEnd, element, isActive }: VoiceInteractionProps) {
   const [isListening, setIsListening] = useState(true)
   const [transcript, setTranscript] = useState('')
   const [minimized, setMinimized] = useState(false)
@@ -79,25 +79,57 @@ export default function VoiceInteraction({ elementId, onVoiceEnd, element }: Voi
   };
 
   useEffect(() => {
+    if (!isActive) {
+      setIsListening(false);
+      setTranscript('');
+      try {
+        window.recognition.stop();
+      } catch (error) {
+        console.error('Speech recognition error:', error);
+      }
+    } else {
+      setIsListening(true);
+      try {
+        window.recognition.start();
+      } catch (error) {
+        console.error('Speech recognition error:', error);
+      }
+    }
+  }, [isActive]);
+
+  useEffect(() => {
     if (!hasPermission) {
       requestMicrophonePermission();
     }
     const recognitionInstance = new SpeechRecognition();
-    recognitionInstance.stop();
+    // recognitionInstance.stop();
     recognitionInstance.continuous = true;
     recognitionInstance.interimResults = true;
     recognitionInstance.lang = 'en-US'; // Default language
     recognitionInstance.onerror = (event: any) => {
       console.log('Speech recognition error:', event);
     };
-    recognitionInstance.onnomatch = (event: any) => {
-      console.log('Speech recognition no match:', event);
-    };
-    recognitionInstance.onprogress = (event: any) => {
-      console.log('Speech recognition progress:', event);
-    };
+    // recognitionInstance.onnomatch = (event: any) => {
+    //   console.log('Speech recognition no match:', event);
+    // };
+    // recognitionInstance.onprogress = (event: any) => {
+    //   console.log('Speech recognition progress:', event);
+    // };
+    // recognitionInstance.onsoundstart = (event: any) => {
+    //   console.log('Speech recognition sound start:', event);
+    // };
+    // recognitionInstance.onsoundend = (event: any) => {
+    //   console.log('Speech recognition sound end:', event);
+    // };
+    // recognitionInstance.onaudiostart = (event: any) => {
+    //   console.log('Speech recognition audio start:', event);
+    // };
+    // recognitionInstance.onaudioend = (event: any) => {
+    //   console.log('Speech recognition audio end:', event);
+    // };
+
     recognitionInstance.onresult = (event: any) => {
-      console.log('Speech recognition result:', event);
+      // console.log('Speech recognition result:', event);
       let interimTranscript = '';
       let finalTranscript = '';
 
@@ -110,15 +142,17 @@ export default function VoiceInteraction({ elementId, onVoiceEnd, element }: Voi
           interimTranscript += transcript;
         }
       }
-      console.log('finalTranscript', finalTranscript);
+      // console.log('finalTranscript', finalTranscript);
       setTranscript(finalTranscript + interimTranscript);
     };
 
     recognitionInstance.onstart = () => {
+      // console.log('Speech recognition onstart');
       setIsRecognitionActive(true);
     };
 
     recognitionInstance.onend = () => {
+      // console.log('Speech recognition onend');
       setIsRecognitionActive(false);
     };
 
@@ -145,8 +179,6 @@ export default function VoiceInteraction({ elementId, onVoiceEnd, element }: Voi
           setIsListening(false);
         }
       }
-    } else {
-      window.recognition.stop();
     }
   }, [isListening])
 
@@ -161,54 +193,58 @@ export default function VoiceInteraction({ elementId, onVoiceEnd, element }: Voi
   const position = getPosition()
 
   return (
-    <div
-      ref={popupRef}
-      className="fixed z-50 bg-white/95 rounded-full shadow-2xl transition-all duration-300 animate-fadeIn backdrop-blur-md border border-white/20 flex items-center"
-      style={{
-        top: position.top,
-        left: position.left,
-        width: transcript ? '600px' : '180px',
-        height: '180px',
-        padding: '20px'
-      }}
-    >
-      <div className="h-full aspect-square rounded-full flex items-center justify-center group relative">
-        <div className="relative group">
-          <div className={`absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full opacity-75 blur transition duration-1000 ${isListening ? 'animate-pulse' : ''}`}></div>
-          <div className={`relative w-28 h-28 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-xl ${isListening ? 'scale-110' : ''} transition-transform duration-300`}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-14 w-14 text-white transform transition-transform"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
-              />
-            </svg>
-            {isListening && (
-              <div className="absolute inset-0 rounded-full animate-pulse-ring"></div>
-            )}
+    isActive ? (
+      <div
+        ref={popupRef}
+        className="fixed z-50 bg-white/95 rounded-full shadow-2xl transition-all duration-300 animate-fadeIn backdrop-blur-md border border-white/20 flex items-center"
+        style={{
+          top: position.top,
+          left: position.left,
+          width: transcript ? '600px' : '180px',
+          height: '180px',
+          padding: '20px'
+        }}
+      >
+        <div className="h-full aspect-square rounded-full flex items-center justify-center group relative">
+          <div className="relative group">
+            <div className={`absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full opacity-75 blur transition duration-1000 ${isListening ? 'animate-pulse' : ''}`}></div>
+            <div className={`relative w-28 h-28 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-xl ${isListening ? 'scale-110' : ''} transition-transform duration-300`}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-14 w-14 text-white transform transition-transform"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+                />
+              </svg>
+              {isListening && (
+                <div className="absolute inset-0 rounded-full animate-pulse-ring"></div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-      <div
-        className={`flex-1 ml-4 transition-opacity duration-300 ${transcript ? 'opacity-100' : 'opacity-0'}`}
-      >
-        <input
-          ref={inputRef}
-          type="text"
-          value={transcript}
-          readOnly
-          className="w-full bg-gray-50/50 border border-gray-200 rounded-full px-4 py-2 text-gray-700 focus:outline-none"
-          placeholder="Listening..."
-        />
+        <div
+          className={`flex-1 ml-4 transition-opacity duration-300 ${transcript ? 'opacity-100' : 'opacity-0'}`}
+        >
+          <input
+            ref={inputRef}
+            type="text"
+            value={transcript}
+            readOnly
+            className="w-full bg-gray-50/50 border border-gray-200 rounded-full px-4 py-2 text-gray-700 focus:outline-none"
+            placeholder="Listening..."
+          />
+        </div>
       </div>
-    </div>
+    ) : (
+      null
+    )
   )
 }

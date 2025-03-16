@@ -42,7 +42,7 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
 
   const getCssPath = (element: HTMLElement): string => {
     if (!element || element === document.documentElement) return '';
-    
+
     const parent = element.parentElement;
     if (!parent) return element.tagName.toLowerCase();
 
@@ -55,7 +55,7 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
     const tag = element.tagName.toLowerCase();
     const classes = element.className ? `.${element.className.trim().replace(/\s+/g, '.')}` : '';
     const nthSelector = nth > 1 ? `:nth-of-type(${nth})` : '';
-    
+
     return `${getCssPath(parent)} > ${tag}${classes}${nthSelector}`.trim();
   };
 
@@ -89,7 +89,7 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
           <div className="flex-1" onMouseDown={handleElementMouseDown} onMouseUp={handleElementMouseUp}>
             {view === 'brief' && <BriefView
               elements={appContent?.brief as BriefItem[]}
-              onElementClick={() => {}}
+              onElementClick={() => { }}
               onElementUpdate={(elementId, updates) => {
                 // Handle element updates here
                 console.log('Element updated:', elementId, updates)
@@ -101,7 +101,7 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
             />}
             {view === 'stories' && <StoriesView
               elements={appContent?.stories as CanvasStory[]}
-              onElementClick={() => {}}
+              onElementClick={() => { }}
               activeElement={activeElement}
               showProgress={showProgress}
               isGenerating={!appContent?.stories || !appContent?.stories.length}
@@ -110,7 +110,7 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
             />}
             {view === 'sitemap' && <SitemapView
               elements={appContent?.sitemap as string[]}
-              onElementClick={() => {}}
+              onElementClick={() => { }}
               activeElement={activeElement}
               showProgress={showProgress}
               isGenerating={!appContent?.sitemap || !appContent?.sitemap.length}
@@ -118,7 +118,7 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
             {view === 'pages' && <DesignView
               pages={appContent?.pages || {}}
               stylesheet={appContent?.stylesheet || ''}
-              onElementClick={() => {}}
+              onElementClick={() => { }}
               activeElement={activeElement}
               showProgress={showProgress}
               isGenerating={!appContent?.pages || !Object.keys(appContent?.pages).length}
@@ -127,23 +127,24 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
         </div>
       </div>
 
-      {voiceActive && (
-        <div
-          style={{
-            position: 'fixed',
-            left: voicePopupPosition.x,
-            top: voicePopupPosition.y,
-            transform: 'translate(-50%, -50%)',
-            zIndex: 1000
-          }}
-        >
-          <VoiceInteraction
-            elementId={activeElement || ''}
-            onVoiceEnd={handleVoiceEnd}
-            element={canvasElements.find(el => el.id === activeElement)}
-          />
-        </div>
-      )}
+      <div
+        style={{
+          display: voiceActive ? 'block' : 'none',
+          position: 'fixed',
+          left: voicePopupPosition.x,
+          top: voicePopupPosition.y,
+          transform: 'translate(-50%, -50%)',
+          zIndex: 1000
+        }}
+      >
+        <VoiceInteraction
+          isActive={voiceActive}
+          elementId={activeElement || ''}
+          onVoiceEnd={handleVoiceEnd}
+          element={canvasElements.find(el => el.id === activeElement)}
+        />
+      </div>
+
     </div>
   )
 }
