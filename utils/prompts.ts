@@ -431,8 +431,8 @@ Create a HTML/CSS component based on the following information:
 App Brief:
 {{brief}}
 
-Global CSS Classes:
-{{cssClasses}}
+Page Description:
+{{page}}
 
 `
 };
