@@ -8,12 +8,15 @@ import { DesignView } from '@/components/views/DesignView'
 import { BriefView } from '@/components/views/BriefView'
 import { CanvasElement, CanvasStory, BriefItem } from '@/types/canvas'
 import { SitemapView } from '@/components/views/SitemapView'
+import prompts from '@/utils/prompts'
+import { generateChangeRequest } from '@/utils/openai'
 
 interface CanvasProps {
   view: string
   appDescription: string
   generatingSection: string | null
   buildProgress: number
+  onChangeRequest: (changeRequest: string) => void
   appContent: {
     brief: BriefItem[]
     pages: any
@@ -23,13 +26,14 @@ interface CanvasProps {
   } | null
 }
 
-export default function Canvas({ view, appDescription, generatingSection, buildProgress, appContent }: CanvasProps) {
+export default function Canvas({ view, appDescription, generatingSection, buildProgress, appContent, onChangeRequest }: CanvasProps) {
   const [activeElement, setActiveElement] = useState<string | null>(null)
   const [voiceActive, setVoiceActive] = useState(false)
   const [canvasElements, setCanvasElements] = useState<CanvasElement[]>([])
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [voicePopupPosition, setVoicePopupPosition] = useState({ x: 0, y: 0 })
   const [showProgress, setShowProgress] = useState(null as any)
+  const [changeRequests, setChangeRequests] = useState<string[]>([])
   const canvasRef = useRef<HTMLDivElement>(null)
 
   const handleElementMouseDown = (event: ReactMouseEvent<HTMLDivElement>) => {
@@ -37,7 +41,7 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
     const elementId = getCssPath(target);
     setVoiceActive(true);
     setVoicePopupPosition({ x: event.clientX, y: event.clientY });
-    setActiveElement(elementId);
+    if (elementId) setActiveElement(elementId);
   }
 
   const getCssPath = (element: HTMLElement): string => {
@@ -60,12 +64,28 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
   };
 
   const handleElementMouseUp = (event: ReactMouseEvent<HTMLDivElement>) => {
-    setVoiceActive(false)
+    setTimeout(() => {
+      setVoiceActive(false)
+    }, 1000)
   }
 
-  const handleVoiceEnd = () => {
+  const handleVoiceEnd = async (changeRequest: string) => {
+    if (!changeRequest) return;
     setShowProgress(activeElement)
     setVoiceActive(false)
+
+    const context = await fetch('/api/context', {
+      method: 'POST',
+      body: JSON.stringify({ html: document.documentElement.outerHTML, cssPath: activeElement, userRequest: changeRequest })
+    })
+
+    const contextData = await context.json()
+
+    const lastChangeRequest = `This is the user request: '${changeRequest}', and this is the context that the user is referring to: '${JSON.stringify(contextData.context)}'`
+    const tempChangeRequests = [lastChangeRequest, ...changeRequests.filter(Boolean)]
+    setChangeRequests(tempChangeRequests)
+
+    onChangeRequest(lastChangeRequest)
   }
 
   return (

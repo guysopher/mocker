@@ -28,7 +28,7 @@ import AppDescriptionForm from '@/components/AppDescriptionForm'
 import Header from '@/components/Header'
 import { CanvasStory } from '@/types/canvas'
 import { BriefItem } from '@/types/canvas'
-import { PromptName } from '@/utils/prompts'
+import prompts, { PromptName } from '@/utils/prompts'
 
 const { Content } = Layout
 const { Title, Text } = Typography
@@ -56,50 +56,61 @@ export default function Home() {
   } | null>(null)
   const [generatingSection, setGeneratingSection] = useState<string | null>(null)
 
-  const handleSubmitDescription = async (description: string, prompts: Record<PromptName, string>) => {
+  let tempAppContent = {
+    brief: [],
+    stories: [],
+    sitemap: [],
+    stylesheet: { classes: [], stylesheet: '' },
+    pages: {} as Record<string, {
+      order: number;
+      layout: string;
+      components: string[];
+    }>
+  }
+
+
+  const createPromise = async (section: string, description: string, prompts: Record<PromptName, string>, changeRequest?: string) => {
+    try {
+      const _section = changeRequest ? 'change' : section
+      await fetch(`/api/${_section}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ description, customPrompt: prompts[_section as keyof typeof prompts], changeRequest, ...tempAppContent, section }),
+      }).then(response => response.json()).then(data => {
+        if (changeRequest) {
+          data = data.change;
+          console.log("Change request", data)
+        }
+        tempAppContent = {
+          brief: section === 'brief' ? data.brief : (tempAppContent?.brief || []),
+          sitemap: section === 'sitemap' ? data.sitemap : (tempAppContent?.sitemap || []),
+          stories: section === 'stories' ? data.stories : (tempAppContent?.stories || []),
+          pages: section === 'pages' ? data.pages : (tempAppContent?.pages || {}),
+          stylesheet: section === 'stylesheet' ? data.stylesheet : (tempAppContent?.stylesheet || { classes: [], stylesheet: '' })
+        };
+        setAppContent(tempAppContent);
+      });
+    } catch (error) {
+      console.error(`Error generating ${section}:`, error);
+    }
+  };
+
+  const handleChangeRequest = async (changeRequest: string) => {
+    await handleSubmitDescription(appDescription, prompts, changeRequest)
+  }
+
+  const handleSubmitDescription = async (description: string, prompts: Record<PromptName, string>, changeRequest?: string) => {
     setAppDescription(description)
     setGeneratingContent(true)
     setGeneratingSection('brief')
     setAppGenerated(true);
 
     try {
-      let tempAppContent = {
-        brief: [],
-        stories: [],
-        sitemap: [],
-        stylesheet: { classes: [], stylesheet: '' },
-        pages: {} as Record<string, {
-          order: number;
-          layout: string;
-          components: string[];
-        }>
-      }
+      await createPromise('brief', description, prompts, changeRequest);
 
-      const createPromise = async (section: string) => {
-        try {
-          await fetch(`/api/${section}`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ description, customPrompt: prompts[section as keyof typeof prompts], ...tempAppContent }),
-          }).then(response => response.json()).then(data => {
-            tempAppContent = {
-              brief: section === 'brief' ? data.brief : (tempAppContent?.brief || []),
-              sitemap: section === 'sitemap' ? data.sitemap : (tempAppContent?.sitemap || []),
-              stories: section === 'stories' ? data.stories : (tempAppContent?.stories || []),
-              pages: section === 'pages' ? data.pages : (tempAppContent?.pages || {}),
-              stylesheet: section === 'stylesheet' ? data.stylesheet : (tempAppContent?.stylesheet || { classes: [], stylesheet: '' })
-            };
-            setAppContent(tempAppContent);
-          });
-        } catch (error) {
-          console.error(`Error generating ${section}:`, error);
-        }
-      };
-      await createPromise('brief');
-
-      await Promise.all([createPromise('stories'), createPromise('stylesheet'), createPromise('sitemap')]);
+      await Promise.all([createPromise('stories', description, prompts, changeRequest), createPromise('stylesheet', description, prompts, changeRequest), createPromise('sitemap', description, prompts, changeRequest)]);
 
       const pagePromises = tempAppContent.sitemap.map(async (page: { type: string, description: string }, idx: number) => {
         try {
@@ -132,7 +143,7 @@ export default function Home() {
                   headers: {
                     'Content-Type': 'application/json',
                   },
-                  body: JSON.stringify({ description, page, component, cssClasses: tempAppContent?.stylesheet?.classes, customPrompt: prompts.component, ...tempAppContent }),
+                  body: JSON.stringify({ description, page, component, customPrompt: prompts.component, ...tempAppContent }),
                 });
 
                 if (!response.ok) {
@@ -165,7 +176,7 @@ export default function Home() {
               headers: {
                 'Content-Type': 'application/json',
               },
-              body: JSON.stringify({ description, page, cssClasses: tempAppContent?.stylesheet?.classes, customPrompt: prompts.page, ...tempAppContent }),
+              body: JSON.stringify({ description, page, customPrompt: prompts.page, ...tempAppContent }),
             });
 
             if (!pageResponse.ok) {
@@ -330,6 +341,7 @@ export default function Home() {
                 appDescription={appDescription}
                 generatingSection={generatingSection}
                 buildProgress={buildProgress}
+                onChangeRequest={handleChangeRequest}
                 appContent={{
                   brief: appContent?.brief || [],
                   pages: appContent?.pages || {},

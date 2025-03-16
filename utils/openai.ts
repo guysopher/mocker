@@ -220,7 +220,6 @@ export async function generateLayout(
 export async function generateComponent(
     description: string,
     brief: string,
-    cssClasses: string,
     page: string,
     component: string,
     customPrompt?: string
@@ -229,7 +228,6 @@ export async function generateComponent(
         const systemPrompt = (customPrompt || prompts.component)
             .replace('{{description}}', description)
             .replace('{{brief}}', brief)
-            .replace('{{cssClasses}}', cssClasses)
             .replace('{{page}}', page)
             .replace('{{component}}', component);
 
@@ -259,7 +257,6 @@ export async function generateComponent(
 export async function generatePage(
     description: string,
     brief: string,
-    cssClasses: string,
     page: string,
     customPrompt?: string
 ) {
@@ -267,7 +264,6 @@ export async function generatePage(
         const systemPrompt = (customPrompt || prompts.page)
             .replace('{{description}}', description)
             .replace('{{brief}}', brief)
-            .replace('{{cssClasses}}', cssClasses)
             .replace('{{page}}', page)
 
         const response = await openai.chat.completions.create({
@@ -322,6 +318,82 @@ export async function generateStylesheet(
         }
     } catch (error) {
         console.error('Error generating stylesheet:', error);
+        throw error;
+    }
+}
+
+export async function generateChangeRequest(
+    result: string,
+    changeRequest: string,
+    prompt: string,
+    promptParams: Record<string, string>,
+    customPrompt?: string
+) {
+    try {
+        let systemPrompt = (customPrompt || prompts.changeRequest)
+            .replace('{{result}}', result)
+            .replace('{{changeRequest}}', changeRequest)
+            .replace('{{prompt}}', prompt);
+        
+        //replace any {{}} in the prompt param with the relevant param from the params object
+        Object.keys(promptParams).forEach(key => {
+            systemPrompt = systemPrompt.replace(`{{${key}}}`, promptParams[key]);
+        });
+
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o",
+            max_tokens: 16384,
+            messages: [
+                {
+                    role: "system",
+                    content: systemPrompt
+                },
+            ],
+            temperature: 0.7,
+            response_format: { type: "json_object" }
+        });
+
+        if (response.choices[0]?.message?.content) {
+            return {
+                change: JSON.parse(response.choices[0].message.content),
+                prompt: systemPrompt
+            };
+        } else {
+            throw new Error('Unexpected response format from OpenAI API');
+        }
+    } catch (error) {
+        console.error('Error generating change request:', error);
+        throw error;
+    }
+}
+
+export async function getContext(html: string, cssPath: string, userRequest: string) {
+    try {
+        const systemPrompt = prompts.context
+            .replace('{{html}}', html)
+            .replace('{{cssPath}}', cssPath)
+            .replace('{{userRequest}}', userRequest);
+
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o",
+            max_tokens: 500,
+            messages: [
+                {
+                    role: "system",
+                    content: systemPrompt
+                },
+            ],
+            temperature: 0.7,
+            response_format: { type: "json_object" }
+        });
+
+        if (response.choices[0]?.message?.content) {
+            return JSON.parse(response.choices[0].message.content);
+        } else {
+            throw new Error('Unexpected response format from OpenAI API');
+        }
+    } catch (error) {
+        console.error('Error generating context:', error);
         throw error;
     }
 }

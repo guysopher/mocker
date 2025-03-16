@@ -16,7 +16,7 @@ interface VoiceInteractionProps {
   isActive?: boolean
   eventTarget?: EventTarget
   elementId?: string
-  onVoiceEnd?: () => void
+  onVoiceEnd?: (changeRequest: string) => void
   element?: any // Using any for simplicity, should be properly typed
 }
 
@@ -68,7 +68,6 @@ export default function VoiceInteraction({ elementId, onVoiceEnd, element, isAct
 
   const requestMicrophonePermission = async () => {
     try {
-      debugger;
       await navigator.mediaDevices.getUserMedia({ audio: true });
       setHasPermission(true);
       setIsListening(true);
@@ -81,18 +80,22 @@ export default function VoiceInteraction({ elementId, onVoiceEnd, element, isAct
   useEffect(() => {
     if (!isActive) {
       setIsListening(false);
+      if (transcript) {
+        console.log("Submitting change request:", transcript)
+        onVoiceEnd?.(transcript);
+      }
       setTranscript('');
       try {
         window.recognition.stop();
       } catch (error) {
-        console.error('Speech recognition error:', error);
+        // console.error('Speech recognition error:', error);
       }
     } else {
       setIsListening(true);
       try {
         window.recognition.start();
       } catch (error) {
-        console.error('Speech recognition error:', error);
+        // console.error('Speech recognition error:', error);
       }
     }
   }, [isActive]);
@@ -171,11 +174,11 @@ export default function VoiceInteraction({ elementId, onVoiceEnd, element, isAct
               window.recognition.start();
             })
             .catch((error) => {
-              console.error('Microphone permission denied:', error);
+              // console.error('Microphone permission denied:', error);
               setIsListening(false);
             });
         } catch (error) {
-          console.error('Speech recognition error:', error);
+          // console.error('Speech recognition error:', error);
           setIsListening(false);
         }
       }

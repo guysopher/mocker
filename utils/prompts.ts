@@ -6,7 +6,9 @@ export enum PromptName {
     STYLESHEET = 'stylesheet',
     LAYOUT = 'layout',
     COMPONENT = 'component',
-    PAGE = 'page'
+    PAGE = 'page',
+    CHANGE_REQUEST = 'changeRequest',
+    CONTEXT = 'context'
 }
 
 // Define the prompts
@@ -25,7 +27,7 @@ Your task is to analyze the provided app requirements and create a structured in
 - The descriptions should be concise and informative
 
 ## OUTPUT STRUCTURE
-The output should be organized in the following sections:
+The output should be organized in the following sections, where each section is a JSON object, with a title and ID:
 
 1. Executive Summary
 - Product Overview
@@ -59,18 +61,19 @@ The output should be organized in the following sections:
 
 ## OUTPUT FORMAT
 Provide the brief in a JSON array format following the sections defined above.
-Note: The description should be a textual description (not a JSON)
+Note: The description should be a textual description (not an object)
+
 For example:
 { brief: [
     {
         "id": "brief1",
         "name": "Executive Summary",
-        "description": "A concise textual description of the executive summary"
+        "description": "A concise text description of the executive summary"
     },
     {
         "id": "brief2",
         "name": "Product Requirements",
-        "description": "A concise textual description of the product requirements"
+        "description": "A concise text description of the product requirements"
     },
     ...
 ]}
@@ -294,9 +297,6 @@ Create a HTML/CSS component based on the following information:
 App Brief:
 {{brief}}
 
-Global CSS Classes:
-{{cssClasses}}
-
 Component Description:
 {{component}}
 
@@ -432,8 +432,65 @@ Create a HTML/CSS component based on the following information:
 Component Description:
 {{page}}
 
-`
+`,
+    // This is a prefix that will be added to the end of the prompt - in case the user want to change something existing and not create a new one
+    [PromptName.CHANGE_REQUEST]: `
+
+    In the following prompt, you will receive a request to change something in the existing result
+
+    The result could be any json - as defined by the creation prompt.
+
+    This is the existing result:
+    {{result}}
+
+    This is the change request:
+    {{changeRequest}}
+
+    This is the prompt that was used to create the result, follow it to create the new result in the format it defines:
+    {{prompt}}
+
+ `,
+
+    [PromptName.CONTEXT]: `
+    ## ROLE
+    You are a senior HTML analyst. Your task is to analyze the HTML code and return the element that the user is currently interacting with, and the intent it has.
+
+    ## INSTRUCTIONS
+    - Analyze the HTML code and return the element that the user is currently interacting with.
+    - Find the element that the user is currently interacting with, according to the CSS path of the element.
+    - Understand the request of the user.
+    - Figure out the relationship between the element and the request.
+    - Create a snapshot of the relevant part of the element and the intent.
+
+    ## OUTPUT FORMAT
+ Return the element in the following JSON format:
+    {
+        "section": "brief | stories | sitemap | page",
+        "element": "string",
+        "snapshot": "string",
+        "intent": "string"
+    }
+
+    ## EXAMPLES
+    {
+        "section": "brief",
+        "element": "Executive Summary",
+        "snapshot": "...This app is meant for small businesses to manage their operations...",
+        "intent": "The user is requesting a add a monetisation section to the Executive Summary"
+    }
+
+    ## INPUT
+    This is the HTML code of the page:
+    {{html}}
+
+    This is the CSS path of the element that the user is currently interacting with:
+    {{cssPath}}
+
+    This is the request of the user:
+    {{userRequest}}
+
+ `
 };
 
-// Export the prompts object as the default export
-export default prompts; 
+    // Export the prompts object as the default export
+    export default prompts; 
