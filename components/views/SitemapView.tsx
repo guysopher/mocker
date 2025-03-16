@@ -73,9 +73,6 @@ export const SitemapView: React.FC<SitemapViewProps> = ({
             onClick={() => onElementClick(page)}
           >
             <div className="flex items-center">
-              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 mr-3">
-                {index + 1}
-              </div>
               {renderPageContent(page)}
             </div>
             {showProgress === page && (
