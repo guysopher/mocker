@@ -26,9 +26,9 @@ const PromptEditor = ({ onSave, onCancel, onResetPrompt }: PromptEditorProps) =>
     const loadPrompts = () => {
       try {
         // Try to get saved prompts from localStorage
-        const savedPrompts = localStorage.getItem('customPrompts');
+        const savedPrompts = JSON.parse(localStorage.getItem('customPrompts') || '{}');
         
-        const editedPrompts = prompts;
+        const editedPrompts = {...prompts};
         if (savedPrompts) {
           for (const promptName of Object.keys(savedPrompts)) {
             // If saved prompts exist, use them
