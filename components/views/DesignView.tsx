@@ -57,7 +57,7 @@ export const DesignView: FC<DesignViewProps> = ({
   const [activePage, setActivePage] = useState(Object.keys(pages)[0] || '');
   const [renderedPages, setRenderedPages] = useState<Record<string, boolean>>({});
 
-  const compileAndRenderComponent = async (code: string, elementId: string) => {
+  const addComponentScript = async (code: string, elementId: string) => {
     if (renderedPages[elementId]) {
       return;
     }
@@ -98,7 +98,14 @@ export const DesignView: FC<DesignViewProps> = ({
         }
       `;
       document.head.appendChild(scriptElement);
+    } catch (error) {
+      console.error("Error adding component script:", error);
+    }
+  }
 
+  const compileAndRenderComponent = async (code: string, elementId: string) => {
+    try {
+      await addComponentScript(code, elementId);
       // Now the Component should be available as a global variable
       const PageComponent = window?.[elementId]?.default || window?.[elementId];
 
@@ -160,9 +167,13 @@ export const DesignView: FC<DesignViewProps> = ({
   }));
 
   useEffect(() => {
-    if (pages?.[activePage]?.components?.length > 0) {
-      compileAndRenderComponent(pages[activePage].components[0], titleToId(activePage));
+    const loadComponents = async () => {
+      if (pages?.[activePage]?.components?.length > 0) {
+        await Promise.all(Object.keys(pages).map(page => addComponentScript(pages[page].components[0], titleToId(page))));
+        compileAndRenderComponent(pages[activePage].components[0], titleToId(activePage));
+      }
     }
+    loadComponents();
   }, [activePage, pages]);
 
   return (

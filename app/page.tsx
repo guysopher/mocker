@@ -111,7 +111,7 @@ export default function Home() {
     try {
       await createPromise('brief', description, prompts, changeRequest);
 
-      await Promise.all([createPromise('stories', description, prompts, changeRequest), createPromise('stylesheet', description, prompts, changeRequest), createPromise('sitemap', description, prompts, changeRequest)]);
+      await Promise.all([createPromise('stories', description, prompts, changeRequest), createPromise('sitemap', description, prompts, changeRequest)]);
 
       const pagePromises = tempAppContent.sitemap.map(async (page: { type: string, description: string }, idx: number) => {
         try {
