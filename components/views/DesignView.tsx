@@ -58,10 +58,6 @@ export const DesignView: FC<DesignViewProps> = ({
   const [renderedPages, setRenderedPages] = useState<Record<string, boolean>>({});
 
   const addComponentScript = async (code: string, elementId: string) => {
-    if (renderedPages[elementId]) {
-      return;
-    }
-
     setRenderedPages(prev => ({
       ...prev,
       [elementId]: true
@@ -168,7 +164,6 @@ export const DesignView: FC<DesignViewProps> = ({
 
   useEffect(() => {
     const loadComponents = async () => {
-      debugger;
       if (pages?.[activePage]?.components?.length > 0) {
         await Promise.all(Object.keys(pages).map(page => addComponentScript(pages[page].components[0], titleToId(page))));
         compileAndRenderComponent(pages[activePage].components[0], titleToId(activePage));
