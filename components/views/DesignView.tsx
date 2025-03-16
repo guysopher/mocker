@@ -2,11 +2,12 @@ import { CanvasElement } from '@/types/canvas'
 import { Component, FC, useEffect, useState } from 'react'
 import { CommentsIndicator } from '@/components/CommentsIndicator'
 import * as antd from 'antd'
-import { Skeleton, Tabs } from 'antd'
+import { Skeleton, Spin, Tabs } from 'antd'
 import * as Babel from '@babel/standalone';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import * as antdIcons from '@ant-design/icons';
+import { LoadingOutlined } from '@ant-design/icons'
 
 interface DesignViewProps {  
   pages: Record<string, {
@@ -154,9 +155,12 @@ export const DesignView: FC<DesignViewProps> = ({
           width: 1105,
           margin: '0 auto',
           overflow: 'hidden',
-          boxSizing: 'border-box'
+          boxSizing: 'border-box',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
         }}>
-        Loading...
+        <Spin indicator={<LoadingOutlined />} />
       </div>
     )
   }));
@@ -174,8 +178,9 @@ export const DesignView: FC<DesignViewProps> = ({
   useEffect(() => {
     if (!isGenerating) {
       setTimeout(() => {
-        compileAndRenderComponent(pages[activePage].components[0], titleToId(activePage));
-      }, 100);
+        setActivePage(Object.keys(pages)[0]);
+        compileAndRenderComponent(pages[Object.keys(pages)[0]].components[0], titleToId(Object.keys(pages)[0]));
+      }, 1000);
     }
   }, [isGenerating]);
 
