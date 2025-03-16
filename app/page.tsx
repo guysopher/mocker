@@ -69,6 +69,7 @@ export default function Home() {
         sitemap: [],
         stylesheet: { classes: [], stylesheet: '' },
         pages: {} as Record<string, {
+          order: number;
           layout: string;
           components: string[];
         }>
@@ -100,7 +101,7 @@ export default function Home() {
 
       await Promise.all([createPromise('stories'), createPromise('stylesheet'), createPromise('sitemap')]);
 
-      const pagePromises = tempAppContent.sitemap.map(async (page: { type: string, description: string }) => {
+      const pagePromises = tempAppContent.sitemap.map(async (page: { type: string, description: string }, idx: number) => {
         try {
           if (useComponents) {
             const response = await fetch(`/api/layout`, {
@@ -119,7 +120,7 @@ export default function Home() {
 
             tempAppContent.pages = {
               ...tempAppContent.pages,
-              [page.type]: { layout: data.layout, components: [] }
+              [page.type]: { order: idx, layout: data.layout, components: [] }
             }
 
             console.log("Updating pages", tempAppContent.pages)
@@ -146,7 +147,7 @@ export default function Home() {
                     tempAppContent.pages = {};
                   }
                   if (!tempAppContent.pages[page.type]) {
-                    tempAppContent.pages[page.type] = { layout: '', components: [] };
+                    tempAppContent.pages[page.type] = { order: idx, layout: '', components: [] };
                   }
                   tempAppContent.pages[page.type].components.push(data.code);
                 }
@@ -177,7 +178,7 @@ export default function Home() {
                 tempAppContent.pages = {};
               }
               if (!tempAppContent.pages[page.type]) {
-                tempAppContent.pages[page.type] = { layout: '', components: [] };
+                tempAppContent.pages[page.type] = { order: idx, layout: '', components: [] };
               }
               tempAppContent.pages[page.type].components.push(pageData.code);
             }

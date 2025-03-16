@@ -8,8 +8,9 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import * as antdIcons from '@ant-design/icons';
 
-interface DesignViewProps {
+interface DesignViewProps {  
   pages: Record<string, {
+    order: number;
     layout: string;
     components: string[];
   }>
@@ -118,7 +119,7 @@ export const DesignView: FC<DesignViewProps> = ({
     }
   };
 
-  const items = Object.keys(pages).map(page => ({
+  const items = Object.keys(pages).sort((a, b) => pages?.[a]?.order - pages?.[b]?.order).map(page => ({
     label: page,
     key: (page),
     children: (
@@ -159,6 +160,12 @@ export const DesignView: FC<DesignViewProps> = ({
               }
             }}
             defaultActiveKey={Object.keys(pages)[0] || ''}
+            onLoad={() => {
+              const firstPage = Object.keys(pages)[0];
+              if (firstPage && pages[firstPage] && pages[firstPage].components && pages[firstPage].components.length > 0) {
+                compileAndRenderComponent(pages[firstPage].components[0], 'render-page-' + titleToId(firstPage));
+              }
+            }}
           />
         )
       }
