@@ -199,12 +199,123 @@ export const DesignView: FC<DesignViewProps> = ({
     }
   }
 
-  // useEffect(() => {
-  //   if (Object.keys(pages).length > 0) {
-  //     const key = Object.keys(pages)[0];
-  //     renderComponent(pages[key].components[0], 'render-page-' + titleToId(key))
-  //   }
-  // }, []);
+  useEffect(() => {
+    const fetchAndRenderComponent = async () => {
+      debugger;
+      const REACT_CODE = `
+import React, { useState } from 'react';
+
+const TodoApp = () => {
+  const [todos, setTodos] = useState([]);
+  const [input, setInput] = useState('');
+
+  const addTodo = () => {
+    if (input.trim() !== '') {
+      setTodos([...todos, { id: Date.now(), text: input, completed: false }]);
+      setInput('');
+    }
+  };
+
+  const toggleTodo = (id) => {
+    setTodos(
+      todos.map(todo =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
+  };
+
+  const deleteTodo = (id) => {
+    setTodos(todos.filter(todo => todo.id !== id));
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      addTodo();
+    }
+  };
+
+  return (
+    <div className="w-full max-w-md mx-auto p-4 bg-white rounded shadow">
+      <h1 className="text-2xl font-bold mb-4 text-center">Todo App</h1>
+
+      <div className="flex mb-4">
+        <input
+          type="text"
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          onKeyPress={handleKeyPress}
+          placeholder="Add a new todo..."
+          className="flex-grow p-2 border rounded-l"
+        />
+        <button
+          onClick={addTodo}
+          className="bg-blue-500 text-white px-4 py-2 rounded-r hover:bg-blue-600"
+        >
+          Add
+        </button>
+      </div>
+
+      <ul className="space-y-2">
+        {todos.map(todo => (
+          <li
+            key={todo.id}
+            className="flex items-center justify-between p-2 border rounded bg-gray-50"
+          >
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                checked={todo.completed}
+                onChange={() => toggleTodo(todo.id)}
+                className="mr-2"
+              />
+              <span className={todo.completed ? 'line-through text-gray-400' : ''}>
+                {todo.text}
+              </span>
+            </div>
+            <button
+              onClick={() => deleteTodo(todo.id)}
+              className="text-red-500 hover:text-red-700"
+            >
+              Delete
+            </button>
+          </li>
+        ))}
+      </ul>
+
+      {todos.length > 0 && (
+        <div className="mt-4 text-sm text-gray-500">
+          {todos.filter(todo => todo.completed).length} of {todos.length} tasks completed
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default TodoApp;
+      `;
+
+      const response = await fetch('/api/bundler', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          code: REACT_CODE,
+          options: {
+            minify: false,
+          },
+        }),
+      });
+
+      const { bundledCode } = await response.json();
+
+      const key = Object.keys(pages)[0];
+      renderComponent(bundledCode, 'render-page-' + titleToId(key))
+    };
+    
+    debugger;
+    fetchAndRenderComponent();
+  }, []);
 
   const items = Object.keys(pages).map(page => ({
     label: page,
