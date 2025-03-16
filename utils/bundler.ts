@@ -13,6 +13,7 @@ export async function bundleReactCode(codeString: string, options: any = {}) {
     // Create a virtual file system for esbuild
     const virtualFS = {
         'virtual-component.tsx': codeString,
+        'process-polyfill.js': `export default { env: { NODE_ENV: "production" } };`,
     };
 
     try {
@@ -26,13 +27,16 @@ export async function bundleReactCode(codeString: string, options: any = {}) {
             target: 'es2015',
             platform: 'browser',
             plugins: [
-                // Handle node polyfills if needed
-                NodeGlobalsPolyfillPlugin(),
-                NodeModulesPolyfillPlugin(),
-                // Virtual file system to handle the input code string
+                // Custom plugin to handle process and other node globals
                 {
-                    name: 'virtual-file-system',
+                    name: 'node-globals-polyfill',
                     setup(build) {
+                        // Handle process module
+                        build.onResolve({ filter: /^process$/ }, () => {
+                            return { path: 'process-polyfill.js', namespace: 'virtual-fs' };
+                        });
+
+                        // Handle virtual files
                         build.onResolve({ filter: /^virtual-component\.tsx$/ }, args => {
                             return { path: args.path, namespace: 'virtual-fs' };
                         });
@@ -40,7 +44,7 @@ export async function bundleReactCode(codeString: string, options: any = {}) {
                         build.onLoad({ filter: /.*/, namespace: 'virtual-fs' }, args => {
                             return {
                                 contents: virtualFS[args.path as keyof typeof virtualFS],
-                                loader: 'tsx',
+                                loader: args.path.endsWith('.tsx') ? 'tsx' : 'js',
                             };
                         });
 
@@ -55,6 +59,7 @@ export async function bundleReactCode(codeString: string, options: any = {}) {
             outfile: 'virtual-output.js',
             define: {
                 'process.env.NODE_ENV': '"production"',
+                'global': 'window',
             },
         });
 

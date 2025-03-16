@@ -1,15 +1,12 @@
 // File: pages/api/bundle-react.js
 import { bundleReactCode } from '@/utils/bundler';
 import { NextRequest, NextResponse } from 'next/server';
-export const config = {
-    api: {
-        bodyParser: {
-            sizeLimit: '2mb', // Increase limit if needed for larger code
-        },
-    },
-    // Add runtime configuration to use Node.js runtime
-    runtime: 'nodejs',
-};
+
+// Use the new configuration format
+export const runtime = 'nodejs';
+
+// This bodyParser config is no longer needed in App Router
+// It was used in Pages Router
 
 export async function POST(req: NextRequest, res: NextResponse) {
     if (req.method !== 'POST') {
@@ -32,18 +29,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
         // Return the bundled code
         return NextResponse.json({
             success: true,
-            bundledCode,
-            exampleUsage: `
-// HTML setup:
-// <div id="react-root"></div>
-// <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-// <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-
-// Render the bundled component:
-const container = document.getElementById('react-root');
-const root = ReactDOM.createRoot(container);
-root.render(React.createElement(Component));
-      `
+            bundledCode
         }, { status: 200 });
 
     } catch (error: any) {

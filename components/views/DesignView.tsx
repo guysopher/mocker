@@ -28,7 +28,6 @@ declare global {
   }
 }
 
-debugger;
 if (typeof window !== 'undefined') {
   window.React = React;
   window.antd = antd;
@@ -167,7 +166,6 @@ export const DesignView: FC<DesignViewProps> = ({
   };
 
   function renderComponent(code: string, elementId: string) {
-    debugger;
     try {
       const Component = eval(`
         (function() {
@@ -199,10 +197,13 @@ export const DesignView: FC<DesignViewProps> = ({
     }
   }
 
+  const RENDER_TEST = false;
   useEffect(() => {
-    const fetchAndRenderComponent = async () => {
-      debugger;
-      const REACT_CODE = `
+    if (!RENDER_TEST) {
+      return;
+    }
+      const fetchAndRenderComponent = async () => {
+        const REACT_CODE = `
 import React, { useState } from 'react';
 
 const TodoApp = () => {
@@ -309,10 +310,12 @@ export default TodoApp;
 
       const { bundledCode } = await response.json();
 
-      const key = Object.keys(pages)[0];
-      renderComponent(bundledCode, 'render-page-' + titleToId(key))
+      const root = createRoot(document.getElementById('render-page-todo-app') as HTMLElement);
+      root.render(React.createElement(bundledCode));
+
+      // renderComponent(bundledCode, 'render-page-todo-app')
     };
-    
+
     debugger;
     fetchAndRenderComponent();
   }, []);
@@ -362,21 +365,30 @@ export default TodoApp;
   }));
 
   return (
-    isGenerating ? (
-      <div className="w-full h-full flex items-center justify-center">
-        <Skeleton active paragraph={{ rows: 8 }} className="w-full max-w-4xl" />
-      </div>
-    ) : (
-      <Tabs items={items} onChange={(key) => {
-        debugger;
-        renderComponent(pages[key].components[0], 'render-page-' + titleToId(key))
-      }}
-      // onLoad={() => {
-      //   debugger;
-      //   const key = items[0].key;
-      //   renderComponent(pages[key].layout, 'render-page-' + key)
-      // }}
-      />
-    )
+    <div className='w-full h-full'>
+      {RENDER_TEST && (
+        <div id='render-page-todo-app'>
+          <div>
+            <h1>Todo App</h1>
+          <p>This is a todo app</p>
+          </div>
+        </div>
+      )}
+      {isGenerating ? (
+        <div className="w-full h-full flex items-center justify-center">
+          <Skeleton active paragraph={{ rows: 8 }} className="w-full max-w-4xl" />
+        </div>
+      ) : (
+        <Tabs items={items} onChange={(key) => {
+          renderComponent(pages[key].components[0], 'render-page-' + titleToId(key))
+        }}
+        // onLoad={() => {
+        //   debugger;
+        //   const key = items[0].key;
+        //   renderComponent(pages[key].layout, 'render-page-' + key)
+        // }}
+        />
+      )}
+    </div>
   )
 } 
