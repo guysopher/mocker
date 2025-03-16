@@ -1,5 +1,5 @@
 import React from 'react';
-import { Skeleton } from 'antd';
+import { Skeleton, Descriptions, Tag } from 'antd';
 
 interface SitemapViewProps {
   elements: string[];
@@ -24,24 +24,39 @@ export const SitemapView: React.FC<SitemapViewProps> = ({
     );
   }
 
-  const renderPageContent = (page: string) => {
+    const renderPageContent = (pageData: any) => {
     try {
-      const pageData = JSON.parse(page);
+      const data = typeof pageData === 'string' ? JSON.parse(pageData) : pageData;
+      
       return (
         <div className="font-medium">
-          <div className="font-bold">{pageData.type || 'Page'}</div>
-          {pageData.description && (
-            <div className="text-sm text-gray-600 mt-1 line-clamp-2">
-              {typeof pageData.description === 'string' 
-                ? pageData.description 
-                : JSON.stringify(pageData.description)}
-            </div>
-          )}
+          <div className="font-bold mb-2">{data.type || 'Page'}</div>
+          <Descriptions size="small" column={1}>
+            {data.description && (
+              <Descriptions.Item label="Description" className="text-sm">
+                {data.description}
+              </Descriptions.Item>
+            )}
+            {data.design && (
+              <Descriptions.Item label="Design" className="text-sm">
+                {data.design}
+              </Descriptions.Item>
+            )}
+            {data.components && (
+              <Descriptions.Item label="Components">
+                <div className="flex flex-wrap gap-1">
+                  {data.components.map((component: string, idx: number) => (
+                    <Tag key={idx} color="blue">{component}</Tag>
+                  ))}
+                </div>
+              </Descriptions.Item>
+            )}
+          </Descriptions>
         </div>
       );
     } catch (e) {
       // Fallback to string if JSON parsing fails
-      return <div className="font-medium">{String(page)}</div>;
+      return <div className="font-medium">{String(pageData)}</div>;
     }
   };
 
