@@ -2,11 +2,28 @@
 
 import { useState, useEffect, useRef } from 'react'
 
-interface VoiceInteractionProps {
-  elementId: string
-  onVoiceEnd: () => void
-  element: any // Using any for simplicity, should be properly typed
+// Add these type declarations at the top of the file
+declare global {
+  interface Window {
+    SpeechRecognition?: any;
+    webkitSpeechRecognition?: any;
+    recognition?: any;
+  }
 }
+
+interface VoiceInteractionProps {
+  isListening?: boolean
+  isActive?: boolean
+  eventTarget?: EventTarget
+  elementId?: string
+  onVoiceEnd?: () => void
+  element?: any // Using any for simplicity, should be properly typed
+}
+
+// Then modify the existing line to check if window is defined (for SSR compatibility)
+const SpeechRecognition = typeof window !== 'undefined'
+  ? (window.SpeechRecognition || window.webkitSpeechRecognition)
+  : null;
 
 export default function VoiceInteraction({ elementId, onVoiceEnd, element }: VoiceInteractionProps) {
   const [isListening, setIsListening] = useState(true)
@@ -19,90 +36,120 @@ export default function VoiceInteraction({ elementId, onVoiceEnd, element }: Voi
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
   const popupRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
-  
+  const [isRecognitionActive, setIsRecognitionActive] = useState(false);
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    checkMicrophonePermission();
+  }, []);
+
+  const checkMicrophonePermission = async () => {
+    try {
+      // Check if we can access microphone permissions
+      const permissionStatus = await navigator.permissions.query({ name: 'microphone' as PermissionName });
+      setHasPermission(permissionStatus.state === 'granted');
+
+      // Listen for permission changes
+      permissionStatus.addEventListener('change', () => {
+        setHasPermission(permissionStatus.state === 'granted');
+      });
+    } catch (error) {
+      console.error('Error checking microphone permission:', error);
+      // Fallback to getUserMedia if permissions API is not supported
+      try {
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+        setHasPermission(true);
+      } catch (err) {
+        console.error('Microphone permission denied:', err);
+        setHasPermission(false);
+      }
+    }
+  };
+
+  const requestMicrophonePermission = async () => {
+    try {
+      debugger;
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      setHasPermission(true);
+      setIsListening(true);
+    } catch (error) {
+      console.error('Microphone permission denied:', error);
+      setHasPermission(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!hasPermission) {
+      requestMicrophonePermission();
+    }
+    const recognitionInstance = new SpeechRecognition();
+    recognitionInstance.stop();
+    recognitionInstance.continuous = true;
+    recognitionInstance.interimResults = true;
+    recognitionInstance.lang = 'en-US'; // Default language
+    recognitionInstance.onerror = (event: any) => {
+      console.log('Speech recognition error:', event);
+    };
+    recognitionInstance.onnomatch = (event: any) => {
+      console.log('Speech recognition no match:', event);
+    };
+    recognitionInstance.onprogress = (event: any) => {
+      console.log('Speech recognition progress:', event);
+    };
+    recognitionInstance.onresult = (event: any) => {
+      console.log('Speech recognition result:', event);
+      let interimTranscript = '';
+      let finalTranscript = '';
+
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript + ' ';
+        } else {
+          interimTranscript += transcript;
+        }
+      }
+      console.log('finalTranscript', finalTranscript);
+      setTranscript(finalTranscript + interimTranscript);
+    };
+
+    recognitionInstance.onstart = () => {
+      setIsRecognitionActive(true);
+    };
+
+    recognitionInstance.onend = () => {
+      setIsRecognitionActive(false);
+    };
+
+    window.recognition = recognitionInstance;
+  }, [])
+
   // Simulated voice recognition
   useEffect(() => {
     if (isListening) {
-      // Simulating voice recognition. In a real app, we would use the Web Speech API
-      timeoutRef.current = setTimeout(() => {
-        setIsListening(false)
-        setTranscript("Make this component larger and add a dropdown menu for user selections.")
-      }, 5000)
-    }
-    
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-      }
-    }
-  }, [isListening])
-  
-  // Simulated AI response
-  useEffect(() => {
-    if (transcript && !isListening) {
-      setTimeout(() => {
-        setConversations([
-          ...conversations,
-          `You: ${transcript}`,
-          "AI: I've noted your request to increase the component size and add a dropdown menu. I'll update the design accordingly."
-        ])
-        
-        // Auto-close after a response
-        setTimeout(() => {
-          onVoiceEnd()
-        }, 2000)
-      }, 1000)
-    }
-  }, [transcript, isListening, conversations, onVoiceEnd])
-  
-  // Handle click outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
-        onVoiceEnd()
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [onVoiceEnd])
-  
-  // Simulate transcription when listening - starts automatically now
-  useEffect(() => {
-    if (isListening) {
-      const words = [
-        "Hello",
-        "I want to",
-        "I want to make this",
-        "I want to make this component",
-        "I want to make this component larger"
-      ]
-      
-      let currentIndex = 0
-      const interval = setInterval(() => {
-        if (currentIndex < words.length) {
-          setTranscript(words[currentIndex])
-          currentIndex++
-        } else {
-          setIsListening(false)
-          clearInterval(interval)
+      setTranscript('')
+      if (!isRecognitionActive) {
+        try {
+          // Request microphone permission first
+          navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(() => {
+              window.recognition.start();
+            })
+            .catch((error) => {
+              console.error('Microphone permission denied:', error);
+              setIsListening(false);
+            });
+        } catch (error) {
+          console.error('Speech recognition error:', error);
+          setIsListening(false);
         }
-      }, 1000)
-
-      return () => clearInterval(interval)
+      }
+    } else {
+      window.recognition.stop();
     }
   }, [isListening])
-  
-  const handleMinimize = () => {
-    setMinimized(!minimized)
-  }
-  
-  const handleClose = () => {
-    onVoiceEnd()
-  }
-  
+
   const getPosition = () => {
     // In a real implementation, this would calculate position based on the element location
     return {
@@ -110,26 +157,11 @@ export default function VoiceInteraction({ elementId, onVoiceEnd, element }: Voi
       left: element ? `${element.x + element.width + 20}px` : '100px'
     }
   }
-  
+
   const position = getPosition()
-  
-  const handleAddNote = () => {
-    if (newNote.trim()) {
-      setNotes([...notes, newNote.trim()])
-      setNewNote('')
-      setShowNoteInput(false)
-    }
-  }
-  
-  const toggleListening = () => {
-    setIsListening(!isListening)
-    if (!isListening) {
-      setTranscript('')
-    }
-  }
-  
+
   return (
-    <div 
+    <div
       ref={popupRef}
       className="fixed z-50 bg-white/95 rounded-full shadow-2xl transition-all duration-300 animate-fadeIn backdrop-blur-md border border-white/20 flex items-center"
       style={{
@@ -144,18 +176,18 @@ export default function VoiceInteraction({ elementId, onVoiceEnd, element }: Voi
         <div className="relative group">
           <div className={`absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full opacity-75 blur transition duration-1000 ${isListening ? 'animate-pulse' : ''}`}></div>
           <div className={`relative w-28 h-28 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-xl ${isListening ? 'scale-110' : ''} transition-transform duration-300`}>
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              className="h-14 w-14 text-white transform transition-transform" 
-              fill="none" 
-              viewBox="0 0 24 24" 
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-14 w-14 text-white transform transition-transform"
+              fill="none"
+              viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2} 
-                d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" 
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
               />
             </svg>
             {isListening && (
@@ -165,7 +197,7 @@ export default function VoiceInteraction({ elementId, onVoiceEnd, element }: Voi
         </div>
       </div>
 
-      <div 
+      <div
         className={`flex-1 ml-4 transition-opacity duration-300 ${transcript ? 'opacity-100' : 'opacity-0'}`}
       >
         <input

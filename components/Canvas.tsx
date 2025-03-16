@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, MouseEventHandler, MouseEvent as ReactMouseEvent } from 'react'
 import { StoriesView } from '@/components/views/StoriesView'
 import VoiceInteraction from '@/components/VoiceInteraction'
 import { MarketplaceDemo } from '@/components/Marketplace'
@@ -31,59 +31,41 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
   const [voicePopupPosition, setVoicePopupPosition] = useState({ x: 0, y: 0 })
   const [showProgress, setShowProgress] = useState(null as any)
   const canvasRef = useRef<HTMLDivElement>(null)
-  const [activeTab, setActiveTab] = useState('brief')
 
-  // Create demo project for second-hand marketplace
-  const getMarketplaceDemo = () => MarketplaceDemo;
+  const handleElementMouseDown = (event: ReactMouseEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLElement;
+    const elementId = getCssPath(target);
+    setVoiceActive(true);
+    setVoicePopupPosition({ x: event.clientX, y: event.clientY });
+    setActiveElement(elementId);
+  }
 
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setVoiceActive(false)
-        setActiveElement(null)
-      }
+  const getCssPath = (element: HTMLElement): string => {
+    if (!element || element === document.documentElement) return '';
+    
+    const parent = element.parentElement;
+    if (!parent) return element.tagName.toLowerCase();
+
+    let nth = 1;
+    let sibling = element;
+    while ((sibling = sibling.previousElementSibling as HTMLElement)) {
+      if (sibling.tagName === element.tagName) nth++;
     }
 
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
-    }
+    const tag = element.tagName.toLowerCase();
+    const classes = element.className ? `.${element.className.trim().replace(/\s+/g, '.')}` : '';
+    const nthSelector = nth > 1 ? `:nth-of-type(${nth})` : '';
+    
+    return `${getCssPath(parent)} > ${tag}${classes}${nthSelector}`.trim();
+  };
 
-    document.addEventListener('keydown', handleEscape)
-    document.addEventListener('mousemove', handleMouseMove)
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape)
-      document.removeEventListener('mousemove', handleMouseMove)
-    }
-  }, [])
-
-  const handleElementClick = (elementId: string) => {
-    // If clicking the same element that's active, trigger voice end
-    if (elementId === activeElement && voiceActive) {
-      handleVoiceEnd()
-    } else {
-      // Otherwise activate voice for the new element
-      setActiveElement(elementId)
-      setVoiceActive(true)
-      setVoicePopupPosition({ x: mousePosition.x, y: mousePosition.y })
-    }
+  const handleElementMouseUp = (event: ReactMouseEvent<HTMLDivElement>) => {
+    setVoiceActive(false)
   }
 
   const handleVoiceEnd = () => {
     setShowProgress(activeElement)
     setVoiceActive(false)
-
-    // Reduced timeout to make it feel more responsive
-    setTimeout(() => {
-      setShowProgress(null)
-
-      // Update canvas elements with comment
-      setCanvasElements(elements => elements.map(element =>
-        element.id === activeElement
-          ? { ...element, hasComments: true }
-          : element
-      ))
-    }, 2000) // Reduced from 4000ms to 2000ms for better responsiveness
   }
 
   return (
@@ -104,10 +86,10 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
         <div className="relative w-full h-full bg-gradient-to-br from-gray-50 to-white p-8 grid grid-cols-1">
           <div className="absolute bg-grid-pattern opacity-20"></div>
 
-          <div className="flex-1">
+          <div className="flex-1" onMouseDown={handleElementMouseDown} onMouseUp={handleElementMouseUp}>
             {view === 'brief' && <BriefView
               elements={appContent?.brief as BriefItem[]}
-              onElementClick={handleElementClick}
+              onElementClick={() => {}}
               onElementUpdate={(elementId, updates) => {
                 // Handle element updates here
                 console.log('Element updated:', elementId, updates)
@@ -119,7 +101,7 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
             />}
             {view === 'stories' && <StoriesView
               elements={appContent?.stories as CanvasStory[]}
-              onElementClick={handleElementClick}
+              onElementClick={() => {}}
               activeElement={activeElement}
               showProgress={showProgress}
               isGenerating={!appContent?.stories || !appContent?.stories.length}
@@ -128,7 +110,7 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
             />}
             {view === 'sitemap' && <SitemapView
               elements={appContent?.sitemap as string[]}
-              onElementClick={handleElementClick}
+              onElementClick={() => {}}
               activeElement={activeElement}
               showProgress={showProgress}
               isGenerating={!appContent?.sitemap || !appContent?.sitemap.length}
@@ -136,7 +118,7 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
             {view === 'pages' && <DesignView
               pages={appContent?.pages || {}}
               stylesheet={appContent?.stylesheet || ''}
-              onElementClick={handleElementClick}
+              onElementClick={() => {}}
               activeElement={activeElement}
               showProgress={showProgress}
               isGenerating={!appContent?.pages || !Object.keys(appContent?.pages).length}
@@ -145,7 +127,7 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
         </div>
       </div>
 
-      {voiceActive && activeElement && (
+      {voiceActive && (
         <div
           style={{
             position: 'fixed',
@@ -156,7 +138,7 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
           }}
         >
           <VoiceInteraction
-            elementId={activeElement}
+            elementId={activeElement || ''}
             onVoiceEnd={handleVoiceEnd}
             element={canvasElements.find(el => el.id === activeElement)}
           />
