@@ -77,7 +77,7 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ description, customPrompt: prompts[_section as keyof typeof prompts], changeRequest, ...tempAppContent, section }),
+        body: JSON.stringify({ description, customPrompt: prompts[_section as keyof typeof prompts], changeRequest, ...tempAppContent, section, result: tempAppContent[section as keyof typeof tempAppContent] }),
       }).then(response => response.json()).then(data => {
         if (changeRequest) {
           data = data.change;

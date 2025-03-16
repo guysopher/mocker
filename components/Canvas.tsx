@@ -92,13 +92,7 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
       .replace(/<link[^>]*>/gi, '') // Remove link tags
       .replace(/<meta[^>]*>/gi, '') // Remove meta tags
       // Remove common non-essential attributes
-      .replace(/\s+(class|style|id|data-\S*|aria-\S*|role|tabindex|onclick|onload|placeholder)="[^"]*"/gi, '')
-      // Remove empty attributes
-      .replace(/\s+\w+=""/g, '')
-      // Remove any remaining empty attributes without values
-      .replace(/\s+\w+(?!=)/g, '')
-      .replace(/\s+/g, ' ') // Collapse multiple whitespace
-      .replace(/>\s+</g, '><') // Remove whitespace between tags
+      .replace(/\s+(class|style|data-\S*|aria-\S*|role|tabindex|onclick|onload|placeholder)="[^"]*"/gi, '')
       .trim();
   }
 

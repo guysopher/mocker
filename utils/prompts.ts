@@ -162,13 +162,7 @@ Provide a clean JSON (no code blocks) following this structure:
 Analyze the following business information and suggest an optimal page structure:
 
 App Brief:
-{{description}}
-
-Business Brief:
 {{brief}}
-
-User Stories:
-{{stories}}
   
   `,
 
@@ -464,11 +458,12 @@ Component Description:
     - Understand the request of the user.
     - Figure out the relationship between the element and the request.
     - Create a snapshot of the relevant part of the element and the intent.
+    - Be as detailed as possible.
 
     ## OUTPUT FORMAT
  Return the element in the following JSON format:
     {
-        "section": "brief | stories | sitemap | page",
+        "section": "brief | stories | sitemap | page (page name)",
         "element": "string",
         "snapshot": "string",
         "intent": "string"
