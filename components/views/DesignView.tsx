@@ -197,7 +197,7 @@ export const DesignView: FC<DesignViewProps> = ({
     }
   }
 
-  const RENDER_TEST = false;
+  const RENDER_TEST = true;
   useEffect(() => {
     if (!RENDER_TEST) {
       return;
