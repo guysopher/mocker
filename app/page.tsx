@@ -104,12 +104,13 @@ export default function Home() {
   const handleSubmitDescription = async (description: string, prompts: Record<PromptName, string>, changeRequest?: string) => {
     setAppDescription(description)
     setGeneratingContent(true)
-    setGeneratingSection('brief')
+    setGeneratingSection('Brief')
     setAppGenerated(true);
 
     try {
       await createPromise('brief', description, prompts, changeRequest);
 
+      setGeneratingSection('Stories & Sitemap')
       await Promise.all([createPromise('stories', description, prompts, changeRequest), createPromise('sitemap', description, prompts, changeRequest)]);
 
       const pagePromises = tempAppContent.sitemap.map(async (page: { type: string, description: string }, idx: number) => {
@@ -171,6 +172,7 @@ export default function Home() {
             // Wait for all component requests to complete
             await Promise.all(componentPromises);
           } else {
+            setGeneratingSection('Page (' + page.type + ')')
             const pageResponse = await fetch(`/api/page`, {
               method: 'POST',
               headers: {
@@ -322,7 +324,7 @@ export default function Home() {
                 generatingContent ? (
                   <span className="mr-4 flex items-center bg-red-50 px-4 py-2 rounded-full">
                     <Spin indicator={<LoadingOutlined style={{ fontSize: 24, color: '#f5222d' }} spin />} />
-                    <Text strong className="ml-2 text-red-600">Generating...</Text>
+                    <Text strong className="ml-2 text-red-600">Generating {generatingSection}...</Text>
                   </span>
                 ) : null
               )
