@@ -369,27 +369,9 @@ export async function generateChangeRequest(
 
 export async function getContext(html: string, cssPath: string, userRequest: string) {
     try {
-        // Clean HTML by removing unnecessary elements and whitespace
-        const cleanedHtml = html
-            .replace(/<head>[\s\S]*?<\/head>/gi, '') // Remove head section
-            .replace(/<script[\s\S]*?<\/script>/gi, '') // Remove all script tags
-            .replace(/<style[\s\S]*?<\/style>/gi, '') // Remove all style tags
-            .replace(/<svg[\s\S]*?<\/svg>/gi, '') // Remove SVG elements
-            .replace(/<![^>]*>/g, '') // Remove comments and doctype
-            .replace(/<link[^>]*>/gi, '') // Remove link tags
-            .replace(/<meta[^>]*>/gi, '') // Remove meta tags
-            // Remove common non-essential attributes
-            .replace(/\s+(class|style|id|data-\S*|aria-\S*|role|tabindex|onclick|onload|placeholder)="[^"]*"/gi, '')
-            // Remove empty attributes
-            .replace(/\s+\w+=""/g, '')
-            // Remove any remaining empty attributes without values
-            .replace(/\s+\w+(?!=)/g, '')
-            .replace(/\s+/g, ' ') // Collapse multiple whitespace
-            .replace(/>\s+</g, '><') // Remove whitespace between tags
-            .trim();
-        
+        // Clean HTML by removing unnecessary elements and whitespace        
         const systemPrompt = prompts.context
-            .replace('{{html}}', cleanedHtml)
+            .replace('{{html}}', html)
             .replace('{{cssPath}}', cssPath)
             .replace('{{userRequest}}', userRequest);
 

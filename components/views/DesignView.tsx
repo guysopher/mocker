@@ -58,11 +58,6 @@ export const DesignView: FC<DesignViewProps> = ({
   const [renderedPages, setRenderedPages] = useState<Record<string, boolean>>({});
 
   const addComponentScript = async (code: string, elementId: string) => {
-    setRenderedPages(prev => ({
-      ...prev,
-      [elementId]: true
-    }));
-
     try {
       const response = await fetch('/api/bundler', {
         method: 'POST',
@@ -79,21 +74,33 @@ export const DesignView: FC<DesignViewProps> = ({
 
       const { bundledCode } = await response.json();
 
-      // Create a script element to evaluate the bundled code
-      const scriptElement = document.createElement('script');
-      scriptElement.textContent = `
-        try {
-          window.${elementId} = (function() {
-            ${bundledCode}
-            // Return the default export or the module itself
-            // return typeof exports.default !== 'undefined' ? exports.default : exports;
-            return Component;
-          })();
-        } catch (e) {
-          console.error("Error in bundled code:", e);
-        }
-      `;
-      document.head.appendChild(scriptElement);
+      return new Promise<void>((resolve, reject) => {
+        const scriptElement = document.createElement('script');
+        scriptElement.textContent = `
+          try {
+            window.${elementId} = (function() {
+              ${bundledCode}
+              return Component;
+            })();
+          } catch (e) {
+            console.error("Error in bundled code:", e);
+          }
+        `;
+        
+        scriptElement.onload = () => {
+          setRenderedPages(prev => ({
+            ...prev,
+            [elementId]: true
+          }));
+          resolve();
+        };
+        
+        scriptElement.onerror = (error) => {
+          reject(error);
+        };
+        
+        document.head.appendChild(scriptElement);
+      });
     } catch (error) {
       console.error("Error adding component script:", error);
     }
@@ -164,13 +171,13 @@ export const DesignView: FC<DesignViewProps> = ({
 
   useEffect(() => {
     const loadComponents = async () => {
-      if (pages?.[activePage]?.components?.length > 0) {
+      if (!isGenerating && pages?.[activePage]?.components?.length > 0) {
         await Promise.all(Object.keys(pages).map(page => addComponentScript(pages[page].components[0], titleToId(page))));
         compileAndRenderComponent(pages[activePage].components[0], titleToId(activePage));
       }
     }
     loadComponents();
-  }, [activePage, pages]);
+  }, [activePage, pages, isGenerating]);
 
   return (
     <div className='w-full h-full'>

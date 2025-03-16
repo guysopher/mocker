@@ -63,8 +63,8 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
       if (sibling.tagName === element.tagName) nth++;
     }
 
-    const tag = element.tagName.toLowerCase();
-    const classes = element.className ? `.${element.className.trim().replace(/\s+/g, '.')}` : '';
+    const tag = element.tagName?.toLowerCase();
+    const classes = element.className ? `.${element.className?.trim?.()?.replace(/\s+/g, '.')}` : '';
     const nthSelector = nth > 1 ? `:nth-of-type(${nth})` : '';
 
     return `${getCssPath(parent)} > ${tag}${classes}${nthSelector}`.trim();
@@ -82,6 +82,26 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
     }
   }
 
+  const getCurrentHtml = () => {
+    return document.documentElement.outerHTML
+      .replace(/<head>[\s\S]*?<\/head>/gi, '') // Remove head section
+      .replace(/<script[\s\S]*?<\/script>/gi, '') // Remove all script tags
+      .replace(/<style[\s\S]*?<\/style>/gi, '') // Remove all style tags
+      .replace(/<svg[\s\S]*?<\/svg>/gi, '') // Remove SVG elements
+      .replace(/<![^>]*>/g, '') // Remove comments and doctype
+      .replace(/<link[^>]*>/gi, '') // Remove link tags
+      .replace(/<meta[^>]*>/gi, '') // Remove meta tags
+      // Remove common non-essential attributes
+      .replace(/\s+(class|style|id|data-\S*|aria-\S*|role|tabindex|onclick|onload|placeholder)="[^"]*"/gi, '')
+      // Remove empty attributes
+      .replace(/\s+\w+=""/g, '')
+      // Remove any remaining empty attributes without values
+      .replace(/\s+\w+(?!=)/g, '')
+      .replace(/\s+/g, ' ') // Collapse multiple whitespace
+      .replace(/>\s+</g, '><') // Remove whitespace between tags
+      .trim();
+  }
+
   const handleVoiceEnd = async (changeRequest: string) => {
     if (!changeRequest) return;
     setShowProgress(activeElement)
@@ -90,7 +110,7 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
 
     const context = await fetch('/api/context', {
       method: 'POST',
-      body: JSON.stringify({ html: document.documentElement.outerHTML, cssPath: activeElement, userRequest: changeRequest })
+      body: JSON.stringify({ html: getCurrentHtml(), cssPath: activeElement, userRequest: changeRequest })
     })
 
     const contextData = await context.json()
