@@ -35,13 +35,19 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
   const [showProgress, setShowProgress] = useState(null as any)
   const [changeRequests, setChangeRequests] = useState<string[]>([])
   const canvasRef = useRef<HTMLDivElement>(null)
+  const [mouseDownTimer, setMouseDownTimer] = useState<NodeJS.Timeout | null>(null);
 
   const handleElementMouseDown = (event: ReactMouseEvent<HTMLDivElement>) => {
     const target = event.target as HTMLElement;
     const elementId = getCssPath(target);
-    setVoiceActive(true);
-    setVoicePopupPosition({ x: event.clientX, y: event.clientY });
     if (elementId) setActiveElement(elementId);
+    
+    const timer = setTimeout(() => {
+      setVoiceActive(true);
+      setVoicePopupPosition({ x: event.clientX, y: event.clientY });
+    }, 1000);
+    
+    setMouseDownTimer(timer);
   }
 
   const getCssPath = (element: HTMLElement): string => {
@@ -64,9 +70,15 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
   };
 
   const handleElementMouseUp = (event: ReactMouseEvent<HTMLDivElement>) => {
-    setTimeout(() => {
-      setVoiceActive(false)
-    }, 1000)
+    if (mouseDownTimer) {
+      clearTimeout(mouseDownTimer);
+      setMouseDownTimer(null);
+    } 
+    if (voiceActive) {
+      setTimeout(() => {
+        setVoiceActive(false)
+      }, 1000)
+    }
   }
 
   const handleVoiceEnd = async (changeRequest: string) => {
