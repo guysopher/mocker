@@ -7,6 +7,7 @@ import { MarketplaceDemo } from '@/components/Marketplace'
 import { DesignView } from '@/components/views/DesignView'
 import { BriefView } from '@/components/views/BriefView'
 import { CanvasElement, CanvasStory, BriefItem } from '@/types/canvas'
+import { SitemapView } from '@/components/views/SitemapView'
 
 interface CanvasProps {
   view: string
@@ -17,6 +18,7 @@ interface CanvasProps {
     brief: BriefItem[]
     pages: any
     stories: CanvasStory[]
+    sitemap: string[]
     stylesheet: string
   } | null
 }
@@ -123,6 +125,13 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
               isGenerating={!appContent?.stories || !appContent?.stories.length}
             // isGenerating={isGenerating && generatingSection === 'stories'}
             // content={appContent?.stories}
+            />}
+            {view === 'sitemap' && <SitemapView
+              elements={appContent?.sitemap as string[]}
+              onElementClick={handleElementClick}
+              activeElement={activeElement}
+              showProgress={showProgress}
+              isGenerating={!appContent?.sitemap || !appContent?.sitemap.length}
             />}
             {view === 'pages' && <DesignView
               pages={appContent?.pages || {}}

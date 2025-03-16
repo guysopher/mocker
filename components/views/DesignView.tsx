@@ -1,5 +1,5 @@
 import { CanvasElement } from '@/types/canvas'
-import { FC, useEffect } from 'react'
+import { Component, FC, useEffect } from 'react'
 import { CommentsIndicator } from '@/components/CommentsIndicator'
 import * as antd from 'antd'
 import { Skeleton, Tabs } from 'antd'
@@ -25,6 +25,7 @@ declare global {
     React: typeof React;
     antd: typeof antd;
     antdIcons: typeof antdIcons;
+    Component: any;
   }
 }
 
@@ -151,28 +152,88 @@ export const DesignView: FC<DesignViewProps> = ({
   isGenerating
 }) => {
 
-  const compileAndRenderComponent = (component: any) => {
+  const compileAndRenderComponent = async (code: string, elementId: string) => {
     try {
-      // return <div style={{...styles, border: '1px solid red'}} >{JSON.stringify(styles)}</div>;
-      if (component.html) {
-        return <div style={component.styles} dangerouslySetInnerHTML={{ __html: component.html }} />;
-      } else {
-        return <div dangerouslySetInnerHTML={{ __html: component }} />;
+      const response = await fetch('/api/bundler', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          code: code,
+          options: {
+            minify: false,
+          },
+        }),
+      });
+
+      const { bundledCode } = await response.json();
+
+      // Create a script element to evaluate the bundled code
+      const scriptElement = document.createElement('script');
+      scriptElement.textContent = `
+        try {
+          window.Component = (function() {
+            ${bundledCode}
+            // Return the default export or the module itself
+            return typeof exports.default !== 'undefined' ? exports.default : exports;
+          })();
+        } catch (e) {
+          console.error("Error in bundled code:", e);
+        }
+      `;
+      document.head.appendChild(scriptElement);
+
+      // Now the Component should be available as a global variable
+      const PageComponent = window?.Component?.default || window?.Component;
+
+      // Get the root element
+      const rootElement = document.getElementById(elementId);
+      if (rootElement) {
+        // Clear any existing content
+        rootElement.innerHTML = '';
+        // Create a container div for the component
+        const container = document.createElement('div');
+        container.style.width = '100%';
+        container.style.height = '100%';
+        container.style.display = 'flex';
+        container.style.justifyContent = 'center';
+        container.style.alignItems = 'center';
+        rootElement.appendChild(container);
+
+        // Create root and render
+        const root = createRoot(container);
+
+        if (PageComponent) {
+          // Render the actual component
+          root.render(React.createElement(PageComponent));
+        } else {
+          // Fallback if component is not found
+          root.render(React.createElement('div', {}, 'Component not found'));
+          console.error("Component not found in the bundled code");
+        }
       }
     } catch (error) {
       console.error("Error rendering component:", error);
-      return <p>Error rendering component</p>;
+      const rootElement = document.getElementById(elementId);
+      if (rootElement) {
+        rootElement.innerHTML = `<div style="color: red; padding: 20px;">Error rendering component: ${error instanceof Error ? error.message : String(error)}</div>`;
+      }
     }
   };
 
   function renderComponent(code: string, elementId: string) {
     try {
+      // The issue is here - the code doesn't define a 'Page' variable
+      // Let's modify this to use the component returned by the function
       const Component = eval(`
         (function() {
           var React = window.React;
           var antd = window.antd;
+          var antdIcons = window.antdIcons;
           ${code}
-          return Page;
+          // Return the component directly instead of looking for 'Page'
+          return Component;
         })()`);
 
       const rootElement = document.getElementById(elementId);
@@ -202,8 +263,8 @@ export const DesignView: FC<DesignViewProps> = ({
     if (!RENDER_TEST) {
       return;
     }
-      const fetchAndRenderComponent = async () => {
-        const REACT_CODE = `
+    const fetchAndRenderComponent = async () => {
+      const REACT_CODE = `
 import React, { useState } from 'react';
 
 const TodoApp = () => {
@@ -310,10 +371,35 @@ export default TodoApp;
 
       const { bundledCode } = await response.json();
 
-      const root = createRoot(document.getElementById('render-page-todo-app') as HTMLElement);
-      root.render(React.createElement(bundledCode));
+      // Create a script element to evaluate the bundled code
+      debugger;
+      const scriptElement = document.createElement('script');
+      scriptElement.textContent = bundledCode;
+      document.head.appendChild(scriptElement);
 
-      // renderComponent(bundledCode, 'render-page-todo-app')
+      // Now the Component should be available as a global variable
+      const PageComponent = window?.Component?.default || window?.Component;
+
+      // Get the root element
+      const rootElement = document.getElementById('render-page-todo-app');
+      if (rootElement) {
+        // Clear any existing content
+        rootElement.innerHTML = '';
+        // Create a container div for the component
+        const container = document.createElement('div');
+        container.style.width = '100%';
+        container.style.height = '100%';
+        container.style.display = 'flex';
+        container.style.justifyContent = 'center';
+        container.style.alignItems = 'center';
+        rootElement.appendChild(container);
+
+        // Create root and render
+        const root = createRoot(container);
+        
+        // Render the actual component
+        root.render(React.createElement(PageComponent));
+      }
     };
 
     debugger;
@@ -366,29 +452,33 @@ export default TodoApp;
 
   return (
     <div className='w-full h-full'>
-      {RENDER_TEST && (
-        <div id='render-page-todo-app'>
-          <div>
+      {RENDER_TEST ? (
+        <div>
+            TODO IS HERE
+            <div id='render-page-todo-app'>
             <h1>Todo App</h1>
-          <p>This is a todo app</p>
+            <p>This is a todo app</p>
           </div>
         </div>
-      )}
-      {isGenerating ? (
-        <div className="w-full h-full flex items-center justify-center">
-          <Skeleton active paragraph={{ rows: 8 }} className="w-full max-w-4xl" />
-        </div>
+      ) : (
+        isGenerating ? (
+          <div className="w-full h-full flex items-center justify-center">
+            <Skeleton active paragraph={{ rows: 8 }} className="w-full max-w-4xl" />
+          </div>
       ) : (
         <Tabs items={items} onChange={(key) => {
-          renderComponent(pages[key].components[0], 'render-page-' + titleToId(key))
+          if (pages[key] && pages[key].components && pages[key].components.length > 0) {
+            compileAndRenderComponent(pages[key].components[0], 'render-page-' + titleToId(key));
+          }
         }}
-        // onLoad={() => {
-        //   debugger;
-        //   const key = items[0].key;
-        //   renderComponent(pages[key].layout, 'render-page-' + key)
-        // }}
+        onTabClick={(key) => {
+          if (pages[key] && pages[key].components && pages[key].components.length > 0) {
+            compileAndRenderComponent(pages[key].components[0], 'render-page-' + titleToId(key));
+          }
+        }}
+        defaultActiveKey={Object.keys(pages)[0] || ''}
         />
-      )}
+      ))}
     </div>
   )
 } 

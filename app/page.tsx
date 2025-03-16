@@ -313,7 +313,11 @@ export default function Home() {
               key="stories"
             />
             <TabPane
-              tab={<span>Design</span>}
+              tab={<span>Sitemap</span>}
+              key="sitemap"
+            />
+            <TabPane
+              tab={<span>Prototype</span>}
               key="pages"
             />
           </Tabs>
@@ -330,6 +334,7 @@ export default function Home() {
                   pages: appContent?.pages || {},
                   stories: appContent?.stories || [],
                   stylesheet: appContent?.stylesheet?.stylesheet || '',
+                  sitemap: appContent?.sitemap || [],
                 }}
               />
             </Card>

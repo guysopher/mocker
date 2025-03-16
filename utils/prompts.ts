@@ -311,19 +311,12 @@ You are a senior React Developer specializing in **Ant Design (antd)** component
 Create a **stateless React component** using **Ant Design components and classes**. The component should focus on **visual representation only**, without any functional logic.
 
 ## COMPONENT GUIDELINES
-- Use React.createElement (no JSX).
-- Define the component as a stateless function using var.
-- Use only antd and React as globals (no import statements or other libraries).
-- Destructure antd components at the top (var { Input, Button } = antd;).
-- Use inline styles (no external CSS or CSS-in-JS).
-- Define event handlers as var functions inside the component.
-- Use arrays and map() for rendering lists.
-- Avoid modern syntax (no arrow functions, let, const, classes, or modules).
 - Do not render any images!
 - Write detailed content for the component
 - Use Ant Design icons for the component
 - The page will render in a container. It should not include the header or footer - only the main content.
 - The height and width of the Page component should be 765px and 1105px respectively.
+- Write standard React component
 
 
 ## OUTPUT FORMAT
@@ -334,101 +327,95 @@ For example:
 {
     "plan": "The page will include a header, a footer, and a sidebar. The main content will include a form and a table.",
     "code": "
-  var { Input, Button, List, Checkbox } = antd;
-  var { BookOutlined } = antdIcons;
+import React, { useState } from 'react';
 
-  var Page = function() {
-    var [tasks, setTasks] = React.useState([]);
-    var [newTask, setNewTask] = React.useState("");
+const TodoApp = () => {
+  const [todos, setTodos] = useState([]);
+  const [input, setInput] = useState('');
 
-    var addTask = function() {
-      if (newTask.trim() === "") return;
-      setTasks([...tasks, { id: Date.now(), text: newTask, completed: false }]);
-      setNewTask("");
-    };
+  const addTodo = () => {
+    if (input.trim() !== '') {
+      setTodos([...todos, { id: Date.now(), text: input, completed: false }]);
+      setInput('');
+    }
+  };
 
-    var toggleTask = function(id) {
-      setTasks(tasks.map(function(task) {
-        return task.id === id ? { ...task, completed: !task.completed } : task
-      }));
-    };
-
-    var deleteTask = function(id) {
-      setTasks(tasks.filter(function(task) {
-        return task.id !== id
-      }));
-    };
-
-    return React.createElement(
-      'div',
-      {
-        style: {
-          maxWidth: "400px",
-          margin: "auto",
-          padding: "20px",
-          background: "#fff",
-          borderRadius: "8px",
-          boxShadow: "0px 4px 6px rgba(0,0,0,0.1)"
-        }
-      },
-      [
-        React.createElement('h2', {
-          style: { textAlign: "center" },
-          key: 'title'
-        }, 'Todo List'),
-        React.createElement(
-          'div',
-          {
-            style: {
-              display: "flex",
-              gap: "8px",
-              marginBottom: "16px"
-            },
-            key: 'input-container'
-          },
-          [
-            React.createElement(Input, {
-              value: newTask,
-              onChange: function(e) { setNewTask(e.target.value) },
-              placeholder: "Add a new task",
-              key: 'input'
-            }),
-            React.createElement(Button, {
-              type: "primary",
-              onClick: addTask,
-              key: 'add-button'
-            }, 'Add')
-          ]
-        ),
-        React.createElement(List, {
-          bordered: true,
-          dataSource: tasks,
-          key: 'list',
-          renderItem: function(task) {
-            return React.createElement(List.Item, {
-              key: task.id,
-              actions: [
-                React.createElement(Checkbox, {
-                  checked: task.completed,
-                  onChange: function() { toggleTask(task.id) },
-                  key: 'checkbox-' + task.id
-                }),
-                React.createElement(Button, {
-                  danger: true,
-                  onClick: function() { deleteTask(task.id) },
-                  key: 'delete-' + task.id
-                }, 'Delete')
-              ]
-            }, React.createElement('span', {
-              style: {
-                textDecoration: task.completed ? "line-through" : "none"
-              }
-            }, task.text))
-          }
-        })
-      ]
+  const toggleTodo = (id) => {
+    setTodos(
+      todos.map(todo =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
     );
   };
+
+  const deleteTodo = (id) => {
+    setTodos(todos.filter(todo => todo.id !== id));
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      addTodo();
+    }
+  };
+
+  return (
+    <div className="w-full max-w-md mx-auto p-4 bg-white rounded shadow">
+      <h1 className="text-2xl font-bold mb-4 text-center">Todo App</h1>
+
+      <div className="flex mb-4">
+        <input
+          type="text"
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          onKeyPress={handleKeyPress}
+          placeholder="Add a new todo..."
+          className="flex-grow p-2 border rounded-l"
+        />
+        <button
+          onClick={addTodo}
+          className="bg-blue-500 text-white px-4 py-2 rounded-r hover:bg-blue-600"
+        >
+          Add
+        </button>
+      </div>
+
+      <ul className="space-y-2">
+        {todos.map(todo => (
+          <li
+            key={todo.id}
+            className="flex items-center justify-between p-2 border rounded bg-gray-50"
+          >
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                checked={todo.completed}
+                onChange={() => toggleTodo(todo.id)}
+                className="mr-2"
+              />
+              <span className={todo.completed ? 'line-through text-gray-400' : ''}>
+                {todo.text}
+              </span>
+            </div>
+            <button
+              onClick={() => deleteTodo(todo.id)}
+              className="text-red-500 hover:text-red-700"
+            >
+              Delete
+            </button>
+          </li>
+        ))}
+      </ul>
+
+      {todos.length > 0 && (
+        <div className="mt-4 text-sm text-gray-500">
+          {todos.filter(todo => todo.completed).length} of {todos.length} tasks completed
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default TodoApp;
     ",
 }
 
