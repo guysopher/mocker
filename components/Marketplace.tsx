@@ -1,7 +1,6 @@
 import { CanvasElement, CanvasStory, BriefItem } from '@/types/canvas'
 import React, { ReactNode } from 'react'
 
-
 export const MarketplaceContainer = ({ children }: { children: ReactNode }) => {
   return (
     <div className="relative">
@@ -376,157 +375,114 @@ export const MarketplaceDemo: {
   brief: [
     {
       id: 'overview',
-      title: 'Project Overview',
-      content: 'LocalMarket is a community-focused marketplace app that connects local buyers and sellers, emphasizing trust, convenience, and sustainability in neighborhood commerce.',
-      priority: 'high'
+      name: 'Overview',
+      description: 'LocalMarket is a community-focused marketplace app that connects local buyers and sellers, emphasizing trust, convenience, and sustainability in neighborhood commerce.',
     },
     {
       id: 'core-goals',
-      title: 'Core Goals',
-      content: [
+      name: 'Core Goals',
+      description: [
         'Simplify the process of buying and selling items locally',
         'Build trust and safety in peer-to-peer transactions',
         'Reduce environmental impact by promoting local reuse',
         'Create a strong sense of community through commerce'
-      ],
-      priority: 'high'
+      ].join('\n'),
     },
     {
       id: 'target-audience',
-      title: 'Target Audience',
-      content: [
+      name: 'Target Audience',
+      description: [
         'Primary: Urban and suburban residents aged 25-45',
         'Secondary: College students and young professionals',
         'Tech-savvy users comfortable with mobile payments',
         'Environmentally conscious consumers',
         'Local small business owners and artisans'
-      ],
-      priority: 'medium'
+      ].join('\n'),
     },
     {
       id: 'key-features',
-      title: 'Key Features',
-      content: [
+      name: 'Key Features',
+      description: [
         'AI-powered quick listing with photo recognition',
         'Multi-modal search (text, voice, image)',
         'Real-time location-based item discovery',
         'Secure in-app messaging and payment',
         'Community trust scoring system',
         'AR view for nearby items'
-      ],
-      priority: 'high'
+      ].join('\n'),
     },
     {
       id: 'technical-requirements',
-      title: 'Technical Requirements',
-      content: [
+      name: 'Technical Requirements',
+      description: [
         'Native mobile performance with React Native',
         'Real-time location services and mapping',
         'Secure payment gateway integration',
         'Push notifications for messages and alerts',
         'Image recognition and AR capabilities',
         'Offline-first data architecture'
-      ],
-      priority: 'medium'
+      ].join('\n'),
     },
     {
       id: 'success-metrics',
-      title: 'Success Metrics',
-      content: [
+      name: 'Success Metrics',
+      description: [
         'User acquisition and retention rates',
         'Average time to list/sell items',
         'Message response rates',
         'Transaction completion rates',
         'User trust scores',
         'Community engagement levels'
-      ],
-      priority: 'medium'
+      ].join('\n'),
     },
     {
       id: 'design-principles',
-      title: 'Design Principles',
-      content: [
+      name: 'Design Principles',
+      description: [
         'Simplicity: Minimize steps for core actions',
         'Trust: Visual cues for safety and verification',
         'Local: Emphasize proximity and community',
         'Speed: Quick access to key features',
         'Accessibility: Universal design for all users'
-      ],
-      priority: 'high'
+      ].join('\n'),
     },
     {
       id: 'future-considerations',
-      title: 'Future Considerations',
-      content: [
+      name: 'Future Considerations',
+      description: [
         'Integration with local business directories',
         'Community events and meetups feature',
         'Sustainable packaging initiatives',
         'Group buying and bulk deals',
         'Local service exchange platform'
-      ],
-      priority: 'low'
+      ].join('\n'),
     }
   ],
   stories: [
     {
       id: 'quick-listing',
-      title: 'Quick Item Listing',
+      name: 'Quick Item Listing',
       description: 'As a seller, I want to quickly list an item by taking a photo, so I can start selling with minimal effort',
-      acceptance: [
-        'Camera opens immediately when tapping the "Sell" button',
-        'AI automatically suggests item category and title from the photo',
-        'Price suggestion based on similar items in the area',
-        'Option to add multiple photos with drag-to-reorder',
-        'Location is auto-filled based on current position'
-      ]
     },
     {
       id: 'item-search',
-      title: 'Smart Item Search',
+      name: 'Smart Item Search',
       description: 'As a buyer, I want to search for items using various methods including text, voice, and image recognition',
-      acceptance: [
-        'Search by typing with real-time suggestions',
-        'Voice search with natural language processing',
-        'Camera scan to find similar items',
-        'Results filtered by distance and relevance',
-        'Search history is saved for quick access'
-      ]
     },
     {
       id: 'safe-messaging',
-      title: 'Secure Communication',
+      name: 'Secure Communication',
       description: 'As a user, I want to safely communicate with other users about items without sharing personal contact information',
-      acceptance: [
-        'In-app messaging with read receipts',
-        'Ability to share location for meetup',
-        'Quick responses and saved phrases',
-        'Report inappropriate messages',
-        'Built-in identity verification system'
-      ]
     },
     {
       id: 'location-browse',
-      title: 'Location-Based Browsing',
+      name: 'Location-Based Browsing',
       description: 'As a buyer, I want to browse items near me and see them on a map to plan my purchases efficiently',
-      acceptance: [
-        'Interactive map showing item locations',
-        'Distance-based filtering options',
-        'Price clusters for dense areas',
-        'AR view for nearby items',
-        'Save favorite locations for frequent checking'
-      ]
     },
     {
       id: 'trust-safety',
-      title: 'Trust and Safety Features',
+      name: 'Trust and Safety Features',
       description: 'As a user, I want to feel secure when buying and selling items with strangers',
-      acceptance: [
-        'Verified user badges with ID verification',
-        'User ratings and detailed reviews',
-        'Secure payment integration',
-        'Safe meeting spot suggestions',
-        'Transaction protection program'
-      ]
     }
   ]
 } as const

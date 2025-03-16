@@ -132,7 +132,6 @@ export default function AppDescriptionForm({ onSubmit, isGenerating }: AppDescri
         <PromptEditor 
           onSave={handleSavePrompts} 
           onCancel={() => setIsPromptEditorOpen(false)}
-          initialPrompts={prompts}
           onResetPrompt={handleResetPrompt}
         />
       </Modal>

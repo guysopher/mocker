@@ -24,6 +24,7 @@ declare global {
   interface Window {
     React: typeof React;
     antd: typeof antd;
+    antdIcons: typeof antdIcons;
   }
 }
 

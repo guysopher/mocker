@@ -450,4 +450,5 @@ Global CSS Classes:
 `
 };
 
+// Export the prompts object as the default export
 export default prompts; 
