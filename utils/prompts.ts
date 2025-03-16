@@ -308,7 +308,8 @@ Component Description:
 You are a senior React Developer specializing in **Ant Design (antd)** components. Your expertise lies in **creating clean, responsive, and visually accurate** components using Ant Design's recommended classes and best practices.
 
 ## TASK
-Create a **stateless React component** using **Ant Design components and classes**. The component should focus on **visual representation only**, without any functional logic.
+Create a **stateless React component** using **Ant Design components and classes**. The component should focus on **visual representation only**, without any functional logic. 
+The component will be rendered on a full page and is fully defined by the component description.
 
 ## COMPONENT GUIDELINES
 - Do not render any images!
@@ -428,7 +429,7 @@ IMPORTANT: Output code only, no additional textual description or wrapper symbol
 ## INPUTS
 Create a HTML/CSS component based on the following information:
 
-Page Description:
+Component Description:
 {{page}}
 
 `
