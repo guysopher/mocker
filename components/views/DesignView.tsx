@@ -168,6 +168,7 @@ export const DesignView: FC<DesignViewProps> = ({
 
   useEffect(() => {
     const loadComponents = async () => {
+      debugger;
       if (pages?.[activePage]?.components?.length > 0) {
         await Promise.all(Object.keys(pages).map(page => addComponentScript(pages[page].components[0], titleToId(page))));
         compileAndRenderComponent(pages[activePage].components[0], titleToId(activePage));

@@ -16,6 +16,7 @@ interface CanvasProps {
   appDescription: string
   generatingSection: string | null
   buildProgress: number
+  setGeneratingContent: (generatingContent: boolean) => void
   onChangeRequest: (changeRequest: string) => void
   appContent: {
     brief: BriefItem[]
@@ -26,7 +27,7 @@ interface CanvasProps {
   } | null
 }
 
-export default function Canvas({ view, appDescription, generatingSection, buildProgress, appContent, onChangeRequest }: CanvasProps) {
+export default function Canvas({ view, appDescription, generatingSection, buildProgress, setGeneratingContent, appContent, onChangeRequest }: CanvasProps) {
   const [activeElement, setActiveElement] = useState<string | null>(null)
   const [voiceActive, setVoiceActive] = useState(false)
   const [canvasElements, setCanvasElements] = useState<CanvasElement[]>([])
@@ -85,6 +86,7 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
     if (!changeRequest) return;
     setShowProgress(activeElement)
     setVoiceActive(false)
+    setGeneratingContent(true)
 
     const context = await fetch('/api/context', {
       method: 'POST',

@@ -33,7 +33,6 @@ import prompts, { PromptName } from '@/utils/prompts'
 
 const { Content } = Layout
 const { Title, Text } = Typography
-const { TabPane } = Tabs
 
 const USE_COMPONENTS = false
 
@@ -292,7 +291,7 @@ export default function Home() {
             onChange={setCurrentView}
             size='large'
             centered
-            tabBarGutter={20}
+            tabBarGutter={50}
             tabBarExtraContent={{
               right: (
                 <>
@@ -301,47 +300,52 @@ export default function Home() {
                     size='large'
                     icon={<BuildOutlined />}
                     onClick={handleBuildIt}
-                  disabled={generatingContent || building || buildProgress > 0}
-                  loading={building && buildProgress < 100}
-                >
-                  Build It
-                </Button>
-
-                {buildProgress === 100 && (
-                  <Button
-                    type="primary"
-                    icon={<ExportOutlined />}
-                    href="https://www.wix.com/"
-                    target="_blank"
+                    disabled={generatingContent || building || buildProgress > 0}
+                    loading={building && buildProgress < 100}
                   >
-                    Finish in Wix
+                    Build It
                   </Button>
+
+                  {buildProgress === 100 && (
+                    <Button
+                      type="primary"
+                      icon={<ExportOutlined />}
+                      href="https://www.wix.com/"
+                      target="_blank"
+                    >
+                      Finish in Wix
+                    </Button>
                   )}
                 </>
               ),
               left: (
-                generatingContent ? (<span className='mr-2'><Spin indicator={<LoadingOutlined spin />} />Generating... </span>) : null
+                generatingContent ? (
+                  <span className="mr-4 flex items-center bg-red-50 px-4 py-2 rounded-full">
+                    <Spin indicator={<LoadingOutlined style={{ fontSize: 24, color: '#f5222d' }} spin />} />
+                    <Text strong className="ml-2 text-red-600">Generating...</Text>
+                  </span>
+                ) : null
               )
-            }
-            }
-          >
-            <TabPane
-              tab={<span>Brief</span>}
-              key="brief"
-            />
-            <TabPane
-              tab={<span>User Stories</span>}
-              key="stories"
-            />
-            <TabPane
-              tab={<span>Sitemap</span>}
-              key="sitemap"
-            />
-            <TabPane
-              tab={<span>Prototype</span>}
-              key="pages"
-            />
-          </Tabs>
+            }}
+            items={[
+              {
+                key: 'brief',
+                label: <span>Brief</span>,
+              },
+              {
+                key: 'stories',
+                label: <span>User Stories</span>,
+              },
+              {
+                key: 'sitemap',
+                label: <span>Sitemap</span>,
+              },
+              {
+                key: 'pages',
+                label: <span>Prototype</span>,
+              }
+            ]}
+          />
 
           <Content>
             <Card>
@@ -350,6 +354,7 @@ export default function Home() {
                 appDescription={appDescription}
                 generatingSection={generatingSection}
                 buildProgress={buildProgress}
+                setGeneratingContent={setGeneratingContent}
                 onChangeRequest={handleChangeRequest}
                 appContent={{
                   brief: appContent?.brief || [],
