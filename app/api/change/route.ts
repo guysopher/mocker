@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
     const { result, changeRequest, section, customPrompt, ...promptParams } = await request.json();
     
     const {change, prompt: changePrompt} = await generateChangeRequest(
-      JSON.stringify(result), 
+      result, 
       changeRequest, 
       prompts[section as keyof typeof prompts],
       promptParams,

@@ -77,7 +77,7 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ description, customPrompt: prompts[_section as keyof typeof prompts], changeRequest, ...tempAppContent, section, result: tempAppContent[section as keyof typeof tempAppContent] }),
+        body: JSON.stringify({ description, customPrompt: prompts[_section as keyof typeof prompts], changeRequest, ...tempAppContent, section, result: JSON.stringify(appContent?.[section as keyof typeof appContent]) }),
       }).then(response => response.json()).then(data => {
         if (changeRequest) {
           data = data.change;
@@ -179,7 +179,7 @@ export default function Home() {
               headers: {
                 'Content-Type': 'application/json',
               },
-              body: JSON.stringify({ description, page, customPrompt: prompts[target as keyof typeof prompts], ...tempAppContent, result: tempAppContent[target as keyof typeof tempAppContent], changeRequest, section: 'page' }),
+              body: JSON.stringify({ description, page, customPrompt: prompts[target as keyof typeof prompts], ...tempAppContent, result: JSON.stringify(appContent?.pages?.[page.type]?.components?.[0]), changeRequest, section: 'page' }),
             });
 
             if (!pageResponse.ok) {
