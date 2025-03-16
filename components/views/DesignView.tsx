@@ -74,35 +74,27 @@ export const DesignView: FC<DesignViewProps> = ({
 
       const { bundledCode } = await response.json();
 
-      return new Promise<void>((resolve, reject) => {
-        const scriptElement = document.createElement('script');
-        scriptElement.textContent = `
-          try {
-            window.${elementId} = (function() {
-              ${bundledCode}
-              return Component;
-            })();
-          } catch (e) {
-            console.error("Error in bundled code:", e);
-          }
+      // Execute the code directly instead of waiting for onload
+      try {
+        const scriptContent = `
+          window.${elementId} = (function() {
+            ${bundledCode}
+            return Component;
+          })();
         `;
-        
-        scriptElement.onload = () => {
-          setRenderedPages(prev => ({
-            ...prev,
-            [elementId]: true
-          }));
-          resolve();
-        };
-        
-        scriptElement.onerror = (error) => {
-          reject(error);
-        };
-        
-        document.head.appendChild(scriptElement);
-      });
+        eval(scriptContent);
+        setRenderedPages(prev => ({
+          ...prev,
+          [elementId]: true
+        }));
+        return Promise.resolve();
+      } catch (e) {
+        console.error("Error in bundled code:", e);
+        return Promise.reject(e);
+      }
     } catch (error) {
       console.error("Error adding component script:", error);
+      return Promise.reject(error);
     }
   }
 
@@ -172,12 +164,20 @@ export const DesignView: FC<DesignViewProps> = ({
   useEffect(() => {
     const loadComponents = async () => {
       if (!isGenerating && pages?.[activePage]?.components?.length > 0) {
-        await Promise.all(Object.keys(pages).map(page => addComponentScript(pages[page].components[0], titleToId(page))));
+        // await Promise.all(Object.keys(pages).map(page => addComponentScript(pages[page].components[0], titleToId(page))));
         compileAndRenderComponent(pages[activePage].components[0], titleToId(activePage));
       }
     }
     loadComponents();
   }, [activePage, pages, isGenerating]);
+
+  useEffect(() => {
+    if (!isGenerating) {
+      setTimeout(() => {
+        compileAndRenderComponent(pages[activePage].components[0], titleToId(activePage));
+      }, 100);
+    }
+  }, [isGenerating]);
 
   return (
     <div className='w-full h-full'>

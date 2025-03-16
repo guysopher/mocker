@@ -254,7 +254,7 @@ export default function Home() {
 
   return (
     <Layout className="min-h-screen">
-      <Header />
+      {/* <Header /> */}
 
       {!appGenerated ? (
         <Content className="p-8 bg-gradient-to-b from-blue-50 to-gray-50">
