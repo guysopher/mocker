@@ -443,7 +443,11 @@ Component Description:
     This is the change request and context:
     {{changeRequest}}
 
-    This is the prompt that was used to create the result, follow it to create the new result in the format it defines:
+    This is the prompt that was used to create the result, follow it to create the new result in the format it defines.
+    Remember to follow the format of the result, do not change the format of the result.
+
+    ORIGINAL PROMPT:
+    -----------------
     {{prompt}}
 
  `,

@@ -173,19 +173,26 @@ export default function Home() {
             await Promise.all(componentPromises);
           } else {
             setGeneratingSection('Page (' + page.type + ')')
-            const pageResponse = await fetch(`/api/page`, {
+            const target = changeRequest ? 'change' : 'page'
+            const pageResponse = await fetch(`/api/${target}`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
               },
-              body: JSON.stringify({ description, page, customPrompt: prompts.page, ...tempAppContent }),
+              body: JSON.stringify({ description, page, customPrompt: prompts[target as keyof typeof prompts], ...tempAppContent, result: tempAppContent[target as keyof typeof tempAppContent], changeRequest, section: 'page' }),
             });
 
             if (!pageResponse.ok) {
               throw new Error(`HTTP error! status: ${pageResponse.status}`);
             }
 
-            const pageData = await pageResponse.json();
+            let pageData = await pageResponse.json();
+
+            if (changeRequest) {
+              pageData = pageData.change;
+              console.log("Change request", pageData)
+            }
+
             if (pageData) {
               if (!tempAppContent.pages) {
                 tempAppContent.pages = {};
