@@ -428,9 +428,6 @@ IMPORTANT: Output code only, no additional textual description or wrapper symbol
 ## INPUTS
 Create a HTML/CSS component based on the following information:
 
-App Brief:
-{{brief}}
-
 Page Description:
 {{page}}
 

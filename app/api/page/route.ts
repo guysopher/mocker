@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
       description, 
       JSON.stringify(brief), 
       JSON.stringify(cssClasses),
-      // JSON.stringify(page),
+      JSON.stringify(page),
       customPrompt
     );
     return NextResponse.json({ code });

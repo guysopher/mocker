@@ -260,6 +260,7 @@ export async function generatePage(
     description: string,
     brief: string,
     cssClasses: string,
+    page: string,
     customPrompt?: string
 ) {
     try {
@@ -267,7 +268,7 @@ export async function generatePage(
             .replace('{{description}}', description)
             .replace('{{brief}}', brief)
             .replace('{{cssClasses}}', cssClasses)
-            // .replace('{{page}}', page)
+            .replace('{{page}}', page)
 
         const response = await openai.chat.completions.create({
             model: "gpt-4o",
