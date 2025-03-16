@@ -21,7 +21,8 @@ import {
   ExportOutlined,
   FileTextOutlined,
   UserOutlined,
-  AppstoreOutlined
+  AppstoreOutlined,
+  LoadingOutlined
 } from '@ant-design/icons'
 import Canvas from '@/components/Canvas'
 import AppDescriptionForm from '@/components/AppDescriptionForm'
@@ -260,7 +261,6 @@ export default function Home() {
         <Content className="p-8 bg-gradient-to-b from-blue-50 to-gray-50">
           <Card
             className="max-w-7xl mx-auto shadow-lg"
-            bordered={false}
           >
             <div className="text-center mb-8">
               <Title level={1} className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
@@ -284,19 +284,23 @@ export default function Home() {
           </Card>
         </Content>
       ) : (
-        <Layout>
+        <Layout
+            style={{ width: 'calc(100vw - 100px)', minWidth: '1105px', overflowX: 'hidden', margin: '20px auto' }}
+        >
           <Tabs
             activeKey={currentView}
             onChange={setCurrentView}
             size='large'
             centered
-            tabBarExtraContent={
-              <>
-                <Button
-                  type="primary"
-                  size='large'
-                  icon={<BuildOutlined />}
-                  onClick={handleBuildIt}
+            tabBarGutter={20}
+            tabBarExtraContent={{
+              right: (
+                <>
+                  <Button
+                    type="primary"
+                    size='large'
+                    icon={<BuildOutlined />}
+                    onClick={handleBuildIt}
                   disabled={generatingContent || building || buildProgress > 0}
                   loading={building && buildProgress < 100}
                 >
@@ -312,8 +316,13 @@ export default function Home() {
                   >
                     Finish in Wix
                   </Button>
-                )}
-              </>
+                  )}
+                </>
+              ),
+              left: (
+                generatingContent ? (<span className='mr-2'><Spin indicator={<LoadingOutlined spin />} />Generating... </span>) : null
+              )
+            }
             }
           >
             <TabPane

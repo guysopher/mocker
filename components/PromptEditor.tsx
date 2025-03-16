@@ -6,7 +6,6 @@ import { PromptName } from '@/utils/prompts';
 
 const { TextArea } = Input;
 const { Title, Text } = Typography;
-const { TabPane } = Tabs;
 
 interface PromptEditorProps {
   onSave: (updatedPrompts: any) => void;
@@ -89,13 +88,12 @@ const PromptEditor = ({ onSave, onCancel, onResetPrompt, editedPrompts, setEdite
           activeKey={activeTab} 
           onChange={setActiveTab}
           style={{ marginBottom: 24 }}
-        >
-          {Object.keys(prompts).map((promptName) => (
-            <TabPane tab={promptName.toUpperCase()} key={promptName}>
-              {renderTabContent(promptName as PromptName, promptName)}
-            </TabPane>
-          ))}
-        </Tabs>
+          items={Object.keys(prompts).map((promptName) => ({
+            key: promptName,
+            label: promptName.toUpperCase(),
+            children: renderTabContent(promptName as PromptName, promptName)
+          }))}
+        />
         
         <Row justify="end" style={{ marginTop: 24 }}>
           <Space>

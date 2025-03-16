@@ -27,6 +27,7 @@ declare global {
     antd: typeof antd;
     antdIcons: typeof antdIcons;
     Component: any;
+    [key: string]: any;
   }
 }
 
@@ -37,7 +38,11 @@ if (typeof window !== 'undefined') {
 }
 
 const titleToId = (title: string) => {
-  return title.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '');
+  const words = title.split(/[^a-zA-Z0-9]+/);
+  return 'Component' + words
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join('')
+    .replace(/[^a-zA-Z0-9]/g, '');
 }
 
 export const DesignView: FC<DesignViewProps> = ({
@@ -50,8 +55,18 @@ export const DesignView: FC<DesignViewProps> = ({
 }) => {
 
   const [activePage, setActivePage] = useState(Object.keys(pages)[0] || '');
+  const [renderedPages, setRenderedPages] = useState<Record<string, boolean>>({});
 
   const compileAndRenderComponent = async (code: string, elementId: string) => {
+    if (renderedPages[elementId]) {
+      return;
+    }
+
+    setRenderedPages(prev => ({
+      ...prev,
+      [elementId]: true
+    }));
+
     try {
       const response = await fetch('/api/bundler', {
         method: 'POST',
@@ -72,10 +87,11 @@ export const DesignView: FC<DesignViewProps> = ({
       const scriptElement = document.createElement('script');
       scriptElement.textContent = `
         try {
-          window.Component = (function() {
+          window.${elementId} = (function() {
             ${bundledCode}
             // Return the default export or the module itself
-            return typeof exports.default !== 'undefined' ? exports.default : exports;
+            // return typeof exports.default !== 'undefined' ? exports.default : exports;
+            return Component;
           })();
         } catch (e) {
           console.error("Error in bundled code:", e);
@@ -84,7 +100,7 @@ export const DesignView: FC<DesignViewProps> = ({
       document.head.appendChild(scriptElement);
 
       // Now the Component should be available as a global variable
-      const PageComponent = window?.Component?.default || window?.Component;
+      const PageComponent = window?.[elementId]?.default || window?.[elementId];
 
       // Get the root element
       const rootElement = document.getElementById(elementId);
@@ -126,7 +142,7 @@ export const DesignView: FC<DesignViewProps> = ({
     key: (page),
     children: (
       <div
-        id={'render-page-' + titleToId(page)}
+        id={titleToId(page)}
         className="w-full h-full relative"
         style={{
           border: '0px solid #111',
@@ -144,8 +160,8 @@ export const DesignView: FC<DesignViewProps> = ({
   }));
 
   useEffect(() => {
-    if (pages[activePage] && pages[activePage].components && pages[activePage].components.length > 0) {
-      compileAndRenderComponent(pages[activePage].components[0], 'render-page-' + titleToId(activePage));
+    if (pages?.[activePage]?.components?.length > 0) {
+      compileAndRenderComponent(pages[activePage].components[0], titleToId(activePage));
     }
   }, [activePage, pages]);
 
@@ -158,9 +174,7 @@ export const DesignView: FC<DesignViewProps> = ({
           </div>
         ) : (
           <Tabs items={items} onChange={(key) => {
-            if (pages[key] && pages[key].components && pages[key].components.length > 0) {
-              compileAndRenderComponent(pages[key].components[0], 'render-page-' + titleToId(key));
-            }
+              setActivePage(key);
           }}
             onTabClick={(key) => {
               setActivePage(key);

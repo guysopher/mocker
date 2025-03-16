@@ -323,14 +323,15 @@ The component will be rendered on a full page and is fully defined by the compon
 ## OUTPUT FORMAT
 Provide the component code as a JSON with a key "plan" that contains your plan about how to build the page and what will it include
 and a key "code" that contains the code as a string.
-The code should define one component named "Page" that is a page.
+The component should be named "Page" and should be a full page component.
+
 For example:
 {
     "plan": "The page will include a header, a footer, and a sidebar. The main content will include a form and a table.",
     "code": "
 import React, { useState } from 'react';
 
-const TodoApp = () => {
+const Page = () => {
   const [todos, setTodos] = useState([]);
   const [input, setInput] = useState('');
 
@@ -416,7 +417,7 @@ const TodoApp = () => {
   );
 };
 
-export default TodoApp;
+export default Page;
     ",
 }
 
@@ -424,10 +425,9 @@ IMPORTANT: Output code only, no additional textual description or wrapper symbol
 
 ## STYLING GUIDELINES
 - Use relative units (rem, %, vh/vw) where appropriate
-- The grid area is specified in the grid_position key in the component description, remember that the grid is 16 columns and 9 rows and that the end row or column are not included in the grid area (for example: given a start_row 1 and a end_row 3, column_start 1 and column_end 16, the grid area is 1 / 1 / 4 / 17)
 
 ## INPUTS
-Create a HTML/CSS component based on the following information:
+Create a React component based on the following information:
 
 Component Description:
 {{page}}
@@ -436,14 +436,17 @@ Component Description:
     // This is a prefix that will be added to the end of the prompt - in case the user want to change something existing and not create a new one
     [PromptName.CHANGE_REQUEST]: `
 
-    In the following prompt, you will receive a request to change something in the existing result
+    In the following prompt, you will receive a request to change something in the existing result.
+    Change only the part of the result that the user has requested, leave the rest of the result unchanged.
+    Make sure to match the context of the change request to the content you change in the result.
+    Do not change the result if the change request is not clear or if it is not related to the result.
 
     The result could be any json - as defined by the creation prompt.
 
     This is the existing result:
     {{result}}
 
-    This is the change request:
+    This is the change request and context:
     {{changeRequest}}
 
     This is the prompt that was used to create the result, follow it to create the new result in the format it defines:

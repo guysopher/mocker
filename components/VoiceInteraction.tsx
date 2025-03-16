@@ -35,7 +35,7 @@ export default function VoiceInteraction({ elementId, onVoiceEnd, element, isAct
   const [newNote, setNewNote] = useState('')
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
   const popupRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<HTMLTextAreaElement>(null)
   const [isRecognitionActive, setIsRecognitionActive] = useState(false);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
 
@@ -236,13 +236,13 @@ export default function VoiceInteraction({ elementId, onVoiceEnd, element, isAct
         <div
           className={`flex-1 ml-4 transition-opacity duration-300 ${transcript ? 'opacity-100' : 'opacity-0'}`}
         >
-          <input
+          <textarea
             ref={inputRef}
-            type="text"
             value={transcript}
             readOnly
-            className="w-full bg-gray-50/50 border border-gray-200 rounded-full px-4 py-2 text-gray-700 focus:outline-none"
+            className="w-full bg-white rounded-full px-4 py-2 text-gray-700 focus:outline-none font-size-2xl"
             placeholder="Listening..."
+            rows={4}
           />
         </div>
       </div>

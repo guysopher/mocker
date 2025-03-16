@@ -3,9 +3,15 @@
 const nextConfig = {
   reactStrictMode: true,
   webpack: (config, { isServer }) => {
-    // Mark esbuild as external to prevent bundling
+    // Mark all esbuild-related packages as external
     if (isServer) {
-      config.externals = [...(config.externals || []), 'esbuild']
+      config.externals = [
+        ...(config.externals || []),
+        'esbuild',
+        '@esbuild/darwin-x64',
+        '@esbuild/linux-x64',
+        /^@esbuild\/.*/
+      ]
     }
     return config
   },
