@@ -1,9 +1,10 @@
 import OpenAI from 'openai';
 import prompts from './prompts';
 
-// Initialize the OpenAI client
+// Initialize the OpenAI client with a 60-second timeout
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY || '',
+    timeout: 60000, // 60 seconds timeout
 });
 
 /**
@@ -30,6 +31,7 @@ export async function generateCompletion(
                 maxTokens: options.maxTokens,
                 model: options.model,
             }),
+            signal: AbortSignal.timeout(60000),
         });
 
         if (!response.ok) {
@@ -63,6 +65,8 @@ export async function generateAppBrief(description: string, customPrompt?: strin
             ],
             temperature: 0.7,
             response_format: { type: "json_object" }
+        }, {
+            timeout: 60000
         });
 
         if (response.choices[0]?.message?.content) {
