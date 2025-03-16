@@ -53,13 +53,6 @@ const PromptEditor = ({ onSave, onCancel, onResetPrompt }: PromptEditorProps) =>
   };
 
   const handleSave = () => {
-    if (!editedPrompts.brief.trim() || 
-        !editedPrompts.stories.trim() || 
-        !editedPrompts.design.trim()) {
-      // error('All prompts must have content');
-      return;
-    }
-    
     // Save to localStorage
     localStorage.setItem('customPrompts', JSON.stringify(editedPrompts));
     
