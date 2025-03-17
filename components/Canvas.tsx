@@ -46,7 +46,7 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
     const timer = setTimeout(() => {
       setVoiceActive(true);
       setVoicePopupPosition({ x: event.clientX, y: event.clientY });
-    }, 1000);
+    }, 600);
     
     setMouseDownTimer(timer);
   }
@@ -78,7 +78,7 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
     if (voiceActive) {
       setTimeout(() => {
         setVoiceActive(false)
-      }, 1000)
+      }, 600)
     }
   }
 
@@ -181,7 +181,6 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
           position: 'fixed',
           left: voicePopupPosition.x,
           top: voicePopupPosition.y,
-          transform: 'translate(-50%, -50%)',
           zIndex: 1000
         }}
       >

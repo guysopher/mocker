@@ -185,24 +185,12 @@ export default function VoiceInteraction({ elementId, onVoiceEnd, element, isAct
     }
   }, [isListening])
 
-  const getPosition = () => {
-    // In a real implementation, this would calculate position based on the element location
-    return {
-      top: element ? `${element.y + 20}px` : '100px',
-      left: element ? `${element.x + element.width + 20}px` : '100px'
-    }
-  }
-
-  const position = getPosition()
-
   return (
     isActive ? (
       <div
         ref={popupRef}
         className="fixed z-50 bg-white/95 rounded-full shadow-2xl transition-all duration-300 animate-fadeIn backdrop-blur-md border border-white/20 flex items-center"
         style={{
-          top: position.top,
-          left: position.left,
           width: transcript ? '600px' : '180px',
           height: '180px',
           padding: '20px'
