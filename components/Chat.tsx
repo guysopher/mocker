@@ -60,6 +60,12 @@ const Chat = ({ onSummaryCreated, getCurrentDescription, prompts }: { onSummaryC
         }
     }, [messages, onSummaryCreated]);
 
+    useEffect(() => {
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+        }
+    }, [messages]);
+
     const handleSend = () => {
         if (input.trim() === '') return;
 
@@ -72,8 +78,12 @@ const Chat = ({ onSummaryCreated, getCurrentDescription, prompts }: { onSummaryC
 
         setMessages([...messages, userMessage]);
         setInput('');
+        setIsLoading(true); // Set loading state to true before API call
 
-        createNextMessage(input);
+        createNextMessage(input)
+            .finally(() => {
+                setIsLoading(false); // Set loading state to false after API call completes
+            });
     };
 
     const renderMessages = () => {

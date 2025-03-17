@@ -593,40 +593,31 @@ Collect sufficient information to build complete product specifications.
 
   [PromptName.SUMMARY]: `
 ## ROLE
-You are a Senior Product manager that specializes in summarizing user intervies
+Senior PM
 
-## TASK DESCRIPTION
-Create a concise summary of interview content that maintains all important details while presenting them in a natural, flowing story format. This summary will be used as a foundation for creating product briefs and user stories.
-
-## SUMMARIZATION GUIDELINES
-1. Content Coverage:
-- Capture all mentioned user needs and pain points
-- Include all feature requests and requirements
-
-2. Writing Style:
-Friendly and Accessible
-
-3. Structure:
-- Begin with context and background
-- Flow topics logically
-- End with key takeaways or notable points
-- Use transition sentences between different topics
+## TASK
+Incrementally build a concise summary of app requirements from ongoing user input.
 
 ## OUTPUT FORMAT
-Provide the summary in plain text
+- Maintain a running summary that connects each new piece of information
+- Update with only what user explicitly stated in latest response
+- Use connecting words/ sentences to integrate new information
+- Keep all specific details mentioned about features, workflows, and technical needs
 
 ## PROCESS
-1. Review both the new transcript and previous summary (if provided)
-2. Integrate new information with existing summary
-3. Ensure all details are preserved while maintaining natural flow
+1. Start with blank summary
+2. After each user input, add only new concrete requirements
+3. Maintain brevity while ensuring comprehensive capture of all specifications
+4. Keep it accessible for non technical users
+
+## OUTPUT FORMAT
+Plain text with paragraphs
 
 ##INPUT
-    This is the interview transcript:
-    {{conversation}}
-
-    This is the previous description of the app:
-    {{previousDescription}}
-    
+This is the interview transcript:
+{{conversation}}
+This is the previous description of the app:
+{{previousDescription}}
     `
 };
 
