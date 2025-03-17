@@ -299,133 +299,216 @@ Component Description:
 
     [PromptName.PAGE]: `
 ## ROLE
-You are a senior React Developer specializing in **Ant Design (antd)** components. Your expertise lies in **creating clean, responsive, and visually accurate** components using Ant Design's recommended classes and best practices.
+Senior React Developer specializing in **Ant Design (antd)** components and **Tailwind CSS** with expertise in creating clean, responsive, and visually accurate components.
 
 ## TASK
-Create a **stateless React component** using **Ant Design components and classes**. The component should focus on **visual representation only**, without any functional logic. 
-The component will be rendered on a full page and is fully defined by the component description.
+Create a **stateless React component** using Ant Design components and Tailwind CSS. Focus on **visual representation only** (no functional logic). The component will be rendered on a full page (765px × 1105px) as defined by the component description.
 
 ## COMPONENT GUIDELINES
-- Do not render any images!
-- Write detailed content for the component
-- Use Ant Design icons for the component
-- The page will render in a container. It should not include the header or footer - only the main content.
-- The height and width of the Page component should be 765px and 1105px respectively.
-- Write standard React component
+- Do not render any images - use Ant Design icons instead
+- Write detailed content with realistic text that fits each UI element
+- Include only the main components, no headers or footers!!!!
+- Standard React component structure
+- Use Tailwind CSS utility classes for styling
+
+## MOCKUP TEXTUAL CONTENT
+- Generate contextually appropriate mockup text for all content areas
+- Create detailed and varied text content to make the component look authentic
+- Ensure text length is appropriate for each UI element
+- Use relevant placeholder text that matches the purpose of each section
+
+## STYLING GUIDELINES
+- Use Tailwind CSS utility classes for styling
+- Use relative units (rem, %, vh/vw) where appropriate
+- Follow grid specifications: grid is 16 columns × 9 rows
+- The grid area is specified in the grid_position key (e.g., start_row 1, end_row 3, column_start 1, column_end 16 = grid area 1 / 1 / 4 / 17)
 
 
 ## OUTPUT FORMAT
-Provide the component code as a JSON with a key "plan" that contains your plan about how to build the page and what will it include
-and a key "code" that contains the code as a string.
-The component should be named "Page" and should be a full page component.
+Provide the component code as a JSON with:
+1. A key "plan" that contains your plan about how to build the page and what it will include
+2. A key "code" that contains the code as a string
 
-For example:
+The code should define one component named "Page" that is a page. Only include the component code, no header or footer.
+
+Example code:
+
 {
-    "plan": "The page will include a header, a footer, and a sidebar. The main content will include a form and a table.",
-    "code": "
-import React, { useState } from 'react';
+    "plan": "The page will include a dashboard with a statistics summary section, data visualization charts, and a recent activity table.",
+    "code": "import React from 'react';
+import { Layout, Row, Col, Card, Statistic, Table, Badge, Space, Tag, Progress, Typography } from 'antd';
+import { ArrowUpOutlined, ArrowDownOutlined, UserOutlined, ShoppingCartOutlined, DollarOutlined, BarChartOutlined } from '@ant-design/icons';
+
+const { Title, Text } = Typography;
 
 const Page = () => {
-  const [todos, setTodos] = useState([]);
-  const [input, setInput] = useState('');
+  // Mock data for statistics
+  const statsData = [
+    { title: 'Active Users', value: 4328, increase: 12.5, icon: <UserOutlined /> },
+    { title: 'Sales', value: 1432, increase: -2.8, icon: <ShoppingCartOutlined /> },
+    { title: 'Revenue', value: 9271, prefix: '$', increase: 8.1, icon: <DollarOutlined /> },
+    { title: 'Conversion Rate', value: 28.3, suffix: '%', increase: 3.2, icon: <BarChartOutlined /> }
+  ];
 
-  const addTodo = () => {
-    if (input.trim() !== '') {
-      setTodos([...todos, { id: Date.now(), text: input, completed: false }]);
-      setInput('');
-    }
-  };
+  // Mock data for table
+  const tableData = [
+    { key: '1', user: 'John Brown', action: 'New Purchase', amount: '$320.00', status: 'completed', time: '2 minutes ago' },
+    { key: '2', user: 'Jim Green', action: 'Account Login', amount: '-', status: 'processing', time: '12 minutes ago' },
+    { key: '3', user: 'Joe Black', action: 'Payment Failed', amount: '$120.50', status: 'error', time: '30 minutes ago' },
+    { key: '4', user: 'Jim Red', action: 'New Subscription', amount: '$25.99', status: 'completed', time: '1 hour ago' },
+    { key: '5', user: 'Jake White', action: 'Support Ticket', amount: '-', status: 'pending', time: '3 hours ago' }
+  ];
 
-  const toggleTodo = (id) => {
-    setTodos(
-      todos.map(todo =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
-    );
-  };
-
-  const deleteTodo = (id) => {
-    setTodos(todos.filter(todo => todo.id !== id));
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      addTodo();
-    }
-  };
+  // Table columns
+  const columns = [
+    {
+      title: 'User',
+      dataIndex: 'user',
+      key: 'user',
+    },
+    {
+      title: 'Action',
+      dataIndex: 'action',
+      key: 'action',
+    },
+    {
+      title: 'Amount',
+      dataIndex: 'amount',
+      key: 'amount',
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status) => {
+        let color = 'green';
+        if (status === 'processing') {
+          color = 'blue';
+        } else if (status === 'error') {
+          color = 'red';
+        } else if (status === 'pending') {
+          color = 'orange';
+        }
+        return (
+          <Tag color={color}>
+            {status.toUpperCase()}
+          </Tag>
+        );
+      },
+    },
+    {
+      title: 'Time',
+      dataIndex: 'time',
+      key: 'time',
+    },
+  ];
 
   return (
-    <div className="w-full max-w-md mx-auto p-4 bg-white rounded shadow">
-      <h1 className="text-2xl font-bold mb-4 text-center">Todo App</h1>
+    <Layout style={{ height: '765px', width: '1105px', padding: '1rem', background: '#f0f2f5' }}>
+      <Title level={2}>Dashboard Overview</Title>
+      <Text type='secondary' style={{ marginBottom: '2rem', display: 'block' }}>
+        Welcome back! Here's what's happening with your business today.
+      </Text>
 
-      <div className="flex mb-4">
-        <input
-          type="text"
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          onKeyPress={handleKeyPress}
-          placeholder="Add a new todo..."
-          className="flex-grow p-2 border rounded-l"
-        />
-        <button
-          onClick={addTodo}
-          className="bg-blue-500 text-white px-4 py-2 rounded-r hover:bg-blue-600"
-        >
-          Add
-        </button>
-      </div>
-
-      <ul className="space-y-2">
-        {todos.map(todo => (
-          <li
-            key={todo.id}
-            className="flex items-center justify-between p-2 border rounded bg-gray-50"
-          >
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                checked={todo.completed}
-                onChange={() => toggleTodo(todo.id)}
-                className="mr-2"
-              />
-              <span className={todo.completed ? 'line-through text-gray-400' : ''}>
-                {todo.text}
-              </span>
-            </div>
-            <button
-              onClick={() => deleteTodo(todo.id)}
-              className="text-red-500 hover:text-red-700"
-            >
-              Delete
-            </button>
-          </li>
+      {/* Statistics Cards */}
+      <Row gutter={[16, 16]}>
+        {statsData.map((stat, index) => (
+          <Col span={6} key={index}>
+            <Card>
+              <Space align='start'>
+                <div style={{ fontSize: '2rem', color: '#1890ff', marginRight: '0.5rem' }}>
+                  {stat.icon}
+                </div>
+                <Statistic
+                  title={stat.title}
+                  value={stat.value}
+                  precision={stat.precision || 0}
+                  valueStyle={{ color: stat.increase > 0 ? '#3f8600' : '#cf1322' }}
+                  prefix={stat.prefix || ''}
+                  suffix={stat.suffix || ''}
+                />
+              </Space>
+              <Text
+                type={stat.increase > 0 ? 'success' : 'danger'}
+                style={{ display: 'block', marginTop: '0.5rem' }}
+              >
+                {stat.increase > 0 ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
+                {Math.abs(stat.increase)}% compared to last week
+              </Text>
+            </Card>
+          </Col>
         ))}
-      </ul>
+      </Row>
 
-      {todos.length > 0 && (
-        <div className="mt-4 text-sm text-gray-500">
-          {todos.filter(todo => todo.completed).length} of {todos.length} tasks completed
-        </div>
-      )}
-    </div>
+      {/* Charts and Progress */}
+      <Row gutter={[16, 16]} style={{ marginTop: '1rem' }}>
+        <Col span={12}>
+          <Card title='Performance Metrics'>
+            <Row>
+              <Col span={12}>
+                <Typography.Paragraph>Sales Targets</Typography.Paragraph>
+                <Progress percent={75} status='active' />
+                <Typography.Paragraph>Marketing ROI</Typography.Paragraph>
+                <Progress percent={38} status='active' />
+                <Typography.Paragraph>Customer Satisfaction</Typography.Paragraph>
+                <Progress percent={92} status='success' />
+              </Col>
+              <Col span={12}>
+                <Typography.Paragraph>Website Traffic</Typography.Paragraph>
+                <Progress percent={68} status='active' />
+                <Typography.Paragraph>Conversion Rate</Typography.Paragraph>
+                <Progress percent={52} status='active' />
+                <Typography.Paragraph>Support Response Time</Typography.Paragraph>
+                <Progress percent={84} status='success' />
+              </Col>
+            </Row>
+          </Card>
+        </Col>
+        <Col span={12}>
+          <Card title='Activity Distribution' style={{ height: '100%' }}>
+            <div style={{ padding: '1rem', textAlign: 'center' }}>
+              {/* We would normally have a chart here, but per requirements, we'll use text */}
+              <Typography.Paragraph>
+                Product sales distribution across categories visualized here.
+              </Typography.Paragraph>
+              <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '2rem' }}>
+                <div>
+                  <Badge color='#1890ff' text='Electronics' />
+                  <div>42%</div>
+                </div>
+                <div>
+                  <Badge color='#52c41a' text='Clothing' />
+                  <div>28%</div>
+                </div>
+                <div>
+                  <Badge color='#faad14' text='Home' />
+                  <div>18%</div>
+                </div>
+                <div>
+                  <Badge color='#f5222d' text='Other' />
+                  <div>12%</div>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Recent Activities Table */}
+      <Card title='Recent Activities' style={{ marginTop: '1rem' }}>
+        <Table columns={columns} dataSource={tableData} pagination={false} />
+      </Card>
+    </Layout>
   );
 };
 
-export default Page;
-    ",
+export default Page;"
 }
 
-IMPORTANT: Output code only, no additional textual description or wrapper symbols
-
-## STYLING GUIDELINES
-- Use relative units (rem, %, vh/vw) where appropriate
-
-## INPUTS
+## Inputs
 Create a React component based on the following information:
-
 Component Description:
 {{page}}
-
 `,
     // This is a prefix that will be added to the end of the prompt - in case the user want to change something existing and not create a new one
     [PromptName.CHANGE_REQUEST]: `
