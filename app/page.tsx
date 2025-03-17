@@ -159,6 +159,8 @@ export default function Home() {
     } else {
       await handleSubmitDescription(appDescription, prompts, changeRequest)
     }
+    setGeneratingContent(false);
+
   }
 
   const handleSubmitDescription = async (description: string, prompts: Record<PromptName, string>, changeRequest?: string) => {
@@ -237,15 +239,6 @@ export default function Home() {
               <Title level={1} className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
                 Tell Us About Your Dream App
               </Title>
-            </div>
-
-            <div className="flex justify-end mb-4 items-center">
-              <Text className="mr-2">Use Component-Based Generation:</Text>
-              <Switch
-                checked={useComponents}
-                onChange={setUseComponents}
-                disabled={generatingContent}
-              />
             </div>
 
             <AppDescriptionForm

@@ -2,6 +2,7 @@ import { BriefItem } from "@/types/canvas"
 import { useState } from "react"
 import { CommentsIndicator } from "../CommentsIndicator"
 import { Skeleton } from "antd"
+import ReactMarkdown from 'react-markdown'
 
 interface BriefViewProps {
   elements: BriefItem[]
@@ -58,7 +59,9 @@ export function BriefView({
                   tabIndex={0}
                 >
                   <h3 className="text-xl font-bold text-gray-900">{element.name}</h3>
-                  <p className="text-gray-600">{element.description}</p>
+                  <div className="prose text-gray-600">
+                    <ReactMarkdown>{element.description}</ReactMarkdown>
+                  </div>
                   {showProgress === element.name && (
                     <CommentsIndicator />
                   )}
