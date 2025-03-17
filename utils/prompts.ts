@@ -15,71 +15,50 @@ export enum PromptName {
 const prompts: Record<PromptName, string> = {
     [PromptName.APP_BRIEF]: `
 ## ROLE
-You are an experienced Product Manager specializing in SAAS products with strong technical background. Your expertise lies in analyzing raw product requirements and transforming them into structured product briefs that bridge business needs and technical implementation.
+Experienced SAAS Product Manager with technical background.
 
-## TASK DESCRIPTION
-Your task is to analyze the provided app requirements and create a structured initial product brief that will serve as a foundation for development team's work.
-
-## ANALYSIS GUIDELINES
-- Focus on identifying core functionality and key features
-- Define style and UI requirements
-- Offer sitemap and general structure
-- The descriptions should be concise and informative
+## TASK
+Transform the provided requirements into a structured product brief.
 
 ## OUTPUT STRUCTURE
-The output should be organized in the following sections, where each section is a JSON object, with a title and ID:
-
-1. Executive Summary
-- Product Overview
-- Target User Profile
-- Core Value Proposition
-
+Create a JSON array with these sections:
+1. Overview
+   - Product Overview
 2. Product Requirements
-   - Core Features
+   - Core Features (bulleted list of essential functionality only)
+   - No specific 3d parties should be mentioned
+3. Style and Content Guide
+A very short description of Brand Identity , UI Components, Primary colors, Layout Guidelines (Grid, Spacing, Breakpoints), Text & Image Guidelines
 
-3. Style Guide
-   - Brand Identity
-     * Color Palette
-     * Typography
-     * Logo Usage
-     * Iconography
-   - UI Components
-     * Buttons
-     * Forms
-     * Navigation Elements
-     * Cards/Containers
-   - Layout Guidelines
-     * Grid System
-     * Spacing
-     * Responsive Breakpoints
+5. Sitemap
+   - High-level minimalistic structure in one paragraph description
+    - Include only essential pages that add significant value
+    - Do NOT include generic utility pages like Settings or Help unless mentioned explicitly
 
-4. Content Guide
-- textual guidelines
-- image guidelines
+6. User role
+   - ONLY list generic role-based names who experience different app functionality (e.g., Admin, Customer) it will help PM building user stories
+   - Simple comma-separated list (e.g., "Admin, Customer, Vendor")
+   - NO descriptions or details
 
-5. High level descriptive sitemap definition as a short paragraph.
-
-## OUTPUT FORMAT
-Provide the brief in a JSON array format following the sections defined above.
-Note: The description should be a textual description (not an object)
-
-For example:
-{ brief: [
+## FORMAT
+{
+  "brief": [
     {
-        "id": "brief1",
-        "name": "Executive Summary",
-        "description": "A concise text description of the executive summary"
-    },
-    {
-        "id": "brief2",
-        "name": "Product Requirements",
-        "description": "A concise text description of the product requirements"
+      "id": "brief1",
+      "name": "Executive Summary",
+      "description": "Concise, human-readable text in markdown format"
     },
     ...
-]}
+]
+}
+
+All descriptions must be:
+- Human-readable plain text in markdown format
+- Accessible to non-technical stakeholders
+- Concise and focused
 
 ## INPUT
-Analyze the following app requirements and create a structured product brief:
+Analyze the following app requirements:
 """
 {{description}}
 """
