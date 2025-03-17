@@ -5,7 +5,7 @@ export async function GET() {
   try {
     // List all blobs, sorted by newest first
     const { blobs } = await list({
-      limit: 1, // We only need the most recent one
+      limit: 1000, // We only need the most recent one
     });
 
     // Check if any blobs were found
@@ -17,7 +17,7 @@ export async function GET() {
     }
 
     // Get the most recent blob
-    const latestBlob = blobs[0];
+    const latestBlob = blobs[blobs.length - 1];
     
     // Fetch the actual blob content
     const blob = await fetch(latestBlob.url);

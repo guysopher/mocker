@@ -222,7 +222,6 @@ export default function Home() {
   const handleBuildIt = async () => {
     setBuilding(true)
     const mentalModelData = { description: appDescription, brief: appContent?.brief, stories: appContent?.stories, sitemap: appContent?.sitemap };
-    console.log("Mental model data", mentalModelData)
     
     try {
       // Add options with token if needed for local development
@@ -234,23 +233,16 @@ export default function Home() {
       const url = data.url;
       // Show a modal with the url
       Modal.info({
-        title: 'App Generated Successfully',
-        content: <div>Your app has been generated and is ready to view. <a href={url} target="_blank">View App</a></div>,
+        title: 'App Exported Successfully',
+        content: <div>Your app has been exported and is ready to view.</div>,
         onOk: () => {
           window.open(url, '_blank')
-        }
+        },
+        okText: 'View App',
+        cancelText: 'Close',
       });
       
       // Simulate build progress
-      const interval = setInterval(() => {
-        setBuildProgress(prev => {
-          if (prev >= 100) {
-            clearInterval(interval)
-            return 100
-          }
-          return prev + 10
-        })
-      }, 800)
     } catch (error) {
       console.error('Error uploading to Vercel Blob:', error);
       notification.error({
@@ -322,7 +314,7 @@ export default function Home() {
                     disabled={generatingContent || building || buildProgress > 0}
                     loading={building && buildProgress < 100}
                   >
-                    Build It
+                    Export
                   </Button>
 
                   {buildProgress === 100 && (
