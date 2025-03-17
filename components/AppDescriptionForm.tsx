@@ -87,7 +87,7 @@ export default function AppDescriptionForm({ onSubmit, isGenerating, appDescript
         <Form.Item className="mb-6">        
           <div className="relative">
             <TextArea
-              rows={10}
+              rows={20}
               placeholder="Describe the features and functionality you want in your app..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -101,6 +101,43 @@ export default function AppDescriptionForm({ onSubmit, isGenerating, appDescript
                 <Spin tip="Generating..." />
               </div>
             )}
+          </div>
+        </Form.Item>
+
+        <Form.Item className="mb-6">
+          <div className="flex flex-wrap gap-2">
+            <Button
+              onClick={() => setDescription(
+                "A second-hand marketplace where users can buy and sell used items. Features include: product listings with images and descriptions, search and filter functionality, user profiles, messaging system between buyers and sellers, rating system, and secure payment integration. The homepage should show featured items and recent listings."
+              )}
+              disabled={isGenerating}
+            >
+              Second-hand Marketplace
+            </Button>
+            <Button
+              onClick={() => setDescription(
+                "An online bookstore with a clean, modern interface. Features include: book catalog with cover images, descriptions, and reviews, search by title/author/genre, user accounts with reading lists and purchase history, recommendation system, and shopping cart functionality. Include a featured books section and new releases on the homepage."
+              )}
+              disabled={isGenerating}
+            >
+              Book Store
+            </Button>
+            <Button
+              onClick={() => setDescription(
+                "A self-moderated YouTube-style platform where content is curated by community voting. Features include: video upload and playback, upvote/downvote system, comment threads, user profiles, content tags, and trending videos section. Videos below a certain score are automatically hidden. Users can earn reputation points for good contributions."
+              )}
+              disabled={isGenerating}
+            >
+              Self-moderated YouTube Channel
+            </Button>
+            <Button
+              onClick={() => setDescription(
+                "An interactive black hole simulator that visualizes gravitational effects and light bending. Features include: 3D visualization of a black hole, adjustable parameters (mass, rotation, viewing angle), particle simulation showing matter falling in, gravitational lensing effects, and an educational mode with explanations of the physics involved."
+              )}
+              disabled={isGenerating}
+            >
+              Black Hole Simulator
+            </Button>
           </div>
         </Form.Item>
         
