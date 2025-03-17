@@ -148,7 +148,9 @@ export default function Home() {
     } else if (section === 'stories') {
       createPromise('stories', appDescription, prompts, changeRequest)
     } else if (section === 'sitemap') {
-      createPromise('sitemap', appDescription, prompts, changeRequest)
+      await createPromise('sitemap', appDescription, prompts, changeRequest)
+      const pagePromises = tempAppContent.sitemap.map((page, idx) => createPagePromise(page, idx, changeRequest));
+      await Promise.all(pagePromises);
     } else if (section === 'page' && pageName) {
       const pageIdx = appContent?.sitemap?.findIndex(page => page.type === pageName);
       if (pageIdx !== undefined && pageIdx >= 0) {
