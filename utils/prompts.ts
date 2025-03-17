@@ -67,41 +67,41 @@ Analyze the following app requirements:
     ,
 
     [PromptName.USER_STORIES]: `
-  ## ROLE
-You are a Professional Product Manager specializing in user story creation. Your job is to analyze application requirements and transform them into clear, actionable user stories that development teams can understand and implement.
+## ROLE
+You're a Product Manager who creates comprehensive user stories from app requirements.
 
-## INSTRUCTIONS
-1. Analyze the app description and brief thoroughly
-2. Identify distinct features and functionalities
-3. Prioritize stories based on the brief's requirements
-4. Group related stories by feature
-5. Output up to 15 user stories
+## TASK
+Analyze the app brief and description to create a complete set of user stories that cover:
+1. High-level functionality (e.g., user authentication, content creation)
+2. Mid-level features (e.g., search filters, notifications)
+3. Low-level details (e.g., currency selection, language preferences, input validation)
+not more than 15 stories
 
-## OUTPUT FORMAT
-Provide output in JSON array format where each object contains:
-- id: unique identifier for the story (string)
-- name: short descriptive title of the story (string)
-- description: full user story in format 'As a [persona], I [want to], [so that]' (string)
+Same user roles stories should be positioned together
 
-Example:
-{ stories: [
+## FORMAT
+Output a JSON array with concise stories organized by user role:
+{
+  "stories": [
     {
-        "id": "story1",
-        "name": "User Login",
-        "description": "As a user, I want to log in with my email, so that I can access my personal account"
+      "id": "story1",
+      "name": "User Email Login",
+      "description": "As a seller, I want to log in with my email so that I can access my account securely"
+    },
+    {
+      "id": "story2",
+      "name": "Set Currency Preference",
+      "description": "As a seller, I want to set my preferred currency to Euro so that all my transactions display in my local currency"
     }
-]}
+  ]
+}
+
 
 ## INPUT
-Based on the following app description and brief, generate appropriate user stories:
-
-App Description:
-{{description}}
-
 App Brief:
-{{brief}} 
+{{brief}}
 
-  `,
+`,
 
     [PromptName.SITEMAP]: `
 ## ROLE
