@@ -8,8 +8,7 @@ interface Message {
     timestamp: Date;
 }
 
-const Chat = ({ onSummaryCreated }: { onSummaryCreated: (summary: string) => void }) => {
-    const [currentDescription, setCurrentDescription] = useState('');
+const Chat = ({ onSummaryCreated, getCurrentDescription }: { onSummaryCreated: (summary: string) => void, getCurrentDescription: () => string }) => {
 
     const [messages, setMessages] = useState<Message[]>([
         {
@@ -40,10 +39,9 @@ const Chat = ({ onSummaryCreated }: { onSummaryCreated: (summary: string) => voi
     const createSummary = async () => {
         const response = await fetch('/api/summary', {
             method: 'POST',
-            body: JSON.stringify({ conversation: messages, previousDescription: currentDescription }),
+            body: JSON.stringify({ conversation: messages, previousDescription: getCurrentDescription() }),
         });
         const data = await response.json();
-        setCurrentDescription(data.summary);
         onSummaryCreated(data.summary);
     }
 
@@ -107,7 +105,7 @@ const Chat = ({ onSummaryCreated }: { onSummaryCreated: (summary: string) => voi
                     </div>
                 )}
             </div>
-            <div className="flex mt-auto p-4 bg-gray-50 border-t">
+            <div className="flex mt-auto p-4">
                 <Input
                     value={input}
                     onChange={(e) => setInput(e.target.value)}

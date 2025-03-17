@@ -239,8 +239,8 @@ export default function Home() {
               <Content className="flex">
                 <Col span={12} className="p-0 border-r bg-white">
                   {/* <Title level={3}>Tell Me About Your App...</Title> */}
-                  <div className="rounded-lg p-0 overflow-y-auto" style={{ height: 'calc(100vh - 200px)', width: '100%' }}>
-                    <Chat onSummaryCreated={setAppDescription}/>
+                  <div className="rounded-lg p-0 overflow-y-auto" style={{ height: 'calc(100vh - 130px)', width: '100%' }}>
+                    <Chat onSummaryCreated={setAppDescription} getCurrentDescription={() => appDescription}/>
                   </div>
                 </Col>
                 <Col span={12} className="p-6">

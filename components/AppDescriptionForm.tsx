@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Form, Input, Button, Spin, Modal, Space } from 'antd'
+import { Form, Input, Button, Spin, Modal, Space, Divider } from 'antd'
 import { SendOutlined, SettingOutlined } from '@ant-design/icons'
 import PromptEditor from './PromptEditor'
 import { PromptName } from '@/utils/prompts'
@@ -141,6 +141,7 @@ export default function AppDescriptionForm({ onSubmit, isGenerating, appDescript
           </div>
         </Form.Item>
         
+        <Divider />
         <Form.Item>
           <div className="flex justify-between space-x-2">
             <Button
