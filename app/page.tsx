@@ -52,6 +52,7 @@ export default function Home() {
     sitemap: any[];
     stylesheet: { classes: string[], stylesheet: string };
     pages: Record<string, {
+      order: number;
       layout: string;
       components: string[];
     }>;
@@ -124,10 +125,10 @@ export default function Home() {
 
       if (pageData) {
         if (!tempAppContent.pages) {
-          tempAppContent.pages = {};
+          tempAppContent.pages = appContent?.pages || {};
         }
         if (!tempAppContent.pages[page.type]) {
-          tempAppContent.pages[page.type] = { order: idx, layout: '', components: [] };
+          tempAppContent.pages[page.type] = appContent?.pages?.[page.type] || { order: idx, layout: '', components: [] };
         }
         tempAppContent.pages[page.type].components.push(pageData.code);
       }
@@ -228,8 +229,6 @@ export default function Home() {
 
   return (
     <Layout className="min-h-screen">
-      {/* <Header /> */}
-
       {!appGenerated ? (
         <Content className="p-8 bg-gradient-to-b from-blue-50 to-gray-50">
           <Card
