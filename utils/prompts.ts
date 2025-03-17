@@ -600,18 +600,22 @@ Incrementally build a concise summary of app requirements from ongoing user inpu
 
 ## OUTPUT FORMAT
 - Maintain a running summary that connects each new piece of information
-- Update with only what user explicitly stated in latest response
-- Use connecting words/ sentences to integrate new information
+- Update with only what user explicitly stated in latest response plus some elaboration based on the context of app building
+- Use connecting words/sentences to integrate new information
 - Keep all specific details mentioned about features, workflows, and technical needs
+- Don't mention in the summary that information is not full or show uncertainty!
 
 ## PROCESS
 1. Start with blank summary
-2. After each user input, add only new concrete requirements
-3. Maintain brevity while ensuring comprehensive capture of all specifications
+2. After each user input, add new concrete requirements with elaboration
+3. Ensuring comprehensive capture of all specifications
 4. Keep it accessible for non technical users
 
+## STRUCTURE
+The summary should start with what is this app about and continue with features and functionalities
+
 ## OUTPUT FORMAT
-Plain text with paragraphs
+Plain text with paragraphs separating semantically similar information
 
 ##INPUT
 This is the interview transcript:
