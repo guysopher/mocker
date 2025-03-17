@@ -138,6 +138,15 @@ export default function AppDescriptionForm({ onSubmit, isGenerating, appDescript
             >
               Black Hole Simulator
             </Button>
+            <Button
+              onClick={() => setDescription(
+                "A simple todo list app with a clean, modern interface. Features include: a list of todos, a button to add a todo, and a button to remove a todo. Single page only."
+              )}
+              disabled={isGenerating}
+            >
+              Simple Todo List
+            </Button>
+
           </div>
         </Form.Item>
         

@@ -124,6 +124,7 @@ export default function Home() {
       }
 
       if (pageData) {
+    debugger;
         if (!tempAppContent.pages) {
           tempAppContent.pages = appContent?.pages || {};
         }

@@ -22,10 +22,17 @@ const Chat = ({ onSummaryCreated, getCurrentDescription, prompts }: { onSummaryC
     const [isLoading, setIsLoading] = useState(false);
     const chatContainerRef = useRef<HTMLDivElement>(null);
 
+    const getPrompts = () => {
+        const STORAGE_KEY_PROMPTS = 'app_prompts'
+        const savedPrompts = localStorage.getItem(STORAGE_KEY_PROMPTS)
+        return savedPrompts ? JSON.parse(savedPrompts) : prompts;
+    }
+
     const createNextMessage = async (message: string) => {
+        const _prompts = getPrompts();
         const response = await fetch('/api/chat', {
             method: 'POST',
-            body: JSON.stringify({ messages: [...messages, { role: 'user' as const, content: message }], customPrompt: prompts.chat }),
+            body: JSON.stringify({ messages: [...messages, { role: 'user' as const, content: message }], customPrompt: _prompts.chat }),
         });
         const data = await response.json();
         const aiMessage = {
@@ -38,9 +45,10 @@ const Chat = ({ onSummaryCreated, getCurrentDescription, prompts }: { onSummaryC
     }
 
     const createSummary = async () => {
+        const _prompts = getPrompts();
         const response = await fetch('/api/summary', {
             method: 'POST',
-            body: JSON.stringify({ conversation: messages, previousDescription: getCurrentDescription(), customPrompt: prompts.summary }),
+            body: JSON.stringify({ conversation: messages, previousDescription: getCurrentDescription(), customPrompt: _prompts.summary }),
         });
         const data = await response.json();
         onSummaryCreated(data.summary);
