@@ -222,26 +222,47 @@ export default function Home() {
 
   const handleBuildIt = async () => {
     setBuilding(true)
-
-    const { url } = await put(`apps/${Date.now()}.txt`, JSON.stringify({ description: appDescription, brief: appContent?.brief, stories: appContent?.stories, sitemap: appContent?.sitemap }), { access: 'public' });
-    //show a modal with the url
-    Modal.info({
-      title: 'App Generated Successfully',
-      content: <div>Your app has been generated and is ready to view. <a href={url} target="_blank">View App</a></div>,
-      onOk: () => {
-        window.open(url, '_blank')
-      }
-    })
-    // Simulate build progress
-    const interval = setInterval(() => {
-      setBuildProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval)
-          return 100
+    const mentalModelData = { description: appDescription, brief: appContent?.brief, stories: appContent?.stories, sitemap: appContent?.sitemap };
+    console.log("Mental model data", mentalModelData)
+    
+    try {
+      // Add options with token if needed for local development
+      const options = {
+        access: 'public' as const,
+        // Add token option if not using environment variable
+        token: process.env.NEXT_PUBLIC_BLOB_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN
+      };
+      
+      const { url } = await put(`apps/${Date.now()}.txt`, JSON.stringify(mentalModelData), options);
+      
+      // Show a modal with the url
+      Modal.info({
+        title: 'App Generated Successfully',
+        content: <div>Your app has been generated and is ready to view. <a href={url} target="_blank">View App</a></div>,
+        onOk: () => {
+          window.open(url, '_blank')
         }
-        return prev + 10
-      })
-    }, 800)
+      });
+      
+      // Simulate build progress
+      const interval = setInterval(() => {
+        setBuildProgress(prev => {
+          if (prev >= 100) {
+            clearInterval(interval)
+            return 100
+          }
+          return prev + 10
+        })
+      }, 800)
+    } catch (error) {
+      console.error('Error uploading to Vercel Blob:', error);
+      notification.error({
+        message: 'Upload Failed',
+        description: 'There was an error uploading your app data. Please try again.',
+        placement: 'bottomRight',
+      });
+      setBuilding(false);
+    }
   }
 
   useEffect(() => {
