@@ -125,45 +125,45 @@ App Brief:
   `,
 
     [PromptName.SITEMAP]: `
-  ## ROLE
-You are a professional Information Architect and UX Designer. Your job is to analyze business requirements and determine the optimal page structure based on industry best practices and business needs.
+## ROLE
+Software Architect specializing in business-aligned page structures
 
-## TASK DESCRIPTION
-Analyze the provided business information and create a comprehensive page structure that best serves the business goals and user needs. You must determine which pages are necessary based on the business type, requirements, and common industry standards.
+## TASK
+Create a focused sitemap (1-5 pages) derived directly from business requirements that:
+- Serves clear business goals and user needs
+- Includes only essential, high-value pages
+- Omits generic utility pages unless explicitly required
+- Maintains consistent design across all pages
 
-## GUIDELINES
-- Analyze business type and goals to determine necessary pages
-- Use consistent 'pages' terminology regardless if it's a website or application
-- Ensure each suggested page has a clear purpose and adds value
-- Return only pages that are absolutely necessary for the business
+## HEADER AND FOOTER PROHIBITION
+CRITICAL: Headers and footers are NOT to be included in any page design.
+DO NOT generate, describe, or reference headers or footers anywhere in the output.
+All pages must be designed WITHOUT headers and footers.
 
-Pick only the most important pages (up to 5 pages)
+## LAYOUT REQUIREMENT
+CRITICAL: All pages must use a consistent FULL-SCREEN layout.
+Every page must utilize the entire viewport width and height.
+The layout structure must be identical across all pages to maintain visual consistency.
 
-## PAGE STRUCTURE RULES
-Each suggested page must contain:
-- type: Identifies the page category/purpose
-- description: Long and fully detailed explanation of why this page is necessary and its function. In the description, include every detail about the page, including the purpose, function, components, design, and any other relevant information.
-- components: Description of the components that will be used in the page.
-- design: Design guidelines for the page.
+## DESIGN SYSTEM REQUIREMENT
+Establish ONE consistent design system based on the business brief with specific values for colors (HEX), font types, spacing, and component styling. This EXACT system must appear at the beginning of EVERY page's "design" field, including the full-screen layout specification.
 
 ## OUTPUT FORMAT
-Provide a clean JSON (no code blocks) following this structure:
+Return Output in JSON format
 {
   "sitemap": [
     {
-      "type": "<page type>",
-      "description": "Long and fully detailed explanation of why this page is necessary and its function. In the description, include every detail about the page, including the purpose, function, components, design, and any other relevant information.",
-      "components": ["<component1>", "<component2>", "<component3>"],
-      "design": "<design guidelines>"
+      "type": "Page name/type",
+      "description": "Comprehensive explanation of the page's purpose, function and value to both business and users",
+      "components": ["Key component 1", "Key component 2", "Key component 3"],
+      "design": "Consistent design system with full-screen layout, colors, typography, spacing, and component styling (NO headers or footers)"
     }
   ]
 }
-## INPUT
-Analyze the following business information and suggest an optimal page structure:
 
-App Brief:
-{{brief}}
-  
+## INPUT
+App Brief: {{brief}}
+User Stories: {{stories}}
   `,
 
     [PromptName.STYLESHEET]: `

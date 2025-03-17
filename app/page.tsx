@@ -131,8 +131,6 @@ export default function Home() {
         }
         setAppContent(tempAppContent);
 
-      
-
     } catch (error) {
       console.error(`Error generating layout for page ${page}:`, error);
       console.error('Current sitemap:', tempAppContent.sitemap);
