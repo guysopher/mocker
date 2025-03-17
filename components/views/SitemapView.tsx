@@ -29,16 +29,16 @@ export const SitemapView: React.FC<SitemapViewProps> = ({
       const data = typeof pageData === 'string' ? JSON.parse(pageData) : pageData;
       
       return (
-        <div className="font-medium">
-          <div className="font-bold mb-2">{data.type || 'Page'}</div>
+        <div className="font-medium text-base">
+          <div className="font-bold mb-2 text-lg">{data.type || 'Page'}</div>
           <Descriptions size="small" column={1}>
             {data.description && (
-              <Descriptions.Item label="Description" className="text-sm">
+              <Descriptions.Item label="Description" className="text-base">
                 {data.description}
               </Descriptions.Item>
             )}
             {data.design && (
-              <Descriptions.Item label="Design" className="text-sm">
+              <Descriptions.Item label="Design" className="text-base">
                 {data.design}
               </Descriptions.Item>
             )}
@@ -46,7 +46,7 @@ export const SitemapView: React.FC<SitemapViewProps> = ({
               <Descriptions.Item label="Components">
                 <div className="flex flex-wrap gap-1">
                   {data.components.map((component: string, idx: number) => (
-                    <Tag key={idx} color="blue">{component}</Tag>
+                    <Tag key={idx} color="blue" className="text-base">{component}</Tag>
                   ))}
                 </div>
               </Descriptions.Item>
@@ -56,7 +56,7 @@ export const SitemapView: React.FC<SitemapViewProps> = ({
       );
     } catch (e) {
       // Fallback to string if JSON parsing fails
-      return <div className="font-medium">{String(pageData)}</div>;
+      return <div className="font-medium text-base">{String(pageData)}</div>;
     }
   };
 

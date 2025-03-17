@@ -38,6 +38,20 @@ const { Title, Text } = Typography
 
 const USE_COMPONENTS = false
 
+type AppContent = {
+  brief: BriefItem[];
+  stories: CanvasStory[];
+  sitemap: any[];
+  stylesheet: { classes: string[], stylesheet: string };
+  pages: Record<string, {
+    order: number;
+    layout: string;
+    components: string[];
+  }>;
+};
+
+type AppContentSection = 'brief' | 'stories' | 'sitemap' | 'stylesheet' | 'pages' | 'change';
+
 export default function Home() {
   const [appDescription, setAppDescription] = useState('')
   const [generatingContent, setGeneratingContent] = useState(false)
@@ -46,33 +60,12 @@ export default function Home() {
   const [buildProgress, setBuildProgress] = useState(0)
   const [building, setBuilding] = useState(false)
   const [useComponents, setUseComponents] = useState(false)
-  const [appContent, setAppContent] = useState<{
-    brief: BriefItem[];
-    stories: CanvasStory[];
-    sitemap: any[];
-    stylesheet: { classes: string[], stylesheet: string };
-    pages: Record<string, {
-      order: number;
-      layout: string;
-      components: string[];
-    }>;
-  } | null>(null)
+  const [appContent, setAppContent] = useState<AppContent | null>(null)
   const [generatingSection, setGeneratingSection] = useState<string | null>(null)
 
-  let tempAppContent = {
-    brief: [],
-    stories: [],
-    sitemap: [],
-    stylesheet: { classes: [], stylesheet: '' },
-    pages: {} as Record<string, {
-      order: number;
-      layout: string;
-      components: string[];
-    }>
-  }
+  let tempAppContent: AppContent | null = null;
 
-
-  const createPromise = async (section: string, description: string, prompts: Record<PromptName, string>, changeRequest?: string) => {
+  const createPromise = async (section: AppContentSection, description: string, prompts: Record<PromptName, string>, changeRequest?: string) => {
     try {
       const _section = changeRequest ? 'change' : section
       await fetch(`/api/${_section}`, {
@@ -80,19 +73,24 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ description, customPrompt: prompts[_section as keyof typeof prompts], changeRequest, ...tempAppContent, section, result: JSON.stringify(appContent?.[section as keyof typeof appContent]) }),
+        body: JSON.stringify({ description, customPrompt: prompts[_section as keyof typeof prompts], changeRequest, ...tempAppContent, section, result: JSON.stringify(appContent?.[section as keyof AppContent]) }),
       }).then(response => response.json()).then(data => {
         if (changeRequest) {
           data = data.change;
           console.log("Change request", data)
         }
-        tempAppContent = {
-          brief: section === 'brief' ? data.brief : (tempAppContent?.brief || []),
-          sitemap: section === 'sitemap' ? data.sitemap : (tempAppContent?.sitemap || []),
-          stories: section === 'stories' ? data.stories : (tempAppContent?.stories || []),
-          pages: section === 'pages' ? data.pages : (tempAppContent?.pages || {}),
-          stylesheet: section === 'stylesheet' ? data.stylesheet : (tempAppContent?.stylesheet || { classes: [], stylesheet: '' })
+        tempAppContent = appContent ? {...appContent} : {
+          brief: [],
+          stories: [],
+          sitemap: [],
+          stylesheet: { classes: [], stylesheet: '' },
+          pages: {}
         };
+        
+        if (section !== 'change') {
+          tempAppContent[section] = data[section] || [];
+        }
+
         setAppContent(tempAppContent);
       });
     } catch (error) {
@@ -124,7 +122,16 @@ export default function Home() {
       }
 
       if (pageData) {
-        if (!tempAppContent.pages || Object.keys(tempAppContent.pages).length === 0) {
+        if (!tempAppContent) {
+          tempAppContent = appContent ? {...appContent} : {
+            brief: [],
+            stories: [],
+            sitemap: [],
+            stylesheet: { classes: [], stylesheet: '' },
+            pages: {}
+          };
+        }
+        if (!tempAppContent.pages) {
           tempAppContent.pages = appContent?.pages || {};
         }
         if (!tempAppContent.pages[page.type] || (tempAppContent.pages[page.type])?.components?.length === 0) {
@@ -136,34 +143,45 @@ export default function Home() {
 
     } catch (error) {
       console.error(`Error generating layout for page ${page}:`, error);
-      console.error('Current sitemap:', tempAppContent.sitemap);
+      if (tempAppContent) {
+        console.error('Current sitemap:', tempAppContent.sitemap);
+      }
     }
   }
 
   const handleChangeRequest = async (changeRequest: string, context: any) => {
     const { section, pageName } = context;
     console.log("Change request", context)
+    
+    tempAppContent = appContent ? {...appContent} : {
+      brief: [],
+      stories: [],
+      sitemap: [],
+      stylesheet: { classes: [], stylesheet: '' },
+      pages: {}
+    };
+    
     if (section === 'brief') {
-      createPromise('brief', appDescription, prompts, changeRequest)
+      await createPromise('brief', appDescription, prompts, changeRequest)
     } else if (section === 'stories') {
-      createPromise('stories', appDescription, prompts, changeRequest)
+      await createPromise('stories', appDescription, prompts, changeRequest)
     } else if (section === 'sitemap') {
       await createPromise('sitemap', appDescription, prompts, changeRequest)
-      const pagePromises = tempAppContent.sitemap.map((page, idx) => createPagePromise(page, idx, changeRequest));
-      await Promise.all(pagePromises);
+      if (tempAppContent) {
+        const pagePromises = tempAppContent.sitemap.map((page, idx) => createPagePromise(page, idx, changeRequest));
+        await Promise.all(pagePromises);
+      }
     } else if (section === 'page' && pageName) {
       const pageIdx = appContent?.sitemap?.findIndex(page => page.type === pageName);
       if (pageIdx !== undefined && pageIdx >= 0) {
         createPagePromise(appContent?.sitemap?.[pageIdx], pageIdx, changeRequest)
       } else {
-        // console.error(`Page ${pageName} not found in sitemap`)
         await handleSubmitDescription(appDescription, prompts, changeRequest)
       }
     } else {
       await handleSubmitDescription(appDescription, prompts, changeRequest)
     }
     setGeneratingContent(false);
-
   }
 
   const handleSubmitDescription = async (description: string, prompts: Record<PromptName, string>, changeRequest?: string) => {
@@ -178,10 +196,10 @@ export default function Home() {
       setGeneratingSection('Stories & Sitemap')
       await Promise.all([createPromise('stories', description, prompts, changeRequest), createPromise('sitemap', description, prompts, changeRequest)]);
 
-      const pagePromises = tempAppContent.sitemap.map((page, idx) => createPagePromise(page, idx, changeRequest));
-
-      // Wait for all page requests to complete
-      await Promise.all(pagePromises);
+      if (tempAppContent && tempAppContent.sitemap) {
+        const pagePromises = tempAppContent.sitemap.map((page, idx) => createPagePromise(page, idx, changeRequest));
+        await Promise.all(pagePromises);
+      }
 
       setGeneratingContent(false);
       setGeneratingSection(null);
