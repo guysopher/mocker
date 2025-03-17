@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { Input, Button, Typography } from 'antd';
-import { SendOutlined } from '@ant-design/icons';
+import { Input, Button, Typography, Spin } from 'antd';
+import { LoadingOutlined, SendOutlined } from '@ant-design/icons';
 import { PromptName } from '@/utils/prompts';
 
 interface Message {
@@ -113,16 +113,10 @@ const Chat = ({ onSummaryCreated, getCurrentDescription, prompts }: { onSummaryC
             <div className="flex-1 overflow-auto p-0 bg-white" ref={chatContainerRef}>
                 {renderMessages()}
                 {isLoading && (
-                    <div className="flex justify-start mb-4">
-                        <div className="bg-gray-100 rounded-lg py-3 px-5 text-gray-800">
-                            <div className="typing-indicator">
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                            </div>
-                        </div>
+                    <div className="flex justify-start mb-4 p-5">
+                        <Spin indicator={<LoadingOutlined style={{ fontSize: 24, color: '#f5222d' }} spin />} size="small" />
                     </div>
-                )}
+                )}  
             </div>
             <div className="flex mt-auto p-4">
                 <Input
