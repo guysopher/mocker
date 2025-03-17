@@ -397,9 +397,9 @@ export async function getContext(html: string, cssPath: string, userRequest: str
     }
 }
 
-export async function generateChatMessage(messages: { role: 'assistant' | 'user', content: string }[]) {
+export async function generateChatMessage(messages: { role: 'assistant' | 'user', content: string }[], customPrompt?: string) {
     try {
-        const systemPrompt = prompts.chat;
+        const systemPrompt = (customPrompt || prompts.chat);
         const response = await openai.chat.completions.create({
             model: "gpt-4o",
             max_tokens: 500,
@@ -419,9 +419,9 @@ export async function generateChatMessage(messages: { role: 'assistant' | 'user'
     }
 }
 
-export async function generateSummary(conversation: string, previousDescription: string) {
+export async function generateSummary(conversation: string, previousDescription: string, customPrompt?: string) {
     try {
-        const systemPrompt = prompts.summary
+        const systemPrompt = (customPrompt || prompts.summary)
             .replace('{{conversation}}', JSON.stringify(conversation))
             .replace('{{previousDescription}}', previousDescription);
 

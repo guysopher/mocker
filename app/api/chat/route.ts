@@ -3,9 +3,9 @@ import { generateChatMessage } from '@/utils/openai';
 import prompts from '@/utils/prompts';
 export async function POST(request: NextRequest) {
   try {
-    const { messages } = await request.json();
+    const { messages, customPrompt } = await request.json();
     
-    const message = await generateChatMessage(messages);
+    const message = await generateChatMessage(messages, customPrompt);
     return NextResponse.json({ message });
   } catch (error) {
     console.error('Error generating chat message:', error);

@@ -240,7 +240,7 @@ export default function Home() {
                 <Col span={12} className="p-0 border-r bg-white">
                   {/* <Title level={3}>Tell Me About Your App...</Title> */}
                   <div className="rounded-lg p-0 overflow-y-auto" style={{ height: 'calc(100vh - 130px)', width: '100%' }}>
-                    <Chat onSummaryCreated={setAppDescription} getCurrentDescription={() => appDescription}/>
+                    <Chat onSummaryCreated={setAppDescription} getCurrentDescription={() => appDescription} prompts={prompts} />
                   </div>
                 </Col>
                 <Col span={12} className="p-6">

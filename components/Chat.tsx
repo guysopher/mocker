@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Input, Button, Typography } from 'antd';
 import { SendOutlined } from '@ant-design/icons';
+import { PromptName } from '@/utils/prompts';
 
 interface Message {
     content: string;
@@ -8,7 +9,7 @@ interface Message {
     timestamp: Date;
 }
 
-const Chat = ({ onSummaryCreated, getCurrentDescription }: { onSummaryCreated: (summary: string) => void, getCurrentDescription: () => string }) => {
+const Chat = ({ onSummaryCreated, getCurrentDescription, prompts }: { onSummaryCreated: (summary: string) => void, getCurrentDescription: () => string, prompts: Record<PromptName, string> }) => {
 
     const [messages, setMessages] = useState<Message[]>([
         {
@@ -24,7 +25,7 @@ const Chat = ({ onSummaryCreated, getCurrentDescription }: { onSummaryCreated: (
     const createNextMessage = async (message: string) => {
         const response = await fetch('/api/chat', {
             method: 'POST',
-            body: JSON.stringify({ messages: [...messages, { role: 'user' as const, content: message }] }),
+            body: JSON.stringify({ messages: [...messages, { role: 'user' as const, content: message }], customPrompt: prompts.chat }),
         });
         const data = await response.json();
         const aiMessage = {
@@ -39,7 +40,7 @@ const Chat = ({ onSummaryCreated, getCurrentDescription }: { onSummaryCreated: (
     const createSummary = async () => {
         const response = await fetch('/api/summary', {
             method: 'POST',
-            body: JSON.stringify({ conversation: messages, previousDescription: getCurrentDescription() }),
+            body: JSON.stringify({ conversation: messages, previousDescription: getCurrentDescription(), customPrompt: prompts.summary }),
         });
         const data = await response.json();
         onSummaryCreated(data.summary);
