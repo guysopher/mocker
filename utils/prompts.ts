@@ -68,7 +68,7 @@ Analyze the following app requirements:
 
   ,
 
-  [PromptName.USER_STORIES]: `
+[PromptName.USER_STORIES]: `
 ## ROLE
 You're a Product Manager who creates comprehensive user stories from app requirements.
 
