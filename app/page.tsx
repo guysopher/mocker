@@ -227,14 +227,12 @@ export default function Home() {
     
     try {
       // Add options with token if needed for local development
-      const options = {
-        access: 'public' as const,
-        // Add token option if not using environment variable
-        token: process.env.NEXT_PUBLIC_BLOB_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN
-      };
-      
-      const { url } = await put(`apps/${Date.now()}.txt`, JSON.stringify(mentalModelData), options);
-      
+      const response = await fetch('/api/save', {
+        method: 'POST',
+        body: JSON.stringify(mentalModelData),
+      });
+      const data = await response.json();
+      const url = data.url;
       // Show a modal with the url
       Modal.info({
         title: 'App Generated Successfully',
