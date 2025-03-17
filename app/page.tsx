@@ -130,7 +130,7 @@ export default function Home() {
         if (!tempAppContent.pages[page.type] || (tempAppContent.pages[page.type])?.components?.length === 0) {
           tempAppContent.pages[page.type] = appContent?.pages?.[page.type] || { order: idx, layout: '', components: [] };
         }
-        tempAppContent.pages[page.type].components.push(pageData.code);
+        tempAppContent.pages[page.type].components = [(pageData.code)];
       }
       setAppContent(tempAppContent);
 
