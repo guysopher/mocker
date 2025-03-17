@@ -71,16 +71,9 @@ Analyze the following app requirements:
 [PromptName.USER_STORIES]: `
 ## ROLE
 You're a Product Manager who creates comprehensive user stories from app requirements.
-
 ## TASK
-Analyze the app brief and description to create a complete set of user stories that cover:
-1. High-level functionality (e.g., user authentication, content creation)
-2. Mid-level features (e.g., search filters, notifications)
-3. Low-level details (e.g., currency selection, language preferences, input validation)
-not more than 15 stories
-
+Analyze the app brief and description to create a  set of important functionality user stories.
 Same user roles stories should be positioned together
-
 ## FORMAT
 Output a JSON array with concise stories organized by user role:
 {
@@ -97,12 +90,9 @@ Output a JSON array with concise stories organized by user role:
     }
   ]
 }
-
-
 ## INPUT
 App Brief:
 {{brief}}
-
 `,
 
   [PromptName.SITEMAP]: `
@@ -281,47 +271,36 @@ Component Description:
   [PromptName.PAGE]: `
 ## ROLE
 Senior React Developer specializing in **Ant Design (antd)** components and **Tailwind CSS** with expertise in creating clean, responsive, and visually accurate components.
-
 ## TASK
-Create a **stateless React component** using Ant Design components and Tailwind CSS. Focus on **visual representation only** (no functional logic). The component will be rendered on a full page (765px × 1105px) as defined by the component description.
-
+Create a **stateless React component** using Ant Design components and Tailwind CSS. Focus on **visual representation only** (no functional logic). The component will be rendered on a full page (765px × 1105px) as defined by the component description. Make sure there is no overlap and cropping of elements
 ## COMPONENT GUIDELINES
 - Do not render any images - use Ant Design icons instead
 - Write detailed content with realistic text that fits each UI element
 - Include only the main components, no headers or footers!!!!
 - Standard React component structure
 - Use Tailwind CSS utility classes for styling
-
 ## MOCKUP TEXTUAL CONTENT
 - Generate contextually appropriate mockup text for all content areas
 - Create detailed and varied text content to make the component look authentic
 - Ensure text length is appropriate for each UI element
 - Use relevant placeholder text that matches the purpose of each section
-
 ## STYLING GUIDELINES
 - Use Tailwind CSS utility classes for styling
 - Use relative units (rem, %, vh/vw) where appropriate
 - Follow grid specifications: grid is 16 columns × 9 rows
 - The grid area is specified in the grid_position key (e.g., start_row 1, end_row 3, column_start 1, column_end 16 = grid area 1 / 1 / 4 / 17)
-
-
 ## OUTPUT FORMAT
 Provide the component code as a JSON with:
 1. A key "plan" that contains your plan about how to build the page and what it will include
 2. A key "code" that contains the code as a string
-
 The code should define one component named "Page" that is a page. Only include the component code, no header or footer.
-
 Example code:
-
 {
     "plan": "The page will include a dashboard with a statistics summary section, data visualization charts, and a recent activity table.",
     "code": "import React from 'react';
 import { Layout, Row, Col, Card, Statistic, Table, Badge, Space, Tag, Progress, Typography } from 'antd';
 import { ArrowUpOutlined, ArrowDownOutlined, UserOutlined, ShoppingCartOutlined, DollarOutlined, BarChartOutlined } from '@ant-design/icons';
-
 const { Title, Text } = Typography;
-
 const Page = () => {
   // Mock data for statistics
   const statsData = [
@@ -330,7 +309,6 @@ const Page = () => {
     { title: 'Revenue', value: 9271, prefix: '$', increase: 8.1, icon: <DollarOutlined /> },
     { title: 'Conversion Rate', value: 28.3, suffix: '%', increase: 3.2, icon: <BarChartOutlined /> }
   ];
-
   // Mock data for table
   const tableData = [
     { key: '1', user: 'John Brown', action: 'New Purchase', amount: '$320.00', status: 'completed', time: '2 minutes ago' },
@@ -339,7 +317,6 @@ const Page = () => {
     { key: '4', user: 'Jim Red', action: 'New Subscription', amount: '$25.99', status: 'completed', time: '1 hour ago' },
     { key: '5', user: 'Jake White', action: 'Support Ticket', amount: '-', status: 'pending', time: '3 hours ago' }
   ];
-
   // Table columns
   const columns = [
     {
@@ -383,28 +360,26 @@ const Page = () => {
       key: 'time',
     },
   ];
-
   return (
-    <Layout style={{ height: '765px', width: '1105px', padding: '1rem', background: '#f0f2f5' }}>
+    <Layout style={{ height: '765px', width: '1105px', padding: '1rem', background: '#F0F2F5' }}>
       <Title level={2}>Dashboard Overview</Title>
       <Text type='secondary' style={{ marginBottom: '2rem', display: 'block' }}>
         Welcome back! Here's what's happening with your business today.
       </Text>
-
       {/* Statistics Cards */}
       <Row gutter={[16, 16]}>
         {statsData.map((stat, index) => (
           <Col span={6} key={index}>
             <Card>
               <Space align='start'>
-                <div style={{ fontSize: '2rem', color: '#1890ff', marginRight: '0.5rem' }}>
+                <div style={{ fontSize: '2rem', color: '#1890FF', marginRight: '0.5rem' }}>
                   {stat.icon}
                 </div>
                 <Statistic
                   title={stat.title}
                   value={stat.value}
                   precision={stat.precision || 0}
-                  valueStyle={{ color: stat.increase > 0 ? '#3f8600' : '#cf1322' }}
+                  valueStyle={{ color: stat.increase > 0 ? '#3F8600' : '#CF1322' }}
                   prefix={stat.prefix || ''}
                   suffix={stat.suffix || ''}
                 />
@@ -420,7 +395,6 @@ const Page = () => {
           </Col>
         ))}
       </Row>
-
       {/* Charts and Progress */}
       <Row gutter={[16, 16]} style={{ marginTop: '1rem' }}>
         <Col span={12}>
@@ -454,19 +428,19 @@ const Page = () => {
               </Typography.Paragraph>
               <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '2rem' }}>
                 <div>
-                  <Badge color='#1890ff' text='Electronics' />
+                  <Badge color='#1890FF' text='Electronics' />
                   <div>42%</div>
                 </div>
                 <div>
-                  <Badge color='#52c41a' text='Clothing' />
+                  <Badge color='#52C41A' text='Clothing' />
                   <div>28%</div>
                 </div>
                 <div>
-                  <Badge color='#faad14' text='Home' />
+                  <Badge color='#FAAD14' text='Home' />
                   <div>18%</div>
                 </div>
                 <div>
-                  <Badge color='#f5222d' text='Other' />
+                  <Badge color='#F5222D' text='Other' />
                   <div>12%</div>
                 </div>
               </div>
@@ -474,7 +448,6 @@ const Page = () => {
           </Card>
         </Col>
       </Row>
-
       {/* Recent Activities Table */}
       <Card title='Recent Activities' style={{ marginTop: '1rem' }}>
         <Table columns={columns} dataSource={tableData} pagination={false} />
@@ -482,14 +455,13 @@ const Page = () => {
     </Layout>
   );
 };
-
 export default Page;"
 }
-
 ## Inputs
 Create a React component based on the following information:
 Component Description:
 {{page}}
+
 `,
   // This is a prefix that will be added to the end of the prompt - in case the user want to change something existing and not create a new one
   [PromptName.CHANGE_REQUEST]: `
