@@ -467,7 +467,8 @@ Component Description:
     ## OUTPUT FORMAT
  Return the element in the following JSON format:
     {
-        "section": "brief | stories | sitemap | page (page name)",
+        "section": "brief | stories | sitemap | page",
+        "pageName": "string",
         "element": "string",
         "snapshot": "string",
         "intent": "string"
@@ -476,9 +477,17 @@ Component Description:
     ## EXAMPLES
     {
         "section": "brief",
+        "pageName": "",
         "element": "Executive Summary",
         "snapshot": "...This app is meant for small businesses to manage their operations...",
         "intent": "The user is requesting a add a monetisation section to the Executive Summary"
+    }
+    {
+        "section": "page",
+        "pageName": "Home",
+        "element": "back button",
+        "snapshot": "...This button is used to go back to the previous page...",
+        "intent": "The user is requesting remove the back button"
     }
 
     ## INPUT

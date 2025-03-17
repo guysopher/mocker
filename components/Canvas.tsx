@@ -17,7 +17,7 @@ interface CanvasProps {
   generatingSection: string | null
   buildProgress: number
   setGeneratingContent: (generatingContent: boolean) => void
-  onChangeRequest: (changeRequest: string) => void
+  onChangeRequest: (changeRequest: string, context: any) => void
   appContent: {
     brief: BriefItem[]
     pages: any
@@ -113,7 +113,7 @@ export default function Canvas({ view, appDescription, generatingSection, buildP
     const tempChangeRequests = [lastChangeRequest, ...changeRequests.filter(Boolean)]
     setChangeRequests(tempChangeRequests)
 
-    onChangeRequest(lastChangeRequest)
+    onChangeRequest(lastChangeRequest, contextData.context)
   }
 
   return (

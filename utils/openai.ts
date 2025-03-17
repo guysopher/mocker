@@ -255,14 +255,12 @@ export async function generateComponent(
     }
 }
 export async function generatePage(
-    description: string,
     brief: string,
     page: string,
     customPrompt?: string
 ) {
     try {
         const systemPrompt = (customPrompt || prompts.page)
-            .replace('{{description}}', description)
             .replace('{{brief}}', brief)
             .replace('{{page}}', page)
 

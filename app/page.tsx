@@ -97,8 +97,68 @@ export default function Home() {
     }
   };
 
-  const handleChangeRequest = async (changeRequest: string) => {
-    await handleSubmitDescription(appDescription, prompts, changeRequest)
+  const createPagePromise = async (page: { type: string, description: string }, idx: number, changeRequest?: string) => {
+    try {
+        setGeneratingSection('Page (' + page.type + ')')
+        const target = changeRequest ? 'change' : 'page'
+        const pageResponse = await fetch(`/api/${target}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ page, customPrompt: prompts[target as keyof typeof prompts], ...tempAppContent, result: JSON.stringify(appContent?.pages?.[page.type]?.components?.[0]), changeRequest, section: 'page' }),
+        });
+
+        if (!pageResponse.ok) {
+          throw new Error(`HTTP error! status: ${pageResponse.status}`);
+        }
+
+        let pageData = await pageResponse.json();
+
+        if (changeRequest) {
+          pageData = pageData.change;
+          console.log("Change request", pageData)
+        }
+
+        if (pageData) {
+          if (!tempAppContent.pages) {
+            tempAppContent.pages = {};
+          }
+          if (!tempAppContent.pages[page.type]) {
+            tempAppContent.pages[page.type] = { order: idx, layout: '', components: [] };
+          }
+          tempAppContent.pages[page.type].components.push(pageData.code);
+        }
+        setAppContent(tempAppContent);
+
+      
+
+    } catch (error) {
+      console.error(`Error generating layout for page ${page}:`, error);
+      console.error('Current sitemap:', tempAppContent.sitemap);
+    }
+  }
+
+  const handleChangeRequest = async (changeRequest: string, context: any) => {
+    const { section, pageName } = context;
+    console.log("Change request", context)
+    if (section === 'brief') {
+      createPromise('brief', appDescription, prompts, changeRequest)
+    } else if (section === 'stories') {
+      createPromise('stories', appDescription, prompts, changeRequest)
+    } else if (section === 'sitemap') {
+      createPromise('sitemap', appDescription, prompts, changeRequest)
+    } else if (section === 'page' && pageName) {
+      const pageIdx = appContent?.sitemap?.findIndex(page => page.type === pageName);
+      if (pageIdx !== undefined && pageIdx >= 0) {
+        createPagePromise(appContent?.sitemap?.[pageIdx], pageIdx, changeRequest)
+      } else {
+        // console.error(`Page ${pageName} not found in sitemap`)
+        await handleSubmitDescription(appDescription, prompts, changeRequest)
+      }
+    } else {
+      await handleSubmitDescription(appDescription, prompts, changeRequest)
+    }
   }
 
   const handleSubmitDescription = async (description: string, prompts: Record<PromptName, string>, changeRequest?: string) => {
@@ -113,104 +173,7 @@ export default function Home() {
       setGeneratingSection('Stories & Sitemap')
       await Promise.all([createPromise('stories', description, prompts, changeRequest), createPromise('sitemap', description, prompts, changeRequest)]);
 
-      const pagePromises = tempAppContent.sitemap.map(async (page: { type: string, description: string }, idx: number) => {
-        try {
-          if (useComponents) {
-            const response = await fetch(`/api/layout`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ description, page, customPrompt: prompts.layout, ...tempAppContent }),
-            });
-
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-
-            tempAppContent.pages = {
-              ...tempAppContent.pages,
-              [page.type]: { order: idx, layout: data.layout, components: [] }
-            }
-
-            console.log("Updating pages", tempAppContent.pages)
-
-            const componentPromises = (data.layout.components).map(async (component: any) => {
-              try {
-                const response = await fetch(`/api/component`, {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({ description, page, component, customPrompt: prompts.component, ...tempAppContent }),
-                });
-
-                if (!response.ok) {
-                  throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                console.log("Generating component", component)
-
-                const data = await response.json();
-                if (data) {
-                  if (!tempAppContent.pages) {
-                    tempAppContent.pages = {};
-                  }
-                  if (!tempAppContent.pages[page.type]) {
-                    tempAppContent.pages[page.type] = { order: idx, layout: '', components: [] };
-                  }
-                  tempAppContent.pages[page.type].components.push(data.code);
-                }
-              } catch (error) {
-                console.error(`Error generating component ${component} for page ${page}:`, error);
-                console.error('Current page layout:', tempAppContent.sitemap);
-              }
-            });
-
-            // Wait for all component requests to complete
-            await Promise.all(componentPromises);
-          } else {
-            setGeneratingSection('Page (' + page.type + ')')
-            const target = changeRequest ? 'change' : 'page'
-            const pageResponse = await fetch(`/api/${target}`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ description, page, customPrompt: prompts[target as keyof typeof prompts], ...tempAppContent, result: JSON.stringify(appContent?.pages?.[page.type]?.components?.[0]), changeRequest, section: 'page' }),
-            });
-
-            if (!pageResponse.ok) {
-              throw new Error(`HTTP error! status: ${pageResponse.status}`);
-            }
-
-            let pageData = await pageResponse.json();
-
-            if (changeRequest) {
-              pageData = pageData.change;
-              console.log("Change request", pageData)
-            }
-
-            if (pageData) {
-              if (!tempAppContent.pages) {
-                tempAppContent.pages = {};
-              }
-              if (!tempAppContent.pages[page.type]) {
-                tempAppContent.pages[page.type] = { order: idx, layout: '', components: [] };
-              }
-              tempAppContent.pages[page.type].components.push(pageData.code);
-            }
-            setAppContent(tempAppContent);
-
-          }
-
-        } catch (error) {
-          console.error(`Error generating layout for page ${page}:`, error);
-          console.error('Current sitemap:', tempAppContent.sitemap);
-        }
-      });
+      const pagePromises = tempAppContent.sitemap.map((page, idx) => createPagePromise(page, idx, changeRequest));
 
       // Wait for all page requests to complete
       await Promise.all(pagePromises);

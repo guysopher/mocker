@@ -3,17 +3,16 @@ import { generatePage } from '@/utils/openai';
 
 export async function POST(request: NextRequest) {
   try {
-    const { description, brief, page, customPrompt } = await request.json();
+    const { brief, page, customPrompt } = await request.json();
     
-    if (!description || !brief || !page) {
+    if (!brief || !page) {
       return NextResponse.json(
-        { error: 'Description, brief, and page are required' },
+        { error: 'Brief, and page are required' },
         { status: 400 }
       );
     }
 
     const code = await generatePage(
-      description, 
       JSON.stringify(brief), 
       JSON.stringify(page),
       customPrompt
