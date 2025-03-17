@@ -11,13 +11,14 @@ const { TextArea } = Input
 interface AppDescriptionFormProps {
   onSubmit: (description: string, prompts: Record<PromptName, string>) => void
   isGenerating: boolean
+  appDescription: string
 }
 
 // Storage keys
 const STORAGE_KEY_DESCRIPTION = 'app_description'
 const STORAGE_KEY_PROMPTS = 'app_prompts'
 
-export default function AppDescriptionForm({ onSubmit, isGenerating }: AppDescriptionFormProps) {
+export default function AppDescriptionForm({ onSubmit, isGenerating, appDescription }: AppDescriptionFormProps) {
   const defaultDescription = "a dead simple todo list app - one page only with a list of todos and a button - nothing else!"
   
   // Initialize state with values from localStorage or defaults
@@ -28,6 +29,10 @@ export default function AppDescriptionForm({ onSubmit, isGenerating }: AppDescri
     return defaultDescription
   })
   
+  useEffect(() => {
+    setDescription(appDescription)
+  }, [appDescription])
+
   const [isPromptEditorOpen, setIsPromptEditorOpen] = useState(false)
   
   const [prompts, setPrompts] = useState<Record<PromptName, string>>(() => {
@@ -83,7 +88,7 @@ export default function AppDescriptionForm({ onSubmit, isGenerating }: AppDescri
           <div className="relative">
             <TextArea
               rows={10}
-              placeholder="Describe the features and functionality you want in your marketplace app..."
+              placeholder="Describe the features and functionality you want in your app..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               disabled={isGenerating}

@@ -332,7 +332,7 @@ export async function generateChangeRequest(
             .replace('{{result}}', result)
             .replace('{{changeRequest}}', changeRequest)
             .replace('{{prompt}}', prompt);
-        
+
         //replace any {{}} in the prompt param with the relevant param from the params object
         Object.keys(promptParams).forEach(key => {
             systemPrompt = systemPrompt.replace(`{{${key}}}`, promptParams[key]);
@@ -393,6 +393,46 @@ export async function getContext(html: string, cssPath: string, userRequest: str
         }
     } catch (error) {
         console.error('Error generating context:', error);
+        throw error;
+    }
+}
+
+export async function generateChatMessage(messages: { role: 'assistant' | 'user', content: string }[]) {
+    try {
+        const systemPrompt = prompts.chat;
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o",
+            max_tokens: 500,
+            messages: [
+                {
+                    role: "system",
+                    content: systemPrompt
+                },
+                ...messages
+            ],
+            temperature: 0.7,
+        });
+        return response.choices[0].message.content;
+    } catch (error) {
+        console.error('Error generating chat message:', error);
+        throw error;
+    }
+}
+
+export async function generateSummary(conversation: string, previousDescription: string) {
+    try {
+        const systemPrompt = prompts.summary
+            .replace('{{conversation}}', JSON.stringify(conversation))
+            .replace('{{previousDescription}}', previousDescription);
+
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o",
+            max_tokens: 1500,
+            messages: [{ role: "system", content: systemPrompt }],
+        });
+        return response.choices[0].message.content;
+    } catch (error) {
+        console.error('Error generating summary:', error);
         throw error;
     }
 }

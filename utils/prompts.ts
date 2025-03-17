@@ -1,19 +1,21 @@
 // Define the available prompt types
 export enum PromptName {
-    APP_BRIEF = 'brief',
-    USER_STORIES = 'stories',
-    SITEMAP = 'sitemap',
-    STYLESHEET = 'stylesheet',
-    LAYOUT = 'layout',
-    COMPONENT = 'component',
-    PAGE = 'page',
-    CHANGE_REQUEST = 'changeRequest',
-    CONTEXT = 'context'
+  APP_BRIEF = 'brief',
+  USER_STORIES = 'stories',
+  SITEMAP = 'sitemap',
+  STYLESHEET = 'stylesheet',
+  LAYOUT = 'layout',
+  COMPONENT = 'component',
+  PAGE = 'page',
+  CHANGE_REQUEST = 'changeRequest',
+  CONTEXT = 'context',
+  CHAT = 'chat',
+  SUMMARY = 'summary'
 }
 
 // Define the prompts
 const prompts: Record<PromptName, string> = {
-    [PromptName.APP_BRIEF]: `
+  [PromptName.APP_BRIEF]: `
 ## ROLE
 Experienced SAAS Product Manager with technical background.
 
@@ -64,9 +66,9 @@ Analyze the following app requirements:
 """
 `
 
-    ,
+  ,
 
-    [PromptName.USER_STORIES]: `
+  [PromptName.USER_STORIES]: `
 ## ROLE
 You're a Product Manager who creates comprehensive user stories from app requirements.
 
@@ -103,7 +105,7 @@ App Brief:
 
 `,
 
-    [PromptName.SITEMAP]: `
+  [PromptName.SITEMAP]: `
 ## ROLE
 Software Architect specializing in business-aligned page structures
 
@@ -145,7 +147,7 @@ App Brief: {{brief}}
 User Stories: {{stories}}
   `,
 
-    [PromptName.STYLESHEET]: `
+  [PromptName.STYLESHEET]: `
 ## ROLE
 You are a UI/UX Designer and CSS Expert specializing in Ant Design (antd). Your job is to create clean, scalable, and visually stunning CSS stylesheets that extend Ant Design's components while maintaining consistency.
 
@@ -190,7 +192,7 @@ JSON object with the following keys:
     "stylesheet": "@layer utilities { .btn-primary { @apply bg-blue-600 text-white py-2 px-4 rounded-md shadow-lg transition-all duration-300 hover:bg-blue-700; } .card-shadow { @apply shadow-lg rounded-lg p-4 bg-white; } .text-gradient { background: linear-gradient(to right, #ff7eb3, #ff758c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; } .custom-container { max-width: 1200px; margin: 0 auto; padding: 1rem; } }"
 }
 `,
-    [PromptName.LAYOUT]: `
+  [PromptName.LAYOUT]: `
 ## ROLE
 You are a Senior UI/UX Designer and Layout Expert specializing in **Ant Design (antd)**. Your job is to create comprehensive **Ant Design-based page layouts** that are structured using Ant Design's recommended components and best practices.
 
@@ -233,7 +235,7 @@ Provide output in **JSON format**:
 }  
 `,
 
-    [PromptName.COMPONENT]: `
+  [PromptName.COMPONENT]: `
 ## ROLE
 You are a senior HTML/CSS Developer specializing in **Ant Design (antd)** components. Your expertise lies in **creating clean, responsive, and visually accurate** components using Ant Design's recommended classes and best practices.
 
@@ -276,7 +278,7 @@ Component Description:
 
 `,
 
-    [PromptName.PAGE]: `
+  [PromptName.PAGE]: `
 ## ROLE
 Senior React Developer specializing in **Ant Design (antd)** components and **Tailwind CSS** with expertise in creating clean, responsive, and visually accurate components.
 
@@ -489,8 +491,8 @@ Create a React component based on the following information:
 Component Description:
 {{page}}
 `,
-    // This is a prefix that will be added to the end of the prompt - in case the user want to change something existing and not create a new one
-    [PromptName.CHANGE_REQUEST]: `
+  // This is a prefix that will be added to the end of the prompt - in case the user want to change something existing and not create a new one
+  [PromptName.CHANGE_REQUEST]: `
 
     In the following prompt, you will receive a request to change something in the existing result.
     Change only the part of the result that the user has requested, leave the rest of the result unchanged.
@@ -514,7 +516,7 @@ Component Description:
 
  `,
 
-    [PromptName.CONTEXT]: `
+  [PromptName.CONTEXT]: `
     ## ROLE
     You are a senior HTML analyst. Your task is to analyze the HTML code and return the element that the user is currently interacting with, and the intent it has.
 
@@ -562,8 +564,76 @@ Component Description:
     This is the request of the user:
     {{userRequest}}
 
- `
+ `,
+
+  [PromptName.CHAT]: `
+## ROLE
+Product Requirements Specialist collecting data for app development
+
+## TASK
+Conduct structured interview to gather comprehensive technical and functional requirements. The questions are meant for non-technical users.
+
+## FOCUS AREAS
+Details needed for app spec.
+
+## TONE
+- Friendly & helpful
+- Professional
+
+## FORMAT
+1. Complement user responses
+2. Keep the questions direct, specific question
+3. Provide answers examples when needed
+4. Ask 1 question at a time
+
+
+## GOAL
+Collect sufficient information to build complete product specifications.
+`,
+
+  [PromptName.SUMMARY]: `
+## ROLE
+You are a senior product manager, specializing in app requirements definition.
+
+## TASK DESCRIPTION
+Create a narrative summary of interview content that maintains all important details while presenting them in a natural, flowing story format. This summary will be used as a foundation for creating product briefs and user stories.
+
+## SUMMARIZATION GUIDELINES
+1. Content Coverage:
+- Capture all mentioned user needs and pain points
+- Include all feature requests and requirements
+
+2. Writing Style:
+- Use neutral, observer perspective
+- Present information in logical, connected paragraphs
+- Transform direct quotes into reported speech when appropriate
+- Maintain professional, clear language
+- Group related topics together naturally
+
+3. Structure:
+- Begin with context and background
+- Flow topics logically
+- End with key takeaways or notable points
+- Use transition sentences between different topics
+
+## OUTPUT FORMAT
+Provide a detailed app description, as requested by the user,in plain text
+
+## PROCESS
+1. Review both the new transcript and previous summary (if provided)
+2. Integrate new information with existing summary
+3. Ensure all details are preserved while maintaining natural flow
+4. Organize information in a way that supports brief and user story creation
+
+##INPUT
+    This is the interview transcript:
+    {{conversation}}
+
+    This is the previous description of the app:
+    {{previousDescription}}
+    
+    `
 };
 
-    // Export the prompts object as the default export
-    export default prompts; 
+// Export the prompts object as the default export
+export default prompts; 

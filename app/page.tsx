@@ -13,7 +13,8 @@ import {
   notification,
   Spin,
   Tabs,
-  Switch
+  Switch,
+  Col
 } from 'antd'
 import {
   CheckOutlined,
@@ -30,6 +31,7 @@ import Header from '@/components/Header'
 import { CanvasStory } from '@/types/canvas'
 import { BriefItem } from '@/types/canvas'
 import prompts, { PromptName } from '@/utils/prompts'
+import Chat from '@/components/Chat'
 
 const { Content } = Layout
 const { Title, Text } = Typography
@@ -99,37 +101,37 @@ export default function Home() {
 
   const createPagePromise = async (page: { type: string, description: string }, idx: number, changeRequest?: string) => {
     try {
-        setGeneratingSection('Page (' + page.type + ')')
-        const target = changeRequest ? 'change' : 'page'
-        const pageResponse = await fetch(`/api/${target}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ page, customPrompt: prompts[target as keyof typeof prompts], ...tempAppContent, result: JSON.stringify(appContent?.pages?.[page.type]?.components?.[0]), changeRequest, section: 'page' }),
-        });
+      setGeneratingSection('Page (' + page.type + ')')
+      const target = changeRequest ? 'change' : 'page'
+      const pageResponse = await fetch(`/api/${target}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ page, customPrompt: prompts[target as keyof typeof prompts], ...tempAppContent, result: JSON.stringify(appContent?.pages?.[page.type]?.components?.[0]), changeRequest, section: 'page' }),
+      });
 
-        if (!pageResponse.ok) {
-          throw new Error(`HTTP error! status: ${pageResponse.status}`);
+      if (!pageResponse.ok) {
+        throw new Error(`HTTP error! status: ${pageResponse.status}`);
+      }
+
+      let pageData = await pageResponse.json();
+
+      if (changeRequest) {
+        pageData = pageData.change;
+        console.log("Change request", pageData)
+      }
+
+      if (pageData) {
+        if (!tempAppContent.pages) {
+          tempAppContent.pages = {};
         }
-
-        let pageData = await pageResponse.json();
-
-        if (changeRequest) {
-          pageData = pageData.change;
-          console.log("Change request", pageData)
+        if (!tempAppContent.pages[page.type]) {
+          tempAppContent.pages[page.type] = { order: idx, layout: '', components: [] };
         }
-
-        if (pageData) {
-          if (!tempAppContent.pages) {
-            tempAppContent.pages = {};
-          }
-          if (!tempAppContent.pages[page.type]) {
-            tempAppContent.pages[page.type] = { order: idx, layout: '', components: [] };
-          }
-          tempAppContent.pages[page.type].components.push(pageData.code);
-        }
-        setAppContent(tempAppContent);
+        tempAppContent.pages[page.type].components.push(pageData.code);
+      }
+      setAppContent(tempAppContent);
 
     } catch (error) {
       console.error(`Error generating layout for page ${page}:`, error);
@@ -233,21 +235,29 @@ export default function Home() {
           <Card
             className="max-w-7xl mx-auto shadow-lg"
           >
-            <div className="text-center mb-8">
-              <Title level={1} className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
-                Tell Us About Your Dream App
-              </Title>
-            </div>
-
-            <AppDescriptionForm
-              onSubmit={handleSubmitDescription}
-              isGenerating={generatingContent}
-            />
+            <Layout>
+              <Content className="flex">
+                <Col span={12} className="p-0 border-r bg-white">
+                  {/* <Title level={3}>Tell Me About Your App...</Title> */}
+                  <div className="rounded-lg p-0 overflow-y-auto" style={{ height: 'calc(100vh - 200px)', width: '100%' }}>
+                    <Chat onSummaryCreated={setAppDescription}/>
+                  </div>
+                </Col>
+                <Col span={12} className="p-6">
+                  <Title level={3}>Your App Description</Title>
+                  <AppDescriptionForm
+                    appDescription={appDescription}
+                    onSubmit={handleSubmitDescription}
+                    isGenerating={generatingContent}
+                  />
+                </Col>
+              </Content>
+            </Layout>
           </Card>
         </Content>
       ) : (
         <Layout
-            style={{ width: 'calc(100vw - 100px)', minWidth: '1105px', overflowX: 'hidden', margin: '20px auto' }}
+          style={{ width: 'calc(100vw - 100px)', minWidth: '1105px', overflowX: 'hidden', margin: '20px auto' }}
         >
           <Tabs
             activeKey={currentView}
