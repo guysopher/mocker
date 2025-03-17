@@ -151,7 +151,7 @@ export const DesignView: FC<DesignViewProps> = ({
           border: '0px solid #111',
           borderRadius: 10,
           boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.1)',
-          height: 765,
+          height: '100%',
           width: 1105,
           margin: '0 auto',
           overflow: 'hidden',
