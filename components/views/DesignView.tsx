@@ -156,9 +156,7 @@ export const DesignView: FC<DesignViewProps> = ({
           margin: '0 auto',
           overflow: 'hidden',
           boxSizing: 'border-box',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center'
+          display: 'block',
         }}>
         <Spin indicator={<LoadingOutlined />} />
       </div>

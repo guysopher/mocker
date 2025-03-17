@@ -98,40 +98,34 @@ App Brief:
   [PromptName.SITEMAP]: `
 ## ROLE
 Software Architect specializing in business-aligned page structures
-
 ## TASK
 Create a focused sitemap (1-5 pages) derived directly from business requirements that:
 - Serves clear business goals and user needs
 - Includes only essential, high-value pages
 - Omits generic utility pages unless explicitly required
 - Maintains consistent design across all pages
-
 ## HEADER AND FOOTER PROHIBITION
 CRITICAL: Headers and footers are NOT to be included in any page design.
 DO NOT generate, describe, or reference headers or footers anywhere in the output.
 All pages must be designed WITHOUT headers and footers.
-
 ## LAYOUT REQUIREMENT
 CRITICAL: All pages must use a consistent FULL-SCREEN layout.
 Every page must utilize the entire viewport width and height.
 The layout structure must be identical across all pages to maintain visual consistency.
-
 ## DESIGN SYSTEM REQUIREMENT
 Establish ONE consistent design system based on the business brief with specific values for colors (HEX), font types, spacing, and component styling. This EXACT system must appear at the beginning of EVERY page's "design" field, including the full-screen layout specification.
-
 ## OUTPUT FORMAT
 Return Output in JSON format
 {
   "sitemap": [
     {
       "type": "Page name/type",
-      "description": "Comprehensive explanation of the page's purpose, function and value to both business and users",
+      "description": "Comprehensive explanation of the page's purpose, function and value to both business and users with some business details",
       "components": ["Key component 1", "Key component 2", "Key component 3"],
       "design": "Consistent design system with full-screen layout, colors, typography, spacing, and component styling (NO headers or footers)"
     }
   ]
 }
-
 ## INPUT
 App Brief: {{brief}}
 User Stories: {{stories}}
