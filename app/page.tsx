@@ -320,7 +320,7 @@ export default function Home() {
           />
 
           <Content>
-            <Card>
+            <Card style={{ backgroundColor: 'white', maxWidth: '1200px', margin: '0 auto' }}>
               <Canvas
                 view={currentView}
                 appDescription={appDescription}
