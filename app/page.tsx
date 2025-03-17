@@ -124,11 +124,10 @@ export default function Home() {
       }
 
       if (pageData) {
-    debugger;
-        if (!tempAppContent.pages) {
+        if (!tempAppContent.pages || Object.keys(tempAppContent.pages).length === 0) {
           tempAppContent.pages = appContent?.pages || {};
         }
-        if (!tempAppContent.pages[page.type]) {
+        if (!tempAppContent.pages[page.type] || (tempAppContent.pages[page.type])?.components?.length === 0) {
           tempAppContent.pages[page.type] = appContent?.pages?.[page.type] || { order: idx, layout: '', components: [] };
         }
         tempAppContent.pages[page.type].components.push(pageData.code);
